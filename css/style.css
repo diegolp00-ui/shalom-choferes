@@ -1,0 +1,318 @@
+/* ========================================================
+   APP SHALOM CHOFERES - ESTILOS PERSONALIZADOS Y MEJORAS UI
+   ======================================================== */
+
+:root {
+  --color-header: #284682;
+  --color-login-bg: #1e3a6e;
+  --color-btn-menu: #1E88E5;
+  --color-fucsia: #D81B60;
+  --color-verde: #4CAF50;
+  --color-ambar: #FB8C00;
+  --color-llegada: #1E88E5;
+  --color-bg: #EDF1F7;
+  --color-dropdown: #0F2644;
+  --color-slate-tag: #455A64;
+  --color-cyan-tag: #00ACC1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #0b1329;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Envoltorio del simulador para escritorio */
+.desktop-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0b1329 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Teléfono móvil en escritorio */
+.phone-box {
+  width: 100%;
+  max-width: 414px;
+  height: min(890px, 96dvh);
+  border-radius: 44px;
+  box-shadow: 
+    0 25px 65px -15px rgba(0, 0, 0, 0.95),
+    0 0 0 10px #1e293b,
+    0 0 0 12px #334155;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #FFFFFF;
+  transition: max-width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
+}
+
+/* Modo pantalla completa en escritorio si el usuario lo desea */
+.phone-box.fullscreen-mode {
+  max-width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Responsive nativo para teléfonos reales */
+@media (max-width: 640px) {
+  html, body {
+    background: #EDF1F7;
+  }
+  .desktop-wrapper {
+    background: transparent;
+    padding: 0;
+  }
+  .phone-box {
+    position: fixed;
+    inset: 0;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    height: 100dvh !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  .desktop-controls {
+    display: none !important;
+  }
+}
+
+/* Isla dinámica o Notch */
+.dynamic-island {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 105px;
+  height: 22px;
+  background: #000000;
+  border-radius: 20px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.dynamic-island-camera {
+  width: 9px;
+  height: 9px;
+  background: #111e38;
+  border-radius: 50%;
+  border: 1px solid #1e293b;
+}
+
+.dynamic-island-sensor {
+  width: 5px;
+  height: 5px;
+  background: #0f172a;
+  border-radius: 50%;
+}
+
+/* Contenedor de scroll suave */
+.scroll-area {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+}
+
+/* Animaciones de cambio de pantalla */
+.fade-in {
+  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Transición tipo deslizamiento de pantalla nativa */
+.slide-in-right {
+  animation: slideInRight 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0.7;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Filas Swipe (Deslizar hacia la izquierda) */
+.swipe-row {
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y;
+  background: #FFFFFF;
+  border-radius: 0.85rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.swipe-row:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.swipe-btns {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  z-index: 1;
+  transform: translateX(100%);
+  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.swipe-body {
+  position: relative;
+  background: #FFFFFF;
+  z-index: 2;
+  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+  cursor: pointer;
+}
+
+.swipe-row.open-programacion .swipe-body {
+  transform: translateX(-195px);
+}
+
+.swipe-row.open-escalas .swipe-body {
+  transform: translateX(-215px);
+}
+
+.swipe-row.open-programacion .swipe-btns,
+.swipe-row.open-escalas .swipe-btns {
+  transform: translateX(0);
+}
+
+/* Inputs con estilo moderno Shalom */
+.app-input {
+  border: none;
+  border-bottom: 2px solid #80DEEA;
+  border-radius: 0;
+  padding: 5px 0;
+  background: transparent;
+  outline: none;
+  font-weight: 700;
+  color: #1E293B;
+  transition: border-color 0.2s;
+}
+
+.app-input:focus {
+  border-bottom-color: #00ACC1;
+}
+
+/* Scrollbars estilizados */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Modales con efecto desenfoque moderno */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Botones interactivos con respuesta táctil */
+.interactive-btn {
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+.interactive-btn:active {
+  transform: scale(0.96);
+  filter: brightness(0.92);
+}
+
+/* Banner de Asistente de Capacitación */
+.training-assistant-banner {
+  background: linear-gradient(135deg, #1e3a6e 0%, #284682 100%);
+  color: #FFFFFF;
+  padding: 8px 12px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.step-pill {
+  background: #FB8C00;
+  color: white;
+  padding: 1px 7px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* Resaltado de botones según el paso guiado */
+.highlight-step {
+  animation: pulseGuide 1.8s infinite;
+  outline: 3px solid #FB8C00 !important;
+  outline-offset: 2px;
+}
+
+@keyframes pulseGuide {
+  0% { box-shadow: 0 0 0 0 rgba(251, 140, 0, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(251, 140, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(251, 140, 0, 0); }
+}
+
+/* Efecto Flash para la toma de fotografía */
+.camera-flash {
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.camera-flash.flash-active {
+  animation: flashAnim 0.35s ease-out;
+}
+
+@keyframes flashAnim {
+  0% { opacity: 0.95; }
+  100% { opacity: 0; }
+}

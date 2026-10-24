@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1e3a6e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <title>Simulador App Choferes Shalom - Capacitación Oficial</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome 6 CDN -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            app: {
+              header: '#284682',
+              loginBg: '#1e3a6e',
+              btnMenu: '#1E88E5',
+              fucsia: '#D81B60',
+              verde: '#4CAF50',
+              ambar: '#FB8C00',
+              llegada: '#1E88E5',
+              bg: '#EDF1F7',
+              dropdown: '#0F2644',
+              slateTag: '#455A64',
+              cyanTag: '#00ACC1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="text-slate-800">
+
+  <div class="desktop-wrapper p-0 sm:p-4">
+
+    <!-- Barra de control en escritorio para capacitadores -->
+    <div class="desktop-controls hidden sm:flex items-center space-x-3 mb-3 text-xs text-blue-200">
+      <span class="font-bold flex items-center space-x-1">
+        <i class="fa-solid fa-truck-fast text-amber-400"></i>
+        <span>Simulador Oficial Shalom Choferes</span>
+      </span>
+      <span class="text-blue-400">|</span>
+      <button onclick="app.toggleFullscreen()" class="hover:text-white px-2 py-1 bg-slate-800/80 rounded border border-slate-700 flex items-center space-x-1">
+        <i class="fa-solid fa-expand"></i>
+        <span>Pantalla Completa</span>
+      </button>
+      <button onclick="app.toggleModoGuiado()" class="hover:text-white px-2 py-1 bg-slate-800/80 rounded border border-slate-700 flex items-center space-x-1">
+        <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+        <span>Modo Guiado</span>
+      </button>
+      <button onclick="app.toggleMute()" class="hover:text-white px-2 py-1 bg-slate-800/80 rounded border border-slate-700 flex items-center space-x-1">
+        <i id="btn-sound-icon" class="fa-solid fa-volume-high"></i>
+        <span>Sonido</span>
+      </button>
+    </div>
+
+    <!-- Teléfono Mockup -->
+    <div id="main-phone-box" class="phone-box shadow-2xl flex flex-col relative">
+
+      <!-- Dynamic Island / Notch decorativo -->
+      <div class="dynamic-island hidden sm:flex">
+        <div class="dynamic-island-camera"></div>
+        <div class="dynamic-island-sensor"></div>
+      </div>
+
+      <!-- Barra de Estado Móvil -->
+      <div class="hidden sm:flex bg-app-header text-white text-[11px] px-6 py-1.5 justify-between items-center select-none z-30 font-medium shrink-0 pt-2">
+        <span id="top-clock">10:00</span>
+        <div class="flex items-center space-x-2 text-[10px]">
+          <span class="text-[9px] font-bold">VoLTE</span>
+          <i class="fa-solid fa-signal"></i>
+          <i class="fa-solid fa-wifi"></i>
+          <span class="text-[9px]">98%</span>
+          <i class="fa-solid fa-battery-full text-xs text-emerald-400"></i>
+        </div>
+      </div>
+
+      <!-- Barra de Capacitación y Acciones Rápidas -->
+      <div class="bg-blue-50 border-b border-blue-200 text-app-header text-[10px] font-bold px-3 py-1.5 flex justify-between items-center z-20 shrink-0">
+        <span class="flex items-center space-x-1 truncate mr-1">
+          <i class="fa-solid fa-graduation-cap text-blue-600"></i>
+          <span class="truncate">CAPACITACIÓN &bull; APP SHALOM CHOFERES</span>
+        </span>
+        <div class="flex items-center space-x-2 shrink-0">
+          <button onclick="app.showVideoModal()" class="text-blue-700 hover:text-blue-900 font-bold flex items-center space-x-1">
+            <i class="fa-solid fa-circle-play text-red-600"></i>
+            <span>Videos</span>
+          </button>
+          <button onclick="app.reset()" class="text-blue-700 hover:text-red-600 underline font-semibold">
+            Reiniciar
+          </button>
+        </div>
+      </div>
+
+      <!-- Banner Asistente de Capacitación (Paso a Paso) -->
+      <div id="training-guide-banner" class="training-assistant-banner">
+        <div class="flex items-center space-x-2 truncate">
+          <span class="step-pill">GUÍA</span>
+          <span id="guia-step-text" class="truncate font-semibold text-[11px]">Ingresa con tu DNI para comenzar.</span>
+        </div>
+      </div>
+
+      <!-- Flash Overlay para la Cámara -->
+      <div id="camera-flash-overlay" class="camera-flash"></div>
+
+      <!-- CONTENEDOR DE PANTALLAS -->
+      <div id="screen-container" class="flex-1 min-h-0 flex flex-col overflow-hidden bg-app-bg relative">
+
+        <!-- =================== VISTA: LOGIN =================== -->
+        <div id="view-login" class="flex-1 min-h-0 overflow-y-auto flex flex-col justify-between p-6 bg-app-loginBg text-white fade-in">
+          <div class="text-right text-[11px] text-blue-200 font-mono font-medium">
+            version: 2.5.5
+          </div>
+
+          <div class="flex flex-col items-center space-y-6 my-auto">
+            <div class="text-center">
+              <h1 class="text-3xl font-black italic tracking-wider text-white">SHALOM</h1>
+              <p class="text-[10px] tracking-widest text-blue-200 uppercase font-bold mt-1">App Choferes</p>
+            </div>
+
+            <div class="w-full space-y-4 max-w-xs">
+              <div class="relative border-2 border-blue-300/80 rounded-xl px-3 py-2 bg-blue-900/40">
+                <label class="block text-[9px] font-bold text-blue-200 uppercase tracking-wider">USUARIO</label>
+                <div class="flex items-center space-x-2 mt-0.5">
+                  <i class="fa-solid fa-user text-blue-300 text-xs"></i>
+                  <input type="text" id="login-input-user" value="48290476" class="w-full bg-transparent text-sm font-mono font-bold outline-none text-white tracking-wider" placeholder="DNI o CE">
+                </div>
+              </div>
+
+              <div class="relative border-2 border-blue-300/80 rounded-xl px-3 py-2 bg-blue-900/40">
+                <label class="block text-[9px] font-bold text-blue-200 uppercase tracking-wider">CONTRASEÑA</label>
+                <div class="flex items-center space-x-2 mt-0.5">
+                  <i class="fa-solid fa-lock text-blue-300 text-xs"></i>
+                  <input type="password" id="login-input-pass" value="48290476" class="w-full bg-transparent text-sm font-mono font-bold outline-none text-white tracking-wider" placeholder="Contraseña">
+                  <button type="button" onclick="app.togglePassVisibility()" class="text-blue-300 hover:text-white px-1">
+                    <i id="login-eye-icon" class="fa-solid fa-eye text-xs"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="bg-blue-400/20 rounded-lg p-2 text-[10px] text-blue-100 flex items-center space-x-1.5">
+                <i class="fa-solid fa-circle-info text-amber-300"></i>
+                <span>Ingresa con tu <b>DNI o CE</b> en usuario y contraseña.</span>
+              </div>
+
+              <div class="pt-2">
+                <button id="btn-login-submit" onclick="app.loginSubmit()" class="interactive-btn w-full py-3 bg-white text-app-header font-black rounded-full text-xs shadow-xl active:scale-95 transition tracking-wider uppercase">
+                  INGRESAR
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center text-[10px] text-blue-300/80 pb-2">
+            PROYECTO CHOFERES &bull; SHALOM EMPRESARIAL
+          </div>
+        </div>
+
+        <!-- =================== VISTA: MENÚ PRINCIPAL (P01) =================== -->
+        <div id="view-p01" class="hidden flex-1 min-h-0 overflow-hidden flex flex-col fade-in bg-white">
+          <header class="bg-app-header text-white px-4 py-3 shadow flex justify-between items-center z-10 shrink-0">
+            <h1 class="text-base font-bold tracking-wide uppercase">CHOFERES</h1>
+            <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10">
+              <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
+            </button>
+          </header>
+
+          <div class="scroll-area p-4 space-y-3 bg-white flex flex-col justify-between">
+            <div class="grid grid-cols-2 gap-3 pt-2">
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center">
+                <i class="fa-solid fa-user text-xl"></i>
+                <span class="text-xs font-semibold uppercase">Perfil</span>
+              </button>
+
+              <button id="btn-to-programacion" class="interactive-btn bg-app-btnMenu hover:bg-blue-600 active:scale-95 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-md transition h-24 text-center ring-2 ring-blue-300">
+                <div class="relative">
+                  <i class="fa-solid fa-truck text-xl"></i>
+                  <span class="absolute -top-1 -right-2 w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping"></span>
+                </div>
+                <span class="text-xs font-bold uppercase">Programación</span>
+              </button>
+
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+                <i class="fa-solid fa-file-lines text-xl"></i>
+                <span class="text-xs font-semibold uppercase">Manifiesto</span>
+              </button>
+
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+                <i class="fa-solid fa-code-branch text-xl"></i>
+                <span class="text-xs font-semibold uppercase">Ruta Carguero</span>
+              </button>
+
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+                <i class="fa-solid fa-file-pdf text-xl"></i>
+                <span class="text-xs font-semibold uppercase">PDF</span>
+              </button>
+
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+                <i class="fa-solid fa-store text-xl"></i>
+                <span class="text-xs font-semibold uppercase">CDTALLERES</span>
+              </button>
+
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+                <i class="fa-solid fa-car text-xl"></i>
+                <span class="text-xs font-semibold uppercase">Servicio de Lavado</span>
+              </button>
+
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+                <i class="fa-solid fa-gas-pump text-xl"></i>
+                <span class="text-xs font-semibold uppercase">Grifos</span>
+              </button>
+            </div>
+
+            <div class="pt-2 pb-4">
+              <button onclick="app.openEvaluacionModal()" class="interactive-btn w-full bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl py-3.5 flex items-center justify-center space-x-2 shadow-md font-bold text-xs uppercase">
+                <i class="fa-solid fa-award text-lg text-amber-300"></i>
+                <span>EVALUACIÓN DE CAPACITACIÓN</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- =================== VISTA: PROGRAMACIÓN DE RUTAS (P02) =================== -->
+        <div id="view-p02" class="hidden flex-1 min-h-0 overflow-hidden flex flex-col fade-in bg-app-bg">
+          <header class="bg-app-header text-white px-3 py-2.5 shadow flex items-center space-x-3 z-10 shrink-0">
+            <button id="btn-back-to-p01" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10">
+              <i class="fa-solid fa-arrow-left text-base"></i>
+            </button>
+            <div class="truncate">
+              <h1 class="text-sm font-bold leading-tight">Programación</h1>
+              <p id="p02-driver-subtitle" class="text-[10px] text-blue-200 truncate">48290476 - MICHAEL JESUS REVILLA ALIAGA - Q482904...</p>
+            </div>
+          </header>
+
+          <div class="bg-blue-50/90 border-b border-blue-200 px-3 py-1.5 text-[10px] text-blue-900 font-medium flex items-center space-x-1.5 shrink-0">
+            <i class="fa-solid fa-hand-pointer text-blue-600"></i>
+            <span>Toca una tarjeta o deslízala a la <b>IZQUIERDA</b> para <b>INGRESAR</b>.</span>
+          </div>
+
+          <div class="scroll-area p-3 space-y-3 pb-16">
+            <!-- TARJETA RUTA IDA -->
+            <div id="card-p02-ida" class="swipe-row rounded-xl shadow-sm border border-slate-300">
+              <div class="swipe-btns">
+                <button onclick="app.actionProgramacionIngresar('IDA')" class="bg-app-verde hover:bg-green-600 text-white px-3.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                  <i class="fa-solid fa-arrow-right text-sm"></i>
+                  <span>INGRESAR</span>
+                </button>
+                <button onclick="alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                  <i class="fa-solid fa-dollar-sign text-sm"></i>
+                  <span>GASTOS</span>
+                </button>
+                <button onclick="alert('Relevos: Informativo');" class="bg-blue-800 text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                  <i class="fa-solid fa-id-card text-sm"></i>
+                  <span>RELEVOS</span>
+                </button>
+              </div>
+
+              <div onclick="app.handleCardClick(event, 'IDA')" class="swipe-body p-3 space-y-2 hover:bg-slate-50 transition">
+                <div class="flex justify-between items-start">
+                  <span class="px-2 py-0.5 rounded bg-app-slateTag text-white text-[10px] font-bold">
+                    IDA - HUACHIPA CO - ...
+                  </span>
+                  <span id="badge-p02-ida" class="px-2 py-0.5 rounded text-[10px] font-black bg-app-fucsia text-white">
+                    PENDIENTE
+                  </span>
+                </div>
+
+                <div class="flex justify-between text-[11px] text-slate-700">
+                  <span class="flex items-center space-x-1">
+                    <i class="fa-regular fa-calendar text-slate-500"></i>
+                    <b>2026-06-19 10:00:00</b>
+                  </span>
+                  <div class="text-right text-[10px] text-blue-700 font-mono font-bold leading-tight">
+                    <div>CCY-904</div>
+                    <div>N°: 948836</div>
+                  </div>
+                </div>
+
+                <div class="text-[11px] text-slate-600 font-mono space-y-0.5">
+                  <div>&rsaquo; ORIGEN: <b class="text-slate-800">HPACO-AYA.MAG</b></div>
+                  <div>&rsaquo; DESTINO: <b class="text-slate-800">AYA.MAG-PLI</b></div>
+                </div>
+
+                <div class="grid grid-cols-2 text-[10px] text-blue-700 font-mono pt-0.5 border-t border-slate-100">
+                  <div>GALONES: <b class="text-slate-800">0</b></div>
+                  <div class="text-right">DIF. KM: <b id="lbl-p02-ida-difkm" class="text-slate-800">0</b></div>
+                </div>
+
+                <div id="p02-ida-details-closed" class="hidden text-[10px] text-slate-500 font-mono pt-1 border-t border-slate-100">
+                  <div>INICIO: <b>29726 Km</b> &bull; FINAL: <b>29764 Km</b></div>
+                  <div>DURACION: <b>2:29:17</b> &bull; DIF. KM: <b>38</b></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TARJETA RUTA RETORNO -->
+            <div id="card-p02-ret" class="swipe-row rounded-xl shadow-sm border border-slate-300 opacity-60">
+              <div class="swipe-btns">
+                <button id="btn-swipe-ret-ingresar" onclick="app.actionProgramacionIngresar('RET')" class="bg-app-verde hover:bg-green-600 text-white px-3.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                  <i class="fa-solid fa-arrow-right text-sm"></i>
+                  <span>INGRESAR</span>
+                </button>
+                <button onclick="alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                  <i class="fa-solid fa-dollar-sign text-sm"></i>
+                  <span>GASTOS</span>
+                </button>
+                <button onclick="alert('Relevos: Informativo');" class="bg-blue-800 text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                  <i class="fa-solid fa-id-card text-sm"></i>
+                  <span>RELEVOS</span>
+                </button>
+              </div>
+
+              <div onclick="app.handleCardClick(event, 'RET')" class="swipe-body p-3 space-y-2 hover:bg-slate-50 transition">
+                <div class="flex justify-between items-start">
+                  <span class="px-2 py-0.5 rounded bg-app-slateTag text-white text-[10px] font-bold">
+                    RET- LA MARINA - HU...
+                  </span>
+                  <span id="badge-p02-ret" class="px-2 py-0.5 rounded text-[10px] font-black bg-slate-300 text-slate-600">
+                    BLOQUEADO
+                  </span>
+                </div>
+
+                <div class="flex justify-between text-[11px] text-slate-700">
+                  <span class="flex items-center space-x-1">
+                    <i class="fa-regular fa-calendar text-slate-500"></i>
+                    <b>2026-06-19 12:50:06</b>
+                  </span>
+                  <div class="text-right text-[10px] text-blue-700 font-mono font-bold leading-tight">
+                    <div>CCY-904</div>
+                    <div>N°: 948836</div>
+                  </div>
+                </div>
+
+                <div class="text-[11px] text-slate-600 font-mono space-y-0.5">
+                  <div>&rsaquo; ORIGEN: <b class="text-slate-800">PLI</b></div>
+                  <div>&rsaquo; DESTINO: <b class="text-slate-800">HPACO</b></div>
+                </div>
+
+                <div class="grid grid-cols-2 text-[10px] text-blue-700 font-mono pt-0.5 border-t border-slate-100">
+                  <div>GALONES: <b class="text-slate-800">0</b></div>
+                  <div class="text-right">DIF. KM: <b id="lbl-p02-ret-difkm" class="text-slate-800">0</b></div>
+                </div>
+
+                <div id="p02-ret-details-closed" class="hidden text-[10px] text-slate-500 font-mono pt-1 border-t border-slate-100">
+                  <div>INICIO: <b>29764 Km</b> &bull; FINAL: <b>29800 Km</b></div>
+                  <div>DURACION: <b>3:39:54</b> &bull; DIF. KM: <b>36</b></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =================== VISTA: INICIO Y FIN DE RUTA (P04) =================== -->
+        <div id="view-p04" class="hidden flex-1 min-h-0 overflow-hidden flex flex-col fade-in bg-white">
+          <header class="bg-app-header text-white px-3 py-2.5 shadow flex items-center justify-between z-20 shrink-0">
+            <div class="flex items-center space-x-2 truncate">
+              <button onclick="app.backFromP04()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10">
+                <i class="fa-solid fa-arrow-left text-base"></i>
+              </button>
+              <div class="truncate">
+                <h1 id="p04-header-title" class="text-xs font-bold leading-tight truncate">IDA - HUACHIPA CO - LA MA...</h1>
+                <p class="text-[10px] text-blue-200">- CCY-904 - 2026-06-19 10:00:00</p>
+              </div>
+            </div>
+            <button id="btn-p04-menu" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10">
+              <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
+            </button>
+          </header>
+
+          <!-- Menú desplegable de 3 puntos -->
+          <div id="dropdown-p04-menu" class="hidden absolute top-12 right-2 bg-app-dropdown text-white shadow-2xl rounded-lg py-1.5 w-48 z-50 fade-in text-xs font-medium border border-blue-900">
+            <button onclick="app.goToHojaRuta()" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5 text-amber-300 font-bold">
+              <i class="fa-solid fa-clipboard-list w-4"></i>
+              <span>Hoja de ruta</span>
+            </button>
+            <button onclick="alert('Gastos'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+              <i class="fa-solid fa-dollar-sign text-blue-300 w-4"></i>
+              <span>Gastos</span>
+            </button>
+            <button onclick="alert('Relevos'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+              <i class="fa-solid fa-id-card text-blue-300 w-4"></i>
+              <span>Relevos</span>
+            </button>
+            <button onclick="alert('Demora'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+              <i class="fa-solid fa-clock text-blue-300 w-4"></i>
+              <span>Demora</span>
+            </button>
+            <button onclick="alert('Evaluación'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+              <i class="fa-solid fa-file-signature text-blue-300 w-4"></i>
+              <span>Evaluación</span>
+            </button>
+            <button onclick="alert('Constancia'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+              <i class="fa-solid fa-certificate text-blue-300 w-4"></i>
+              <span>Constancia</span>
+            </button>
+            <button onclick="alert('Monitores'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+              <i class="fa-solid fa-truck text-blue-300 w-4"></i>
+              <span>Monitores</span>
+            </button>
+            <button onclick="alert('Documentación'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+              <i class="fa-solid fa-folder text-blue-300 w-4"></i>
+              <span>Documentación</span>
+            </button>
+          </div>
+
+          <div class="scroll-area p-4 space-y-4 text-xs pb-16">
+            <!-- SECCIÓN INICIO DE RUTA -->
+            <div class="space-y-2 border-b border-slate-200 pb-3">
+              <h2 class="text-xs font-black text-app-header uppercase">INICIO DE RUTA</h2>
+              <p class="text-[11px] text-slate-500">Registre la información inicial de operaciones.</p>
+
+              <div class="flex items-center space-x-4 text-[11px] font-bold text-slate-800 py-1">
+                <span class="flex items-center space-x-1">
+                  <i class="fa-regular fa-calendar text-slate-500"></i>
+                  <span id="p04-inicio-fecha">2026-06-19</span>
+                </span>
+                <span class="flex items-center space-x-1">
+                  <i class="fa-regular fa-clock text-slate-500"></i>
+                  <span id="p04-inicio-hora">10:20:20</span>
+                </span>
+              </div>
+
+              <div class="space-y-1 text-[11px]">
+                <div>
+                  <span class="text-blue-700 text-[10px] font-bold">&rsaquo; CHOFER 1</span>
+                  <div class="flex items-center space-x-2 mt-0.5">
+                    <span id="p04-driver-dni" class="px-1.5 py-0.5 rounded bg-app-cyanTag text-white font-mono font-bold text-[10px]">48290476</span>
+                    <span id="p04-driver-name" class="font-bold text-slate-800 text-[10px]">MICHAEL JESUS REVILLA ALIAGA</span>
+                  </div>
+                </div>
+                <div>
+                  <span class="text-blue-700 text-[10px] font-bold">&rsaquo; CHOFER 2</span>
+                  <div class="flex items-center space-x-2 mt-0.5">
+                    <span class="w-2 h-4 rounded bg-app-cyanTag"></span>
+                    <span class="text-slate-400">---</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2.5">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[10px] font-bold text-blue-600 uppercase">KILOMETRAJE</label>
+                    <div class="flex items-center space-x-2">
+                      <input type="number" id="input-p04-km-inicio" value="29726" class="app-input w-full text-xs font-mono">
+                      <span id="p04-pencil-inicio" class="hidden w-6 h-6 rounded bg-app-verde text-white flex items-center justify-center text-[10px] flex-shrink-0">
+                        <i class="fa-solid fa-pencil"></i>
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-blue-600 uppercase">N° CANDADOS</label>
+                    <input type="number" id="input-p04-candados-inicio" value="2" class="app-input w-full text-xs font-mono">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[10px] font-bold text-blue-600 uppercase">MONTO INICIAL</label>
+                  <input type="text" value="0.00" class="app-input w-full text-xs font-mono text-slate-400" readonly>
+                </div>
+              </div>
+
+              <button id="btn-p04-grabar-inicio" onclick="app.submitP04Inicio()" class="interactive-btn w-full py-2.5 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow transition active:scale-[0.98]">
+                GRABAR INICIO DE RUTA
+              </button>
+            </div>
+
+            <!-- SECCIÓN FIN DE RUTA -->
+            <div id="box-p04-fin-ruta" class="space-y-2 pt-1 opacity-50">
+              <h2 class="text-xs font-black text-app-header uppercase">FIN DE RUTA</h2>
+              <p class="text-[11px] text-slate-500">Registre la información final de operaciones.</p>
+
+              <div class="flex items-center space-x-4 text-[11px] font-bold text-slate-800 py-1">
+                <span class="flex items-center space-x-1">
+                  <i class="fa-regular fa-calendar text-slate-500"></i>
+                  <span id="p04-fin-fecha">2026-06-19</span>
+                </span>
+                <span class="flex items-center space-x-1">
+                  <i class="fa-regular fa-clock text-slate-500"></i>
+                  <span id="p04-fin-hora">12:34:45</span>
+                </span>
+              </div>
+
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2.5">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[10px] font-bold text-blue-600 uppercase">KILOMETRAJE</label>
+                    <div class="flex items-center space-x-2">
+                      <input type="number" id="input-p04-km-fin" value="29764" class="app-input w-full text-xs font-mono" disabled>
+                      <span id="p04-pencil-fin" class="hidden w-6 h-6 rounded bg-app-verde text-white flex items-center justify-center text-[10px] flex-shrink-0">
+                        <i class="fa-solid fa-pencil"></i>
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-blue-600 uppercase">N° CANDADOS</label>
+                    <input type="number" id="input-p04-candados-fin" value="2" class="app-input w-full text-xs font-mono" disabled>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[10px] font-bold text-blue-600 uppercase">MONTO FINAL</label>
+                  <input type="text" value="0" class="app-input w-full text-xs font-mono text-slate-400" readonly>
+                </div>
+              </div>
+
+              <button id="btn-p04-grabar-fin" disabled onclick="app.submitP04Fin()" class="interactive-btn w-full py-2.5 bg-slate-400 text-white font-bold rounded-lg text-xs shadow transition">
+                GRABAR FINAL DE RUTA
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- =================== VISTA: LISTA DE ESCALAS (P05) =================== -->
+        <div id="view-p05" class="hidden flex-1 min-h-0 overflow-hidden flex flex-col fade-in bg-app-bg">
+          <header class="bg-app-header text-white px-3 py-2.5 shadow flex items-center justify-between z-10 shrink-0">
+            <div class="flex items-center space-x-2 truncate">
+              <button onclick="app.backFromP05()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10">
+                <i class="fa-solid fa-arrow-left text-base"></i>
+              </button>
+              <div class="truncate">
+                <h1 class="text-xs font-bold leading-tight">HOJA DE RUTA: ESCALAS</h1>
+                <p id="p05-subtitle" class="text-[9px] text-blue-200 truncate">- IDA - HUACHIPA CO - LA MARINA...</p>
+              </div>
+            </div>
+          </header>
+
+          <div class="bg-cyan-50 border-b border-cyan-200 px-3 py-2 flex justify-around text-center text-cyan-900 font-mono shrink-0 shadow-inner">
+            <div>
+              <span class="text-[9px] uppercase font-bold block text-cyan-700">CANT. EMBARCADOS:</span>
+              <span id="p05-total-embarcados" class="text-xs font-black px-2.5 py-0.5 rounded bg-cyan-100 border border-cyan-300 inline-block">413</span>
+            </div>
+            <div class="border-l border-cyan-200"></div>
+            <div>
+              <span class="text-[9px] uppercase font-bold block text-cyan-700">CANT. GRT EMITIDAS:</span>
+              <span id="p05-total-grt" class="text-xs font-black px-2.5 py-0.5 rounded bg-cyan-100 border border-cyan-300 inline-block">395</span>
+            </div>
+          </div>
+
+          <div class="bg-blue-50 border-b border-blue-200 px-3 py-1.5 text-[10px] text-blue-900 flex justify-between items-center shrink-0">
+            <span>Toca una escala o desliza para: <b>INGRESAR</b></span>
+            <i class="fa-solid fa-arrows-left-right text-xs text-blue-600"></i>
+          </div>
+
+          <div id="p05-escalas-list" class="scroll-area p-3 space-y-3 pb-24"></div>
+        </div>
+
+        <!-- =================== VISTA: DETALLE DE ESCALA (P07) =================== -->
+        <div id="view-p07" class="hidden flex-1 min-h-0 overflow-hidden flex flex-col fade-in bg-white">
+          <header class="bg-app-header text-white px-3 py-2.5 shadow flex items-center space-x-2 z-10 shrink-0">
+            <button onclick="app.backFromP07()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10">
+              <i class="fa-solid fa-arrow-left text-base"></i>
+            </button>
+            <div class="truncate">
+              <h1 id="p07-title" class="text-xs font-bold leading-tight truncate">ESCALA: HUACHIPA CO</h1>
+              <p id="p07-sub" class="text-[9px] text-blue-200 truncate">- IDA - HUACHIPA CO - LA MARINA...</p>
+            </div>
+          </header>
+
+          <div class="scroll-area p-3.5 space-y-3 text-xs bg-white pb-20">
+            <div class="space-y-0.5">
+              <h2 class="text-xs font-black text-app-header uppercase">HOJA DE RUTA:</h2>
+              <p class="text-[11px] text-slate-500">Registre la información correspondiente a esta escala.</p>
+            </div>
+
+            <!-- Botones de LLEGADA y SALIDA -->
+            <div class="grid grid-cols-2 gap-2.5">
+              <button id="p07-btn-box-llegada" onclick="app.handleLlegadaClick()" class="interactive-btn p-2.5 rounded-xl text-white text-left transition shadow-sm relative flex flex-col justify-between h-20 active:scale-95">
+                <div class="flex items-center space-x-1.5 font-bold text-xs uppercase">
+                  <i class="fa-solid fa-bus text-sm"></i>
+                  <span>LLEGADA</span>
+                </div>
+                <div class="text-[10px] font-mono leading-tight">
+                  <div id="p07-txt-llegada-fecha">2026-06-19</div>
+                  <div class="flex justify-between items-center">
+                    <span id="p07-txt-llegada-hora">12:35:17</span>
+                    <span id="p07-txt-llegada-km" class="font-bold">29762Km</span>
+                  </div>
+                </div>
+              </button>
+
+              <button id="p07-btn-box-salida" onclick="app.handleSalidaClick()" class="interactive-btn p-2.5 rounded-xl text-white text-left transition shadow-sm relative flex flex-col justify-between h-20 active:scale-95">
+                <div class="flex items-center space-x-1.5 font-bold text-xs uppercase">
+                  <i class="fa-solid fa-truck text-sm"></i>
+                  <span>SALIDA</span>
+                </div>
+                <div class="text-[10px] font-mono leading-tight">
+                  <div id="p07-txt-salida-fecha">2026-06-19</div>
+                  <div class="flex justify-between items-center">
+                    <span id="p07-txt-salida-hora">10:21:04</span>
+                    <span id="p07-txt-salida-km" class="font-bold">29726Km</span>
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            <!-- Proceso de Embarque -->
+            <div class="space-y-1 font-mono text-[10px] border-t border-slate-100 pt-2">
+              <span class="text-blue-700 font-bold block">&rsaquo; PROCESO DE EMBARQUE</span>
+              <div class="flex items-center space-x-3 text-slate-700 font-bold">
+                <span><i class="fa-regular fa-clock"></i> 00:00:00</span>
+                <span><i class="fa-solid fa-bell-slash"></i> 00:00:00</span>
+              </div>
+              <div class="inline-block px-2 py-0.5 rounded bg-cyan-500 text-white font-bold text-[9px]">
+                2026-06-19 El proceso duró: 00:00
+              </div>
+            </div>
+
+            <!-- Proceso de Desembarque -->
+            <div class="space-y-1 font-mono text-[10px] border-t border-slate-100 pt-2">
+              <span class="text-blue-700 font-bold block">&rsaquo; PROCESO DE DESEMBARQUE</span>
+              <div class="flex items-center space-x-3 text-slate-700 font-bold">
+                <span><i class="fa-regular fa-clock"></i> 00:00:00</span>
+                <span><i class="fa-solid fa-bell-slash"></i> 00:00:00</span>
+              </div>
+              <div class="inline-block px-2 py-0.5 rounded bg-cyan-500 text-white font-bold text-[9px]">
+                2026-06-19 El proceso duró: 00:00
+              </div>
+            </div>
+
+            <!-- Destinos y Cantidades -->
+            <div class="bg-cyan-500 text-white p-3 rounded-xl shadow-sm space-y-0.5 font-mono">
+              <div class="flex items-center space-x-1.5 font-bold text-xs uppercase">
+                <i class="fa-solid fa-table-cells"></i>
+                <span>DESTINOS Y CANTIDADES</span>
+              </div>
+              <div id="p07-bultos-text" class="text-sm font-bold pl-5">
+                97 Paquetes 0 Guias
+              </div>
+            </div>
+
+            <div class="pt-1">
+              <label class="block text-[10px] font-bold text-blue-600 uppercase">OBSERVACIONES EN LA ESCALA</label>
+              <input type="text" class="app-input w-full text-xs" placeholder="Ninguna observación...">
+            </div>
+
+            <!-- Estado de Evidencia Adjuntada -->
+            <div id="box-evidencia-status" class="hidden bg-emerald-50 border border-emerald-300 p-2.5 rounded-xl flex items-center justify-between text-emerald-800 text-[11px] font-bold">
+              <span class="flex items-center space-x-2">
+                <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
+                <span>Evidencia fotográfica adjuntada</span>
+              </span>
+              <button onclick="app.openModalFoto()" class="text-blue-700 underline text-[10px]">Ver foto</button>
+            </div>
+
+            <!-- Botón Adjuntar Evidencia -->
+            <div class="pt-1">
+              <button id="btn-p07-adjuntar-evidencia" onclick="app.openModalFoto()" class="interactive-btn w-full py-2.5 bg-slate-500 hover:bg-slate-600 active:scale-98 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-camera"></i>
+                <span>ADJUNTAR EVIDENCIA</span>
+              </button>
+            </div>
+
+            <!-- Botón Primer Cierre: Confirmar Cierre de Escala -->
+            <div class="pt-1">
+              <button id="btn-p07-cierre-escala" onclick="app.submitCierreEscala()" class="interactive-btn hidden w-full py-3 bg-app-header hover:bg-blue-900 text-white font-bold rounded-xl text-xs shadow-md transition active:scale-98">
+                CONFIRMAR CIERRE DE ESCALA
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- Fin #screen-container -->
+
+      <!-- =================== MODALES Y POPUPS =================== -->
+
+      <!-- Modal P03: Confirmación de inicio de ruta -->
+      <div id="modal-p03" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-3 text-xs">
+          <h3 class="font-bold text-app-header text-sm">INICIO DE RUTA</h3>
+          <p id="modal-p03-text" class="text-slate-600 text-[11px] leading-relaxed">
+            Está seguro iniciar la ruta: se registrará la fecha y hora.
+          </p>
+          <div class="flex items-center space-x-3 text-[11px] font-bold text-slate-800 py-1 font-mono">
+            <span>📅 2026-06-19</span>
+            <span>⏰ 10:20:12</span>
+          </div>
+          <div class="space-y-1.5 py-1">
+            <label class="flex items-center space-x-2 text-slate-700">
+              <input type="checkbox" class="w-4 h-4 rounded text-blue-600">
+              <span>Directo</span>
+            </label>
+            <label class="flex items-center space-x-2 text-slate-800 font-bold">
+              <input type="checkbox" checked class="w-4 h-4 rounded text-blue-600">
+              <span>Escalas</span>
+            </label>
+          </div>
+          <div class="flex justify-end space-x-3 pt-2">
+            <button onclick="document.getElementById('modal-p03').classList.add('hidden')" class="px-3 py-1.5 text-app-fucsia font-bold text-xs">
+              Cancelar
+            </button>
+            <button onclick="app.confirmModalP03()" class="px-4 py-2 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Confirm Inicio Definitivo -->
+      <div id="modal-confirm-inicio" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-3 text-xs">
+          <h3 class="font-bold text-app-header text-sm truncate">CONFIRMACIÓN DE INICIO D...</h3>
+          <p id="modal-confirm-inicio-txt" class="text-slate-600 text-[11px] leading-relaxed">
+            Está seguro iniciar el proceso de INICIO DE RUTA
+          </p>
+          <div class="flex items-center space-x-3 text-[11px] font-bold text-slate-800 py-1 font-mono">
+            <span>📅 2026-06-19</span>
+            <span>⏰ 10:20:40</span>
+          </div>
+          <div class="flex justify-end space-x-3 pt-2">
+            <button onclick="document.getElementById('modal-confirm-inicio').classList.add('hidden')" class="px-3 py-1.5 text-app-fucsia font-bold text-xs">
+              Cancelar
+            </button>
+            <button onclick="app.confirmarInicioDefinitivo()" class="px-4 py-2 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal P06: Inicio de Escala -->
+      <div id="modal-p06" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-3 text-xs">
+          <h3 class="font-bold text-app-header text-sm">INICIO DE ESCALA</h3>
+          <p id="modal-p06-text" class="text-slate-600 text-[11px] leading-relaxed">
+            Está seguro iniciar la escala: se dará inicio a la escala esta acción es irreversible.
+          </p>
+          <div class="flex justify-end space-x-3 pt-2">
+            <button onclick="document.getElementById('modal-p06').classList.add('hidden')" class="px-3 py-1.5 text-app-fucsia font-bold text-xs">
+              Cancelar
+            </button>
+            <button onclick="app.confirmarInicioEscala()" class="px-4 py-2 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Alerta de Evidencia Obligatoria -->
+      <div id="modal-alerta-evidencia" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-3 text-xs text-center border-t-4 border-amber-500">
+          <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl font-bold">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <h3 class="font-bold text-app-header text-base">Alerta</h3>
+          <p class="text-slate-700 text-xs font-semibold leading-relaxed">
+            Debe adjuntar evidencia
+          </p>
+          <p class="text-[11px] text-slate-500">
+            Pulse en <b>ADJUNTAR EVIDENCIA</b> en la parte inferior, tome la foto y vuelva a marcar su <b>SALIDA</b>.
+          </p>
+          <div class="pt-2 flex space-x-2">
+            <button onclick="document.getElementById('modal-alerta-evidencia').classList.add('hidden')" class="flex-1 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs">
+              Entendido
+            </button>
+            <button onclick="app.irDirectoAdjuntarEvidencia()" class="flex-1 py-2 bg-app-header text-white font-bold rounded-lg text-xs shadow">
+              Tomar Foto
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Foto / Cámara Real / Simulada -->
+      <div id="modal-foto" class="hidden absolute inset-0 bg-black/85 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-4 space-y-3 text-xs">
+          <div class="flex justify-between items-center border-b pb-2">
+            <h3 class="font-bold text-app-header text-sm flex items-center space-x-1.5">
+              <i class="fa-solid fa-camera text-blue-600"></i>
+              <span>ADJUNTAR EVIDENCIA</span>
+            </h3>
+            <button onclick="app.closeModalFoto()" class="text-slate-400 hover:text-slate-700">
+              <i class="fa-solid fa-xmark text-base"></i>
+            </button>
+          </div>
+
+          <div class="bg-slate-100 border-2 border-dashed border-slate-300 rounded-xl p-2 flex flex-col items-center justify-center text-center space-y-2 h-52 relative overflow-hidden">
+            <!-- Estado inicial de selección -->
+            <div id="foto-preview-box" class="flex flex-col items-center space-y-2">
+              <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-camera"></i>
+              </div>
+              <span class="text-[11px] text-slate-600 font-medium">Foto del precinto y candado</span>
+              <div class="flex space-x-2 pt-1">
+                <button onclick="app.activarCamaraReal()" class="px-2.5 py-1.5 bg-blue-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 shadow">
+                  <i class="fa-solid fa-video"></i>
+                  <span>Cámara Real</span>
+                </button>
+                <button onclick="app.simularTomaFoto()" class="px-2.5 py-1.5 bg-slate-700 text-white rounded text-[10px] font-bold flex items-center space-x-1 shadow">
+                  <i class="fa-solid fa-image"></i>
+                  <span>Simulada</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Vista en vivo de Cámara Real -->
+            <div id="foto-video-container" class="hidden absolute inset-0 bg-black flex flex-col items-center justify-center">
+              <video id="camera-feed" class="w-full h-full object-cover" autoplay playsinline muted></video>
+              <canvas id="camera-canvas" class="hidden"></canvas>
+              <button onclick="app.capturarFotoCamaraReal()" class="absolute bottom-3 w-12 h-12 rounded-full border-4 border-white bg-red-600 text-white flex items-center justify-center shadow-lg active:scale-90">
+                <i class="fa-solid fa-camera text-sm"></i>
+              </button>
+            </div>
+
+            <!-- Vista de Foto Capturada -->
+            <div id="foto-capturada-box" class="hidden absolute inset-0 bg-cover bg-center flex items-end p-2" style="background-image: url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=400&q=80');">
+              <span class="bg-emerald-600/95 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow">
+                <i class="fa-solid fa-check"></i> Foto capturada con éxito
+              </span>
+            </div>
+          </div>
+
+          <div class="flex space-x-2 pt-1">
+            <button id="btn-tomar-simulada" onclick="app.simularTomaFoto()" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs shadow flex items-center justify-center space-x-1">
+              <i class="fa-solid fa-camera"></i>
+              <span>Tomar Foto</span>
+            </button>
+            <button id="btn-confirmar-foto" disabled onclick="app.confirmarFotoEvidencia()" class="flex-1 py-2.5 bg-slate-300 text-slate-500 font-bold rounded-lg text-xs transition flex items-center justify-center space-x-1">
+              <i class="fa-solid fa-check"></i>
+              <span>Confirmar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal P08: Registro de Llegada -->
+      <div id="modal-p08" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-3 text-xs">
+          <h3 id="modal-p08-title" class="font-bold text-app-header text-sm">LLEGADA: AGENCIA</h3>
+          <p id="modal-p08-sub" class="text-slate-600 text-[11px]">
+            Registre el proceso de LLEGADA
+          </p>
+
+          <div>
+            <label class="block text-[10px] font-bold text-blue-600 uppercase mb-1">KILOMETRAJE</label>
+            <div class="flex items-center space-x-2">
+              <input type="number" id="input-p08-km" class="app-input w-full text-sm font-mono font-bold">
+              <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold">KM</span>
+              <span class="w-7 h-7 rounded bg-app-verde text-white flex items-center justify-center text-xs flex-shrink-0">
+                <i class="fa-solid fa-pencil"></i>
+              </span>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-3 text-[11px] font-mono text-slate-700 py-1">
+            <span>⏰ 2026-06-19</span>
+            <span id="modal-p08-clock">12:49:07</span>
+          </div>
+
+          <div class="flex justify-end space-x-3 pt-2">
+            <button onclick="document.getElementById('modal-p08').classList.add('hidden')" class="px-3 py-1.5 text-app-fucsia font-bold text-xs">
+              Cancelar
+            </button>
+            <button onclick="app.submitModalLlegada()" class="px-4 py-2 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal P09: Registro de Salida -->
+      <div id="modal-p09" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-3 text-xs">
+          <h3 id="modal-p09-title" class="font-bold text-app-header text-sm">SALIDA: AGENCIA</h3>
+          <p id="modal-p09-sub" class="text-slate-600 text-[11px]">
+            Registre los datos de salida
+          </p>
+
+          <div>
+            <label class="block text-[10px] font-bold text-blue-600 uppercase mb-1">KILOMETRAJE</label>
+            <div class="flex items-center space-x-2">
+              <input type="number" id="input-p09-km" class="app-input w-full text-sm font-mono font-bold">
+              <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold">KM</span>
+              <span class="w-7 h-7 rounded bg-app-verde text-white flex items-center justify-center text-xs flex-shrink-0">
+                <i class="fa-solid fa-pencil"></i>
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-blue-600 uppercase mb-1">PRECINTO</label>
+            <input type="text" id="input-p09-precinto" value="0094821" class="app-input w-full text-xs font-mono">
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] font-bold text-blue-600 uppercase mb-1">Tipo</label>
+              <select class="w-full p-1 border border-slate-300 rounded text-[11px] bg-slate-50">
+                <option selected>BOTELLA</option>
+                <option>CABLE</option>
+                <option>PLÁSTICO</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-blue-600 uppercase mb-1">Orientacion</label>
+              <select class="w-full p-1 border border-slate-300 rounded text-[11px] bg-slate-50">
+                <option selected>HORIZONTAL</option>
+                <option>VERTICAL</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-3 text-[11px] font-mono text-slate-700 py-1">
+            <span>⏰ 2026-06-19</span>
+            <span id="modal-p09-clock">12:49:31</span>
+          </div>
+
+          <div class="flex justify-end space-x-3 pt-2">
+            <button onclick="document.getElementById('modal-p09').classList.add('hidden')" class="px-3 py-1.5 text-app-fucsia font-bold text-xs">
+              Cancelar
+            </button>
+            <button onclick="app.submitModalSalida()" class="px-4 py-2 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Confirm Fin de Ruta -->
+      <div id="modal-confirm-fin" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-3 text-xs">
+          <h3 class="font-bold text-app-header text-sm">CONFIRMACIÓN DE FIN DE RUTA</h3>
+          <p id="modal-confirm-fin-txt" class="text-slate-600 text-[11px] leading-relaxed">
+            Está seguro iniciar el proceso de FIN DE RUTA
+          </p>
+          <div class="flex items-center space-x-3 text-[11px] font-bold text-slate-800 py-1 font-mono">
+            <span>📅 2026-06-19</span>
+            <span>⏰ 12:49:54</span>
+          </div>
+          <div class="flex justify-end space-x-3 pt-2">
+            <button onclick="document.getElementById('modal-confirm-fin').classList.add('hidden')" class="px-3 py-1.5 text-app-fucsia font-bold text-xs">
+              Cancelar
+            </button>
+            <button onclick="app.procesarCargandoFin()" class="px-4 py-2 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Cargando Simulado -->
+      <div id="modal-cargando" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-6 text-center space-y-4">
+          <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p class="text-sm font-medium text-slate-700">Procesando cierre de ruta...</p>
+          <button onclick="app.mostrarExitoFin()" class="w-full py-2 bg-app-header text-white font-bold rounded-lg text-xs shadow">
+            Continuar
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal de Éxito -->
+      <div id="modal-exito" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-6 text-center space-y-4">
+          <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-2xl font-bold">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h4 class="font-bold text-app-header text-base">ÉXITO</h4>
+          <p id="modal-exito-mensaje" class="text-xs text-slate-600 font-medium">Llegada registrada con exito!</p>
+          <button onclick="app.cerrarModalExito()" class="w-full py-2.5 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow">
+            Aceptar
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Videos Informativos (Drive) -->
+      <div id="modal-videos" class="hidden absolute inset-0 bg-black/70 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-4 text-xs text-center">
+          <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-xl">
+            <i class="fa-solid fa-play"></i>
+          </div>
+          <h3 class="font-bold text-app-header text-sm">Material de Apoyo - Videos</h3>
+          <p class="text-[11px] text-slate-600">
+            Acceda a la carpeta compartida en Google Drive con videos explicativos de Distribución.
+          </p>
+          <div class="pt-2 space-y-2">
+            <a href="https://drive.google.com/drive/folders/162YYOkyVzUGWAzM6jjA-OKrcsh674FFV?usp=sharing" target="_blank" rel="noopener" class="block w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs shadow">
+              <i class="fa-brands fa-google-drive mr-1"></i> Abrir Google Drive
+            </a>
+            <button onclick="document.getElementById('modal-videos').classList.add('hidden')" class="w-full py-2 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Evaluación Oficial (Google Forms) -->
+      <div id="modal-evaluacion" class="hidden absolute inset-0 bg-black/70 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-4 text-xs text-center">
+          <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <h3 class="font-bold text-app-header text-sm">Evaluación de Inducción</h3>
+          <p class="text-[11px] text-slate-600">
+            "Pongamos a prueba lo aprendido". Realice el cuestionario oficial de evaluación de la capacitación.
+          </p>
+          <div class="pt-2 space-y-2">
+            <a href="https://forms.gle/EVa3VNLeJ2B2xkcu9" target="_blank" rel="noopener" class="block w-full py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg text-xs shadow">
+              <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Abrir Formulario
+            </a>
+            <button onclick="document.getElementById('modal-evaluacion').classList.add('hidden')" class="w-full py-2 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- Fin #main-phone-box -->
+
+  </div> <!-- Fin .desktop-wrapper -->
+
+  <!-- Script principal -->
+  <script src="js/app.js"></script>
+</body>
+</html>
