@@ -112,6 +112,7 @@ const app = {
 
   init() {
     this.bindEvents();
+    this.initFontSize();
     this.renderEscalasView();
     this.startClock();
     this.updateGuiaPaso();
@@ -192,6 +193,29 @@ const app = {
     if (icon) {
       icon.className = soundFx.enabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark text-red-400';
     }
+  },
+
+  cycleFontSize() {
+    const scales = ['1', '1.18', '1.35'];
+    let cur = this.state.fontScale || '1';
+    let idx = scales.indexOf(cur);
+    let next = scales[(idx + 1) % scales.length];
+    this.setFontSize(next);
+  },
+
+  setFontSize(val) {
+    this.state.fontScale = val;
+    document.documentElement.style.setProperty('--font-scale', val);
+    const indicator = document.getElementById('font-size-indicator');
+    const labels = { '1': 'A', '1.18': 'A+', '1.35': 'A++' };
+    if (indicator) indicator.innerText = labels[val] || 'A';
+    localStorage.setItem('shalom_font_scale', val);
+    soundFx.tap();
+  },
+
+  initFontSize() {
+    const saved = localStorage.getItem('shalom_font_scale') || '1';
+    this.setFontSize(saved);
   },
 
   toggleFullscreen() {

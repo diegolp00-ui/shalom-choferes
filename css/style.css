@@ -14,10 +14,32 @@
   --color-dropdown: #0F2644;
   --color-slate-tag: #455A64;
   --color-cyan-tag: #00ACC1;
+
+  /* Escala de fuentes e iconos regulable */
+  --font-scale: 1;
+  --font-9: calc(11.5px * var(--font-scale));
+  --font-10: calc(13px * var(--font-scale));
+  --font-11: calc(14.5px * var(--font-scale));
+  --font-12: calc(15.5px * var(--font-scale));
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Redefinición proporcional de clases de tamaño para legibilidad móvil */
+.text-\[9px\] { font-size: var(--font-9) !important; }
+.text-\[10px\] { font-size: var(--font-10) !important; }
+.text-\[11px\] { font-size: var(--font-11) !important; }
+.text-xs { font-size: var(--font-12) !important; }
+.text-sm { font-size: calc(16.5px * var(--font-scale)) !important; }
+.text-base { font-size: calc(18px * var(--font-scale)) !important; }
+
+/* Escala dinámica para iconos FontAwesome */
+.fa-solid, .fa-regular, .fa-brands {
+  transform: scale(var(--font-scale));
+  transform-origin: center;
+  transition: transform 0.15s ease;
 }
 
 /* En teléfonos reales: Ocupa el 100% de la pantalla sin márgenes ni fondos oscuros */
@@ -84,7 +106,7 @@ html, body {
     display: flex !important;
   }
   .phone-box {
-    max-width: 420px !important;
+    max-width: 430px !important;
     height: min(890px, 94dvh) !important;
     border-radius: 36px !important;
     box-shadow: 
@@ -217,7 +239,7 @@ html, body {
   background: linear-gradient(135deg, #1e3a6e 0%, #284682 100%);
   color: #FFFFFF;
   padding: 8px 12px;
-  font-size: 11px;
+  font-size: var(--font-11);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -228,10 +250,10 @@ html, body {
 .step-pill {
   background: #FB8C00;
   color: white;
-  padding: 1px 7px;
+  padding: 2px 8px;
   border-radius: 12px;
   font-weight: 800;
-  font-size: 10px;
+  font-size: var(--font-10);
   letter-spacing: 0.5px;
 }
 

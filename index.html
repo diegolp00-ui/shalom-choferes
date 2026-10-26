@@ -31,10 +31,32 @@
   --color-dropdown: #0F2644;
   --color-slate-tag: #455A64;
   --color-cyan-tag: #00ACC1;
+
+  /* Escala de fuentes e iconos regulable */
+  --font-scale: 1;
+  --font-9: calc(11.5px * var(--font-scale));
+  --font-10: calc(13px * var(--font-scale));
+  --font-11: calc(14.5px * var(--font-scale));
+  --font-12: calc(15.5px * var(--font-scale));
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Redefinición proporcional de clases de tamaño para legibilidad móvil */
+.text-\[9px\] { font-size: var(--font-9) !important; }
+.text-\[10px\] { font-size: var(--font-10) !important; }
+.text-\[11px\] { font-size: var(--font-11) !important; }
+.text-xs { font-size: var(--font-12) !important; }
+.text-sm { font-size: calc(16.5px * var(--font-scale)) !important; }
+.text-base { font-size: calc(18px * var(--font-scale)) !important; }
+
+/* Escala dinámica para iconos FontAwesome */
+.fa-solid, .fa-regular, .fa-brands {
+  transform: scale(var(--font-scale));
+  transform-origin: center;
+  transition: transform 0.15s ease;
 }
 
 /* En teléfonos reales: Ocupa el 100% de la pantalla sin márgenes ni fondos oscuros */
@@ -101,7 +123,7 @@ html, body {
     display: flex !important;
   }
   .phone-box {
-    max-width: 420px !important;
+    max-width: 430px !important;
     height: min(890px, 94dvh) !important;
     border-radius: 36px !important;
     box-shadow: 
@@ -234,7 +256,7 @@ html, body {
   background: linear-gradient(135deg, #1e3a6e 0%, #284682 100%);
   color: #FFFFFF;
   padding: 8px 12px;
-  font-size: 11px;
+  font-size: var(--font-11);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -245,10 +267,10 @@ html, body {
 .step-pill {
   background: #FB8C00;
   color: white;
-  padding: 1px 7px;
+  padding: 2px 8px;
   border-radius: 12px;
   font-weight: 800;
-  font-size: 10px;
+  font-size: var(--font-10);
   letter-spacing: 0.5px;
 }
 
@@ -349,6 +371,10 @@ html, body {
           <span class="truncate">CAPACITACIÓN SHALOM CHOFERES</span>
         </span>
         <div class="flex items-center space-x-2 shrink-0">
+          <button onclick="app.cycleFontSize()" class="text-blue-900 bg-white/90 hover:bg-white px-1.5 py-0.5 rounded border border-blue-200 font-bold text-xs flex items-center space-x-1 shadow-sm active:scale-95" title="Regular tamaño de texto e iconos">
+            <i class="fa-solid fa-text-height text-[10px] text-blue-700"></i>
+            <span id="font-size-indicator" class="text-[10px] font-black text-blue-900">A</span>
+          </button>
           <button onclick="app.toggleMute()" class="text-slate-600 hover:text-blue-900 px-1 py-0.5" title="Sonido">
             <i id="btn-sound-icon" class="fa-solid fa-volume-high text-xs"></i>
           </button>
@@ -1290,6 +1316,13 @@ html, body {
  */
 
 // Sonidos sintéticos con Web Audio API (0 dependencias externas)
+/**
+ * ========================================================
+ * APP SHALOM CHOFERES - MOTOR DE SIMULACIÓN Y CAPACITACIÓN
+ * ========================================================
+ */
+
+// Sonidos sintéticos con Web Audio API (0 dependencias externas)
 const soundFx = {
   ctx: null,
   enabled: true,
@@ -1397,6 +1430,7 @@ const app = {
 
   init() {
     this.bindEvents();
+    this.initFontSize();
     this.renderEscalasView();
     this.startClock();
     this.updateGuiaPaso();
@@ -1477,6 +1511,29 @@ const app = {
     if (icon) {
       icon.className = soundFx.enabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark text-red-400';
     }
+  },
+
+  cycleFontSize() {
+    const scales = ['1', '1.18', '1.35'];
+    let cur = this.state.fontScale || '1';
+    let idx = scales.indexOf(cur);
+    let next = scales[(idx + 1) % scales.length];
+    this.setFontSize(next);
+  },
+
+  setFontSize(val) {
+    this.state.fontScale = val;
+    document.documentElement.style.setProperty('--font-scale', val);
+    const indicator = document.getElementById('font-size-indicator');
+    const labels = { '1': 'A', '1.18': 'A+', '1.35': 'A++' };
+    if (indicator) indicator.innerText = labels[val] || 'A';
+    localStorage.setItem('shalom_font_scale', val);
+    soundFx.tap();
+  },
+
+  initFontSize() {
+    const saved = localStorage.getItem('shalom_font_scale') || '1';
+    this.setFontSize(saved);
   },
 
   toggleFullscreen() {
@@ -2331,6 +2388,6 @@ const app = {
 
 document.addEventListener('DOMContentLoaded', () => app.init());
 
-</script>
+  </script>
 </body>
 </html>
