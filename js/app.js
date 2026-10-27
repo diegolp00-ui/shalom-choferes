@@ -72,8 +72,8 @@ const app = {
     activeRouteKey: 'IDA',
     selectedEscalaIdx: 0,
     swipeTriggered: false,
-    driverDni: '48290476',
-    driverName: 'MICHAEL JESUS REVILLA ALIAGA',
+    driverDni: '99999999',
+    driverName: 'pruebashalom',
     fotoTomada: false,
     fotoDataUrl: null,
     modoGuiado: true,
@@ -166,10 +166,10 @@ const app = {
   },
 
   loginSubmit() {
-    const user = document.getElementById('login-input-user').value.trim() || '48290476';
+    const user = document.getElementById('login-input-user').value.trim() || '99999999';
     this.state.driverDni = user;
     const subTitle = document.getElementById('p02-driver-subtitle');
-    if (subTitle) subTitle.innerText = `${user} - MICHAEL JESUS REVILLA ALIAGA - Q${user}`;
+    if (subTitle) subTitle.innerText = `${user} - ${this.state.driverName} - Q${user}`;
     const p04Dni = document.getElementById('p04-driver-dni');
     if (p04Dni) p04Dni.innerText = user;
 

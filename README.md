@@ -74,7 +74,7 @@ git push -u origin main
 
 ## 📱 Flujo de la Capacitación en el Simulador
 
-1. **Login**: Iniciar sesión con DNI (por defecto `48290476`).
+1. **Login**: Iniciar sesión con DNI (por defecto `99999999`).
 2. **Menú**: Seleccionar el módulo **Programación**.
 3. **Inicio de Ruta (Canva Pág 58)**: Registrar kilometraje inicial (`29726 Km`) y candados.
 4. **Hoja de Ruta - Escalas (Pág 59)**:

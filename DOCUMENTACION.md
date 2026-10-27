@@ -33,8 +33,8 @@ Toda la lógica de datos reside en el objeto **`app.state`** dentro de `js/app.j
 En `js/app.js` (alrededor de la línea 75):
 ```javascript
 state: {
-  driverDni: '48290476',                          // Modificar DNI
-  driverName: 'MICHAEL JESUS REVILLA ALIAGA',     // Modificar Nombre
+  driverDni: '99999999',                          // Modificar DNI
+  driverName: 'pruebashalom',                     // Modificar Nombre
   ...
 }
 ```

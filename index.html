@@ -422,7 +422,7 @@ html, body {
                 <label class="block text-[9px] font-bold text-blue-200 uppercase tracking-wider">USUARIO</label>
                 <div class="flex items-center space-x-2 mt-0.5">
                   <i class="fa-solid fa-user text-blue-300 text-xs"></i>
-                  <input type="text" id="login-input-user" value="48290476" class="w-full bg-transparent text-sm font-mono font-bold outline-none text-white tracking-wider" placeholder="DNI o CE">
+                  <input type="text" id="login-input-user" value="99999999" class="w-full bg-transparent text-sm font-mono font-bold outline-none text-white tracking-wider" placeholder="DNI o CE">
                 </div>
               </div>
 
@@ -430,7 +430,7 @@ html, body {
                 <label class="block text-[9px] font-bold text-blue-200 uppercase tracking-wider">CONTRASEÑA</label>
                 <div class="flex items-center space-x-2 mt-0.5">
                   <i class="fa-solid fa-lock text-blue-300 text-xs"></i>
-                  <input type="password" id="login-input-pass" value="48290476" class="w-full bg-transparent text-sm font-mono font-bold outline-none text-white tracking-wider" placeholder="Contraseña">
+                  <input type="password" id="login-input-pass" value="99999999" class="w-full bg-transparent text-sm font-mono font-bold outline-none text-white tracking-wider" placeholder="Contraseña">
                   <button type="button" onclick="app.togglePassVisibility()" class="text-blue-300 hover:text-white px-1">
                     <i id="login-eye-icon" class="fa-solid fa-eye text-xs"></i>
                   </button>
@@ -527,7 +527,7 @@ html, body {
             </button>
             <div class="truncate">
               <h1 class="text-sm font-bold leading-tight">Programación</h1>
-              <p id="p02-driver-subtitle" class="text-[10px] text-blue-200 truncate">48290476 - MICHAEL JESUS REVILLA ALIAGA - Q482904...</p>
+              <p id="p02-driver-subtitle" class="text-[10px] text-blue-200 truncate">99999999 - pruebashalom - Q999999...</p>
             </div>
           </header>
 
@@ -723,8 +723,8 @@ html, body {
                 <div>
                   <span class="text-blue-700 text-[10px] font-bold">&rsaquo; CHOFER 1</span>
                   <div class="flex items-center space-x-2 mt-0.5">
-                    <span id="p04-driver-dni" class="px-1.5 py-0.5 rounded bg-app-cyanTag text-white font-mono font-bold text-[10px]">48290476</span>
-                    <span id="p04-driver-name" class="font-bold text-slate-800 text-[10px]">MICHAEL JESUS REVILLA ALIAGA</span>
+                    <span id="p04-driver-dni" class="px-1.5 py-0.5 rounded bg-app-cyanTag text-white font-mono font-bold text-[10px]">99999999</span>
+                    <span id="p04-driver-name" class="font-bold text-slate-800 text-[10px]">pruebashalom</span>
                   </div>
                 </div>
                 <div>
@@ -1390,8 +1390,8 @@ const app = {
     activeRouteKey: 'IDA',
     selectedEscalaIdx: 0,
     swipeTriggered: false,
-    driverDni: '48290476',
-    driverName: 'MICHAEL JESUS REVILLA ALIAGA',
+    driverDni: '99999999',
+    driverName: 'pruebashalom',
     fotoTomada: false,
     fotoDataUrl: null,
     modoGuiado: true,
@@ -1484,10 +1484,10 @@ const app = {
   },
 
   loginSubmit() {
-    const user = document.getElementById('login-input-user').value.trim() || '48290476';
+    const user = document.getElementById('login-input-user').value.trim() || '99999999';
     this.state.driverDni = user;
     const subTitle = document.getElementById('p02-driver-subtitle');
-    if (subTitle) subTitle.innerText = `${user} - MICHAEL JESUS REVILLA ALIAGA - Q${user}`;
+    if (subTitle) subTitle.innerText = `${user} - ${this.state.driverName} - Q${user}`;
     const p04Dni = document.getElementById('p04-driver-dni');
     if (p04Dni) p04Dni.innerText = user;
 
