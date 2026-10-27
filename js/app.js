@@ -165,6 +165,7 @@ const app = {
   },
 
   showScreen(screenId) {
+    this.closeAllSwipes();
     soundFx.tap();
     ['login', 'p01', 'p02', 'p04', 'p05', 'p07'].forEach(s => {
       const el = document.getElementById(`view-${s}`);
@@ -342,6 +343,12 @@ const app = {
     textEl.innerText = msg;
   },
 
+  closeAllSwipes() {
+    document.querySelectorAll('.swipe-row').forEach(row => {
+      row.classList.remove('open-programacion', 'open-escalas');
+    });
+  },
+
   bindEvents() {
     document.getElementById('btn-to-programacion')?.addEventListener('click', () => this.showScreen('P02'));
     document.getElementById('btn-back-to-p01')?.addEventListener('click', () => this.showScreen('P01'));
@@ -353,6 +360,17 @@ const app = {
     });
     window.addEventListener('click', () => this.closeDropdown());
 
+    // Al tocar en cualquier lugar fuera de los botones de acción, cerrar las tarjetas abiertas y volver a su lugar
+    document.addEventListener('pointerdown', (e) => {
+      const hasOpen = document.querySelector('.swipe-row.open-programacion, .swipe-row.open-escalas');
+      if (hasOpen && !e.target.closest('.swipe-btns')) {
+        if (!e.target.closest('.swipe-row.open-programacion, .swipe-row.open-escalas')) {
+          this.closeAllSwipes();
+          haptics.light();
+        }
+      }
+    });
+
     this.initSwipeHandlers();
   },
 
@@ -363,6 +381,7 @@ const app = {
 
   goToHojaRuta() {
     this.closeDropdown();
+    this.closeAllSwipes();
     this.renderEscalasView();
     this.showScreen('P05');
   },
@@ -374,49 +393,79 @@ const app = {
 
       let startX = 0;
       let startY = 0;
+      let currentX = 0;
+      let isMoving = false;
 
       row.addEventListener('touchstart', e => {
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
+        currentX = startX;
+        isMoving = false;
       }, { passive: true });
 
       row.addEventListener('touchmove', e => {
-        const diffX = startX - e.touches[0].clientX;
+        currentX = e.touches[0].clientX;
+        const diffX = startX - currentX;
         const diffY = Math.abs(startY - e.touches[0].clientY);
-        if (diffY > Math.abs(diffX)) return;
+        if (diffY > Math.abs(diffX) && !isMoving) return;
 
-        if (diffX > 35) {
-          const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
-          if (!row.classList.contains(cls)) {
+        isMoving = true;
+        const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
+        const isOpen = row.classList.contains(cls);
+
+        // Deslizar hacia la izquierda para abrir
+        if (diffX > 30) {
+          if (!isOpen) {
+            this.closeAllSwipes();
             row.classList.add(cls);
             haptics.light();
           }
           this.state.swipeTriggered = true;
-        } else if (diffX < -25) {
-          row.classList.remove('open-escalas', 'open-programacion');
+        } 
+        // Deslizar hacia la derecha para volver a su lugar de inmediato
+        else if (diffX < -15) {
+          if (isOpen) {
+            row.classList.remove(cls);
+            haptics.light();
+          }
+          this.state.swipeTriggered = true;
         }
       }, { passive: true });
 
       row.addEventListener('touchend', () => {
-        setTimeout(() => { this.state.swipeTriggered = false; }, 80);
+        const diffX = startX - currentX;
+        const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
+        if (diffX < -15 && row.classList.contains(cls)) {
+          row.classList.remove(cls);
+          haptics.light();
+        }
+        setTimeout(() => { this.state.swipeTriggered = false; }, 100);
       });
 
       let isDown = false;
       row.addEventListener('mousedown', e => {
+        if (e.target.closest('.swipe-btns')) return;
         isDown = true;
         startX = e.clientX;
       });
 
       window.addEventListener('mousemove', e => {
         if (!isDown) return;
-        if (startX - e.clientX > 35) {
-          const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
-          if (!row.classList.contains(cls)) {
-            row.classList.add(cls);
-            haptics.light();
-          }
+        const diffX = startX - e.clientX;
+        const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
+
+        if (diffX > 30) {
+          this.closeAllSwipes();
+          row.classList.add(cls);
           isDown = false;
           this.state.swipeTriggered = true;
+          haptics.light();
+          setTimeout(() => { this.state.swipeTriggered = false; }, 120);
+        } else if (diffX < -15) {
+          row.classList.remove(cls);
+          isDown = false;
+          this.state.swipeTriggered = true;
+          haptics.light();
           setTimeout(() => { this.state.swipeTriggered = false; }, 120);
         }
       });
@@ -428,36 +477,47 @@ const app = {
   },
 
   handleCardClick(event, routeKey) {
-    if (this.state.swipeTriggered) return;
-    // REGLA: No se debe acceder presionando los destinos, solo deslizando.
     const card = document.getElementById(routeKey === 'IDA' ? 'card-p02-ida' : 'card-p02-ret');
-    if (card) {
-      const isOpen = card.classList.contains('open-programacion');
-      document.querySelectorAll('.swipe-row').forEach(r => r.classList.remove('open-programacion', 'open-escalas'));
-      if (!isOpen) {
-        card.classList.add('open-programacion');
-        haptics.light();
-      }
+    if (!card) return;
+    const isOpen = card.classList.contains('open-programacion');
+    if (isOpen) {
+      // Si ya está abierta, al tocarla vuelve de inmediato a su lugar original
+      card.classList.remove('open-programacion');
+      haptics.light();
+      soundFx.tap();
+      return;
     }
+    if (this.state.swipeTriggered) return;
+    // Si está cerrada, abre las opciones para que el chofer pueda presionar INGRESAR
+    this.closeAllSwipes();
+    card.classList.add('open-programacion');
+    haptics.light();
+    soundFx.tap();
   },
 
   handleEscalaCardClick(event, idx) {
-    if (this.state.swipeTriggered) return;
-    // REGLA: No se debe acceder presionando los destinos, solo deslizando.
     const container = document.getElementById('p05-escalas-list');
     const cards = container ? container.querySelectorAll('.swipe-row') : [];
-    if (cards && cards[idx]) {
-      const card = cards[idx];
-      const isOpen = card.classList.contains('open-escalas');
-      document.querySelectorAll('.swipe-row').forEach(r => r.classList.remove('open-programacion', 'open-escalas'));
-      if (!isOpen) {
-        card.classList.add('open-escalas');
-        haptics.light();
-      }
+    if (!cards || !cards[idx]) return;
+    const card = cards[idx];
+    const isOpen = card.classList.contains('open-escalas');
+    if (isOpen) {
+      // Si ya está abierta, al tocarla vuelve de inmediato a su lugar original
+      card.classList.remove('open-escalas');
+      haptics.light();
+      soundFx.tap();
+      return;
     }
+    if (this.state.swipeTriggered) return;
+    // Si está cerrada, abre las opciones para que el chofer pueda presionar INGRESAR
+    this.closeAllSwipes();
+    card.classList.add('open-escalas');
+    haptics.light();
+    soundFx.tap();
   },
 
   actionProgramacionIngresar(routeKey) {
+    this.closeAllSwipes();
     const r = this.state.routes[routeKey];
     if (r.status === 'BLOQUEADO') {
       soundFx.alert();
@@ -616,17 +676,17 @@ const app = {
             <i class="fa-solid fa-arrow-right text-sm"></i>
             <span>INGRESAR</span>
           </button>
-          <button onclick="soundFx.alert(); alert('Incidencia en ${esc.name}');" class="bg-indigo-800 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('Incidencia en ${esc.name}');" class="bg-indigo-800 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid fa-triangle-exclamation text-sm"></i>
             <span>INCIDENCIA</span>
           </button>
-          <button onclick="soundFx.alert(); alert('${thirdBtnTxt} en ${esc.name}');" class="bg-red-600 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('${thirdBtnTxt} en ${esc.name}');" class="bg-red-600 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid ${thirdBtnIcon} text-sm"></i>
             <span>${thirdBtnTxt}</span>
           </button>
         </div>
 
-        <div onclick="app.handleEscalaCardClick(event, ${idx})" class="swipe-body p-3 space-y-2 hover:bg-slate-50 active:bg-slate-100 transition">
+        <div onclick="app.handleEscalaCardClick(event, ${idx})" class="swipe-body p-3 space-y-2 hover:bg-slate-50 active:bg-slate-100">
           <div class="flex justify-between items-start">
             <span class="px-2 py-0.5 rounded bg-app-slateTag text-white text-[10px] font-bold">
               ${esc.name}
@@ -689,6 +749,7 @@ const app = {
   },
 
   actionEscalaClick(idx) {
+    this.closeAllSwipes();
     this.state.selectedEscalaIdx = idx;
     const r = this.state.routes[this.state.activeRouteKey];
     const esc = r.escalas[idx];

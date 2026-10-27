@@ -15,12 +15,12 @@
   --color-slate-tag: #455A64;
   --color-cyan-tag: #00ACC1;
 
-  /* Escala de fuentes e iconos regulable */
+  /* Escala calibrada para legibilidad móvil perfecta sin desbordes */
   --font-scale: 1;
-  --font-9: calc(11.5px * var(--font-scale));
-  --font-10: calc(13px * var(--font-scale));
-  --font-11: calc(14.5px * var(--font-scale));
-  --font-12: calc(15.5px * var(--font-scale));
+  --font-9: calc(10.5px * var(--font-scale));
+  --font-10: calc(11.5px * var(--font-scale));
+  --font-11: calc(12.5px * var(--font-scale));
+  --font-12: calc(13.5px * var(--font-scale));
 }
 
 * {
@@ -29,13 +29,13 @@
   touch-action: manipulation;
 }
 
-/* Redefinición proporcional de clases de tamaño para legibilidad móvil */
+/* Redefinición proporcional de clases de tamaño */
 .text-\[9px\] { font-size: var(--font-9) !important; }
 .text-\[10px\] { font-size: var(--font-10) !important; }
 .text-\[11px\] { font-size: var(--font-11) !important; }
 .text-xs { font-size: var(--font-12) !important; }
-.text-sm { font-size: calc(16.5px * var(--font-scale)) !important; }
-.text-base { font-size: calc(18px * var(--font-scale)) !important; }
+.text-sm { font-size: calc(15px * var(--font-scale)) !important; }
+.text-base { font-size: calc(17px * var(--font-scale)) !important; }
 
 /* Escala dinámica para iconos FontAwesome */
 .fa-solid, .fa-regular, .fa-brands {
@@ -156,7 +156,7 @@ html, body {
   to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-/* Filas Swipe con aceleración GPU fluida */
+/* Filas Swipe con retorno suave acelerado por GPU */
 .swipe-row {
   position: relative;
   overflow: hidden;
@@ -173,7 +173,7 @@ html, body {
   display: flex;
   z-index: 1;
   transform: translate3d(100%, 0, 0);
-  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1) !important;
   will-change: transform;
 }
 
@@ -182,22 +182,22 @@ html, body {
   background: #FFFFFF;
   z-index: 2;
   transform: translate3d(0, 0, 0);
-  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1) !important;
   cursor: pointer;
   will-change: transform;
 }
 
 .swipe-row.open-programacion .swipe-body {
-  transform: translate3d(-195px, 0, 0);
+  transform: translate3d(-195px, 0, 0) !important;
 }
 
 .swipe-row.open-escalas .swipe-body {
-  transform: translate3d(-215px, 0, 0);
+  transform: translate3d(-215px, 0, 0) !important;
 }
 
 .swipe-row.open-programacion .swipe-btns,
 .swipe-row.open-escalas .swipe-btns {
-  transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0) !important;
 }
 
 /* Inputs estilo Shalom */
@@ -246,7 +246,7 @@ html, body {
 .training-assistant-banner {
   background: linear-gradient(135deg, #1e3a6e 0%, #284682 100%);
   color: #FFFFFF;
-  padding: 8px 12px;
+  padding: 7px 12px;
   font-size: var(--font-11);
   display: flex;
   align-items: center;

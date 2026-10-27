@@ -32,12 +32,12 @@
   --color-slate-tag: #455A64;
   --color-cyan-tag: #00ACC1;
 
-  /* Escala de fuentes e iconos regulable */
+  /* Escala calibrada para legibilidad móvil perfecta sin desbordes */
   --font-scale: 1;
-  --font-9: calc(11.5px * var(--font-scale));
-  --font-10: calc(13px * var(--font-scale));
-  --font-11: calc(14.5px * var(--font-scale));
-  --font-12: calc(15.5px * var(--font-scale));
+  --font-9: calc(10.5px * var(--font-scale));
+  --font-10: calc(11.5px * var(--font-scale));
+  --font-11: calc(12.5px * var(--font-scale));
+  --font-12: calc(13.5px * var(--font-scale));
 }
 
 * {
@@ -46,13 +46,13 @@
   touch-action: manipulation;
 }
 
-/* Redefinición proporcional de clases de tamaño para legibilidad móvil */
+/* Redefinición proporcional de clases de tamaño */
 .text-\[9px\] { font-size: var(--font-9) !important; }
 .text-\[10px\] { font-size: var(--font-10) !important; }
 .text-\[11px\] { font-size: var(--font-11) !important; }
 .text-xs { font-size: var(--font-12) !important; }
-.text-sm { font-size: calc(16.5px * var(--font-scale)) !important; }
-.text-base { font-size: calc(18px * var(--font-scale)) !important; }
+.text-sm { font-size: calc(15px * var(--font-scale)) !important; }
+.text-base { font-size: calc(17px * var(--font-scale)) !important; }
 
 /* Escala dinámica para iconos FontAwesome */
 .fa-solid, .fa-regular, .fa-brands {
@@ -173,7 +173,7 @@ html, body {
   to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-/* Filas Swipe con aceleración GPU fluida */
+/* Filas Swipe con retorno suave acelerado por GPU */
 .swipe-row {
   position: relative;
   overflow: hidden;
@@ -190,7 +190,7 @@ html, body {
   display: flex;
   z-index: 1;
   transform: translate3d(100%, 0, 0);
-  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1) !important;
   will-change: transform;
 }
 
@@ -199,22 +199,22 @@ html, body {
   background: #FFFFFF;
   z-index: 2;
   transform: translate3d(0, 0, 0);
-  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1) !important;
   cursor: pointer;
   will-change: transform;
 }
 
 .swipe-row.open-programacion .swipe-body {
-  transform: translate3d(-195px, 0, 0);
+  transform: translate3d(-195px, 0, 0) !important;
 }
 
 .swipe-row.open-escalas .swipe-body {
-  transform: translate3d(-215px, 0, 0);
+  transform: translate3d(-215px, 0, 0) !important;
 }
 
 .swipe-row.open-programacion .swipe-btns,
 .swipe-row.open-escalas .swipe-btns {
-  transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0) !important;
 }
 
 /* Inputs estilo Shalom */
@@ -263,7 +263,7 @@ html, body {
 .training-assistant-banner {
   background: linear-gradient(135deg, #1e3a6e 0%, #284682 100%);
   color: #FFFFFF;
-  padding: 8px 12px;
+  padding: 7px 12px;
   font-size: var(--font-11);
   display: flex;
   align-items: center;
@@ -373,10 +373,10 @@ html, body {
       
 
       <!-- Barra de Capacitación y Acciones Rápidas -->
-      <div class="bg-blue-50 border-b border-blue-200 text-app-header text-[10px] font-bold px-3 py-1.5 flex justify-between items-center z-20 shrink-0">
-        <span class="flex items-center space-x-1.5 truncate mr-1">
-          <i class="fa-solid fa-graduation-cap text-blue-600"></i>
-          <span class="truncate">CAPACITACIÓN SHALOM CHOFERES</span>
+      <div class="bg-blue-50 border-b border-blue-200 text-app-header text-[10px] font-bold px-2.5 py-1.5 flex justify-between items-center z-20 shrink-0">
+        <span class="flex items-center space-x-1.5 shrink-0 mr-1">
+          <i class="fa-solid fa-graduation-cap text-blue-600 text-xs"></i>
+          <span class="font-black text-xs text-blue-900 tracking-wider">SHALOM</span>
         </span>
         <div class="flex items-center space-x-2 shrink-0">
           <button onclick="app.cycleFontSize()" class="text-blue-900 bg-white/90 hover:bg-white px-1.5 py-0.5 rounded border border-blue-200 font-bold text-xs flex items-center space-x-1 shadow-sm active:scale-95" title="Regular tamaño de texto e iconos">
@@ -474,12 +474,12 @@ html, body {
 
           <div class="scroll-area p-4 space-y-3 bg-white flex flex-col justify-between">
             <div class="grid grid-cols-2 gap-3 pt-2">
-              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center">
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl py-3 px-2 flex flex-col items-center justify-center space-y-1.5 shadow-sm min-h-[5.5rem] h-auto text-center">
                 <i class="fa-solid fa-user text-xl"></i>
                 <span class="text-xs font-semibold uppercase">Perfil</span>
               </button>
 
-              <button id="btn-to-programacion" class="interactive-btn bg-app-btnMenu hover:bg-blue-600 active:scale-95 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-md transition h-24 text-center ring-2 ring-blue-300">
+              <button id="btn-to-programacion" class="interactive-btn bg-app-btnMenu hover:bg-blue-600 active:scale-95 text-white rounded-xl py-3 px-2 flex flex-col items-center justify-center space-y-1.5 shadow-md min-h-[5.5rem] h-auto text-center ring-2 ring-blue-300">
                 <div class="relative">
                   <i class="fa-solid fa-truck text-xl"></i>
                   <span class="absolute -top-1 -right-2 w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping"></span>
@@ -487,32 +487,32 @@ html, body {
                 <span class="text-xs font-bold uppercase">Programación</span>
               </button>
 
-              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl py-3 px-2 flex flex-col items-center justify-center space-y-1.5 shadow-sm min-h-[5.5rem] h-auto text-center opacity-95">
                 <i class="fa-solid fa-file-lines text-xl"></i>
                 <span class="text-xs font-semibold uppercase">Manifiesto</span>
               </button>
 
-              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl py-3 px-2 flex flex-col items-center justify-center space-y-1.5 shadow-sm min-h-[5.5rem] h-auto text-center opacity-95">
                 <i class="fa-solid fa-code-branch text-xl"></i>
                 <span class="text-xs font-semibold uppercase">Ruta Carguero</span>
               </button>
 
-              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl py-3 px-2 flex flex-col items-center justify-center space-y-1.5 shadow-sm min-h-[5.5rem] h-auto text-center opacity-95">
                 <i class="fa-solid fa-file-pdf text-xl"></i>
                 <span class="text-xs font-semibold uppercase">PDF</span>
               </button>
 
-              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl py-3 px-2 flex flex-col items-center justify-center space-y-1.5 shadow-sm min-h-[5.5rem] h-auto text-center opacity-95">
                 <i class="fa-solid fa-store text-xl"></i>
                 <span class="text-xs font-semibold uppercase">CDTALLERES</span>
               </button>
 
-              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl py-3 px-2 flex flex-col items-center justify-center space-y-1.5 shadow-sm min-h-[5.5rem] h-auto text-center opacity-95">
                 <i class="fa-solid fa-car text-xl"></i>
                 <span class="text-xs font-semibold uppercase">Servicio de Lavado</span>
               </button>
 
-              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl p-3 flex flex-col items-center justify-center space-y-2 shadow-sm transition h-24 text-center opacity-95">
+              <button class="interactive-btn bg-app-btnMenu hover:bg-blue-600 text-white rounded-xl py-3 px-2 flex flex-col items-center justify-center space-y-1.5 shadow-sm min-h-[5.5rem] h-auto text-center opacity-95">
                 <i class="fa-solid fa-gas-pump text-xl"></i>
                 <span class="text-xs font-semibold uppercase">Grifos</span>
               </button>
@@ -552,17 +552,17 @@ html, body {
                   <i class="fa-solid fa-arrow-right text-sm"></i>
                   <span>INGRESAR</span>
                 </button>
-                <button onclick="alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-dollar-sign text-sm"></i>
                   <span>GASTOS</span>
                 </button>
-                <button onclick="alert('Relevos: Informativo');" class="bg-blue-800 text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Relevos: Informativo');" class="bg-blue-800 text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-id-card text-sm"></i>
                   <span>RELEVOS</span>
                 </button>
               </div>
 
-              <div onclick="app.handleCardClick(event, 'IDA')" class="swipe-body p-3 space-y-2 hover:bg-slate-50 transition">
+              <div onclick="app.handleCardClick(event, 'IDA')" class="swipe-body p-3 space-y-2 hover:bg-slate-50 active:bg-slate-100">
                 <div class="flex justify-between items-start">
                   <span class="px-2 py-0.5 rounded bg-app-slateTag text-white text-[10px] font-bold">
                     IDA - HUACHIPA CO - ...
@@ -607,17 +607,17 @@ html, body {
                   <i class="fa-solid fa-arrow-right text-sm"></i>
                   <span>INGRESAR</span>
                 </button>
-                <button onclick="alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-dollar-sign text-sm"></i>
                   <span>GASTOS</span>
                 </button>
-                <button onclick="alert('Relevos: Informativo');" class="bg-blue-800 text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Relevos: Informativo');" class="bg-blue-800 text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-id-card text-sm"></i>
                   <span>RELEVOS</span>
                 </button>
               </div>
 
-              <div onclick="app.handleCardClick(event, 'RET')" class="swipe-body p-3 space-y-2 hover:bg-slate-50 transition">
+              <div onclick="app.handleCardClick(event, 'RET')" class="swipe-body p-3 space-y-2 hover:bg-slate-50 active:bg-slate-100">
                 <div class="flex justify-between items-start">
                   <span class="px-2 py-0.5 rounded bg-app-slateTag text-white text-[10px] font-bold">
                     RET- LA MARINA - HU...
@@ -1362,6 +1362,37 @@ const haptics = {
 };
 
 // Sonidos sintéticos con Web Audio API (0 dependencias externas)
+/**
+ * ========================================================
+ * APP SHALOM CHOFERES - MOTOR DE SIMULACIÓN Y CAPACITACIÓN
+ * ========================================================
+ */
+
+// Motor de respuesta háptica real (vibración nativa en celular)
+const haptics = {
+  light() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate(12); } catch (e) {}
+    }
+  },
+  medium() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate(25); } catch (e) {}
+    }
+  },
+  success() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate([15, 60, 25]); } catch (e) {}
+    }
+  },
+  alert() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate([35, 75, 35]); } catch (e) {}
+    }
+  }
+};
+
+// Sonidos sintéticos con Web Audio API (0 dependencias externas)
 const soundFx = {
   ctx: null,
   enabled: true,
@@ -1498,6 +1529,7 @@ const app = {
   },
 
   showScreen(screenId) {
+    this.closeAllSwipes();
     soundFx.tap();
     ['login', 'p01', 'p02', 'p04', 'p05', 'p07'].forEach(s => {
       const el = document.getElementById(`view-${s}`);
@@ -1675,6 +1707,12 @@ const app = {
     textEl.innerText = msg;
   },
 
+  closeAllSwipes() {
+    document.querySelectorAll('.swipe-row').forEach(row => {
+      row.classList.remove('open-programacion', 'open-escalas');
+    });
+  },
+
   bindEvents() {
     document.getElementById('btn-to-programacion')?.addEventListener('click', () => this.showScreen('P02'));
     document.getElementById('btn-back-to-p01')?.addEventListener('click', () => this.showScreen('P01'));
@@ -1686,6 +1724,17 @@ const app = {
     });
     window.addEventListener('click', () => this.closeDropdown());
 
+    // Al tocar en cualquier lugar fuera de los botones de acción, cerrar las tarjetas abiertas y volver a su lugar
+    document.addEventListener('pointerdown', (e) => {
+      const hasOpen = document.querySelector('.swipe-row.open-programacion, .swipe-row.open-escalas');
+      if (hasOpen && !e.target.closest('.swipe-btns')) {
+        if (!e.target.closest('.swipe-row.open-programacion, .swipe-row.open-escalas')) {
+          this.closeAllSwipes();
+          haptics.light();
+        }
+      }
+    });
+
     this.initSwipeHandlers();
   },
 
@@ -1696,6 +1745,7 @@ const app = {
 
   goToHojaRuta() {
     this.closeDropdown();
+    this.closeAllSwipes();
     this.renderEscalasView();
     this.showScreen('P05');
   },
@@ -1707,49 +1757,79 @@ const app = {
 
       let startX = 0;
       let startY = 0;
+      let currentX = 0;
+      let isMoving = false;
 
       row.addEventListener('touchstart', e => {
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
+        currentX = startX;
+        isMoving = false;
       }, { passive: true });
 
       row.addEventListener('touchmove', e => {
-        const diffX = startX - e.touches[0].clientX;
+        currentX = e.touches[0].clientX;
+        const diffX = startX - currentX;
         const diffY = Math.abs(startY - e.touches[0].clientY);
-        if (diffY > Math.abs(diffX)) return;
+        if (diffY > Math.abs(diffX) && !isMoving) return;
 
-        if (diffX > 35) {
-          const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
-          if (!row.classList.contains(cls)) {
+        isMoving = true;
+        const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
+        const isOpen = row.classList.contains(cls);
+
+        // Deslizar hacia la izquierda para abrir
+        if (diffX > 30) {
+          if (!isOpen) {
+            this.closeAllSwipes();
             row.classList.add(cls);
             haptics.light();
           }
           this.state.swipeTriggered = true;
-        } else if (diffX < -25) {
-          row.classList.remove('open-escalas', 'open-programacion');
+        } 
+        // Deslizar hacia la derecha para volver a su lugar de inmediato
+        else if (diffX < -15) {
+          if (isOpen) {
+            row.classList.remove(cls);
+            haptics.light();
+          }
+          this.state.swipeTriggered = true;
         }
       }, { passive: true });
 
       row.addEventListener('touchend', () => {
-        setTimeout(() => { this.state.swipeTriggered = false; }, 80);
+        const diffX = startX - currentX;
+        const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
+        if (diffX < -15 && row.classList.contains(cls)) {
+          row.classList.remove(cls);
+          haptics.light();
+        }
+        setTimeout(() => { this.state.swipeTriggered = false; }, 100);
       });
 
       let isDown = false;
       row.addEventListener('mousedown', e => {
+        if (e.target.closest('.swipe-btns')) return;
         isDown = true;
         startX = e.clientX;
       });
 
       window.addEventListener('mousemove', e => {
         if (!isDown) return;
-        if (startX - e.clientX > 35) {
-          const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
-          if (!row.classList.contains(cls)) {
-            row.classList.add(cls);
-            haptics.light();
-          }
+        const diffX = startX - e.clientX;
+        const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
+
+        if (diffX > 30) {
+          this.closeAllSwipes();
+          row.classList.add(cls);
           isDown = false;
           this.state.swipeTriggered = true;
+          haptics.light();
+          setTimeout(() => { this.state.swipeTriggered = false; }, 120);
+        } else if (diffX < -15) {
+          row.classList.remove(cls);
+          isDown = false;
+          this.state.swipeTriggered = true;
+          haptics.light();
           setTimeout(() => { this.state.swipeTriggered = false; }, 120);
         }
       });
@@ -1761,36 +1841,47 @@ const app = {
   },
 
   handleCardClick(event, routeKey) {
-    if (this.state.swipeTriggered) return;
-    // REGLA: No se debe acceder presionando los destinos, solo deslizando.
     const card = document.getElementById(routeKey === 'IDA' ? 'card-p02-ida' : 'card-p02-ret');
-    if (card) {
-      const isOpen = card.classList.contains('open-programacion');
-      document.querySelectorAll('.swipe-row').forEach(r => r.classList.remove('open-programacion', 'open-escalas'));
-      if (!isOpen) {
-        card.classList.add('open-programacion');
-        haptics.light();
-      }
+    if (!card) return;
+    const isOpen = card.classList.contains('open-programacion');
+    if (isOpen) {
+      // Si ya está abierta, al tocarla vuelve de inmediato a su lugar original
+      card.classList.remove('open-programacion');
+      haptics.light();
+      soundFx.tap();
+      return;
     }
+    if (this.state.swipeTriggered) return;
+    // Si está cerrada, abre las opciones para que el chofer pueda presionar INGRESAR
+    this.closeAllSwipes();
+    card.classList.add('open-programacion');
+    haptics.light();
+    soundFx.tap();
   },
 
   handleEscalaCardClick(event, idx) {
-    if (this.state.swipeTriggered) return;
-    // REGLA: No se debe acceder presionando los destinos, solo deslizando.
     const container = document.getElementById('p05-escalas-list');
     const cards = container ? container.querySelectorAll('.swipe-row') : [];
-    if (cards && cards[idx]) {
-      const card = cards[idx];
-      const isOpen = card.classList.contains('open-escalas');
-      document.querySelectorAll('.swipe-row').forEach(r => r.classList.remove('open-programacion', 'open-escalas'));
-      if (!isOpen) {
-        card.classList.add('open-escalas');
-        haptics.light();
-      }
+    if (!cards || !cards[idx]) return;
+    const card = cards[idx];
+    const isOpen = card.classList.contains('open-escalas');
+    if (isOpen) {
+      // Si ya está abierta, al tocarla vuelve de inmediato a su lugar original
+      card.classList.remove('open-escalas');
+      haptics.light();
+      soundFx.tap();
+      return;
     }
+    if (this.state.swipeTriggered) return;
+    // Si está cerrada, abre las opciones para que el chofer pueda presionar INGRESAR
+    this.closeAllSwipes();
+    card.classList.add('open-escalas');
+    haptics.light();
+    soundFx.tap();
   },
 
   actionProgramacionIngresar(routeKey) {
+    this.closeAllSwipes();
     const r = this.state.routes[routeKey];
     if (r.status === 'BLOQUEADO') {
       soundFx.alert();
@@ -1949,17 +2040,17 @@ const app = {
             <i class="fa-solid fa-arrow-right text-sm"></i>
             <span>INGRESAR</span>
           </button>
-          <button onclick="soundFx.alert(); alert('Incidencia en ${esc.name}');" class="bg-indigo-800 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('Incidencia en ${esc.name}');" class="bg-indigo-800 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid fa-triangle-exclamation text-sm"></i>
             <span>INCIDENCIA</span>
           </button>
-          <button onclick="soundFx.alert(); alert('${thirdBtnTxt} en ${esc.name}');" class="bg-red-600 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('${thirdBtnTxt} en ${esc.name}');" class="bg-red-600 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid ${thirdBtnIcon} text-sm"></i>
             <span>${thirdBtnTxt}</span>
           </button>
         </div>
 
-        <div onclick="app.handleEscalaCardClick(event, ${idx})" class="swipe-body p-3 space-y-2 hover:bg-slate-50 active:bg-slate-100 transition">
+        <div onclick="app.handleEscalaCardClick(event, ${idx})" class="swipe-body p-3 space-y-2 hover:bg-slate-50 active:bg-slate-100">
           <div class="flex justify-between items-start">
             <span class="px-2 py-0.5 rounded bg-app-slateTag text-white text-[10px] font-bold">
               ${esc.name}
@@ -2022,6 +2113,7 @@ const app = {
   },
 
   actionEscalaClick(idx) {
+    this.closeAllSwipes();
     this.state.selectedEscalaIdx = idx;
     const r = this.state.routes[this.state.activeRouteKey];
     const esc = r.escalas[idx];
