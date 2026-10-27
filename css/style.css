@@ -177,6 +177,15 @@ html, body {
   will-change: transform;
 }
 
+.swipe-btns button {
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.swipe-btns button * {
+  pointer-events: none;
+}
+
 .swipe-body {
   position: relative;
   background: #FFFFFF;
@@ -188,16 +197,18 @@ html, body {
 }
 
 .swipe-row.open-programacion .swipe-body {
-  transform: translate3d(-195px, 0, 0) !important;
+  transform: translate3d(-230px, 0, 0) !important;
 }
 
 .swipe-row.open-escalas .swipe-body {
-  transform: translate3d(-215px, 0, 0) !important;
+  transform: translate3d(-235px, 0, 0) !important;
 }
 
 .swipe-row.open-programacion .swipe-btns,
 .swipe-row.open-escalas .swipe-btns {
   transform: translate3d(0, 0, 0) !important;
+  z-index: 10 !important;
+  pointer-events: auto !important;
 }
 
 /* Inputs estilo Shalom */

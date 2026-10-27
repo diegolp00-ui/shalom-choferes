@@ -362,12 +362,11 @@ const app = {
 
     // Al tocar en cualquier lugar fuera de los botones de acción, cerrar las tarjetas abiertas y volver a su lugar
     document.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.swipe-btns')) return;
       const hasOpen = document.querySelector('.swipe-row.open-programacion, .swipe-row.open-escalas');
-      if (hasOpen && !e.target.closest('.swipe-btns')) {
-        if (!e.target.closest('.swipe-row.open-programacion, .swipe-row.open-escalas')) {
-          this.closeAllSwipes();
-          haptics.light();
-        }
+      if (hasOpen && !e.target.closest('.swipe-row.open-programacion, .swipe-row.open-escalas')) {
+        this.closeAllSwipes();
+        haptics.light();
       }
     });
 
@@ -382,6 +381,8 @@ const app = {
   goToHojaRuta() {
     this.closeDropdown();
     this.closeAllSwipes();
+    document.getElementById('modal-p03')?.classList.add('hidden');
+    document.getElementById('modal-confirm-inicio')?.classList.add('hidden');
     this.renderEscalasView();
     this.showScreen('P05');
   },
@@ -397,6 +398,7 @@ const app = {
       let isMoving = false;
 
       row.addEventListener('touchstart', e => {
+        if (e.target.closest('.swipe-btns')) return;
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
         currentX = startX;
@@ -404,6 +406,7 @@ const app = {
       }, { passive: true });
 
       row.addEventListener('touchmove', e => {
+        if (e.target.closest('.swipe-btns')) return;
         currentX = e.touches[0].clientX;
         const diffX = startX - currentX;
         const diffY = Math.abs(startY - e.touches[0].clientY);
@@ -432,7 +435,8 @@ const app = {
         }
       }, { passive: true });
 
-      row.addEventListener('touchend', () => {
+      row.addEventListener('touchend', e => {
+        if (e.target.closest('.swipe-btns')) return;
         const diffX = startX - currentX;
         const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
         if (diffX < -15 && row.classList.contains(cls)) {
@@ -477,6 +481,7 @@ const app = {
   },
 
   handleCardClick(event, routeKey) {
+    if (event && event.target && event.target.closest('.swipe-btns')) return;
     const card = document.getElementById(routeKey === 'IDA' ? 'card-p02-ida' : 'card-p02-ret');
     if (!card) return;
     const isOpen = card.classList.contains('open-programacion');
@@ -496,6 +501,7 @@ const app = {
   },
 
   handleEscalaCardClick(event, idx) {
+    if (event && event.target && event.target.closest('.swipe-btns')) return;
     const container = document.getElementById('p05-escalas-list');
     const cards = container ? container.querySelectorAll('.swipe-row') : [];
     if (!cards || !cards[idx]) return;
