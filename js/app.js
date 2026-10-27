@@ -147,7 +147,9 @@ const app = {
 
     // Registrar Service Worker para PWA (offline)
     if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-      navigator.serviceWorker.register('./sw.js').catch(err => {
+      navigator.serviceWorker.register('./sw.js').then(reg => {
+        reg.update();
+      }).catch(err => {
         console.log('SW no registrado:', err);
       });
     }
@@ -678,15 +680,15 @@ const app = {
 
       card.innerHTML = `
         <div class="swipe-btns">
-          <button onclick="app.actionEscalaClick(${idx})" class="bg-app-btnMenu hover:bg-blue-600 text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="app.actionEscalaClick(${idx})" class="bg-app-verde hover:bg-green-600 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid fa-arrow-right text-sm"></i>
             <span>INGRESAR</span>
           </button>
-          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('Incidencia en ${esc.name}');" class="bg-indigo-800 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('Incidencia en ${esc.name}');" class="bg-indigo-800 text-white px-1 font-bold text-[9.5px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid fa-triangle-exclamation text-sm"></i>
             <span>INCIDENCIA</span>
           </button>
-          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('${thirdBtnTxt} en ${esc.name}');" class="bg-red-600 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('${thirdBtnTxt} en ${esc.name}');" class="bg-red-600 text-white px-1 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid ${thirdBtnIcon} text-sm"></i>
             <span>${thirdBtnTxt}</span>
           </button>

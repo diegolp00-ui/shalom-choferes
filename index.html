@@ -188,6 +188,7 @@ html, body {
   right: 0;
   bottom: 0;
   display: flex;
+  width: 228px;
   z-index: 1;
   transform: translate3d(100%, 0, 0);
   transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1) !important;
@@ -195,8 +196,13 @@ html, body {
 }
 
 .swipe-btns button {
+  flex: 1 1 0;
+  min-width: 0;
+  width: 76px;
   touch-action: manipulation;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .swipe-btns button * {
@@ -213,12 +219,9 @@ html, body {
   will-change: transform;
 }
 
-.swipe-row.open-programacion .swipe-body {
-  transform: translate3d(-230px, 0, 0) !important;
-}
-
+.swipe-row.open-programacion .swipe-body,
 .swipe-row.open-escalas .swipe-body {
-  transform: translate3d(-235px, 0, 0) !important;
+  transform: translate3d(-228px, 0, 0) !important;
 }
 
 .swipe-row.open-programacion .swipe-btns,
@@ -559,15 +562,15 @@ html, body {
             <!-- TARJETA RUTA IDA -->
             <div id="card-p02-ida" class="swipe-row rounded-xl shadow-sm border border-slate-300">
               <div class="swipe-btns">
-                <button onclick="app.actionProgramacionIngresar('IDA')" class="bg-app-verde hover:bg-green-600 text-white px-3.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="app.actionProgramacionIngresar('IDA')" class="bg-app-verde hover:bg-green-600 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-arrow-right text-sm"></i>
                   <span>INGRESAR</span>
                 </button>
-                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-dollar-sign text-sm"></i>
                   <span>GASTOS</span>
                 </button>
-                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Relevos: Informativo');" class="bg-blue-800 text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Relevos: Informativo');" class="bg-blue-800 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-id-card text-sm"></i>
                   <span>RELEVOS</span>
                 </button>
@@ -614,15 +617,15 @@ html, body {
             <!-- TARJETA RUTA RETORNO -->
             <div id="card-p02-ret" class="swipe-row rounded-xl shadow-sm border border-slate-300 opacity-60">
               <div class="swipe-btns">
-                <button id="btn-swipe-ret-ingresar" onclick="app.actionProgramacionIngresar('RET')" class="bg-app-verde hover:bg-green-600 text-white px-3.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button id="btn-swipe-ret-ingresar" onclick="app.actionProgramacionIngresar('RET')" class="bg-app-verde hover:bg-green-600 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-arrow-right text-sm"></i>
                   <span>INGRESAR</span>
                 </button>
-                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-dollar-sign text-sm"></i>
                   <span>GASTOS</span>
                 </button>
-                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Relevos: Informativo');" class="bg-blue-800 text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Relevos: Informativo');" class="bg-blue-800 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-id-card text-sm"></i>
                   <span>RELEVOS</span>
                 </button>
@@ -1477,7 +1480,9 @@ const app = {
 
     // Registrar Service Worker para PWA (offline)
     if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-      navigator.serviceWorker.register('./sw.js').catch(err => {
+      navigator.serviceWorker.register('./sw.js').then(reg => {
+        reg.update();
+      }).catch(err => {
         console.log('SW no registrado:', err);
       });
     }
@@ -2008,15 +2013,15 @@ const app = {
 
       card.innerHTML = `
         <div class="swipe-btns">
-          <button onclick="app.actionEscalaClick(${idx})" class="bg-app-btnMenu hover:bg-blue-600 text-white px-3 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="app.actionEscalaClick(${idx})" class="bg-app-verde hover:bg-green-600 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid fa-arrow-right text-sm"></i>
             <span>INGRESAR</span>
           </button>
-          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('Incidencia en ${esc.name}');" class="bg-indigo-800 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('Incidencia en ${esc.name}');" class="bg-indigo-800 text-white px-1 font-bold text-[9.5px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid fa-triangle-exclamation text-sm"></i>
             <span>INCIDENCIA</span>
           </button>
-          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('${thirdBtnTxt} en ${esc.name}');" class="bg-red-600 text-white px-2.5 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('${thirdBtnTxt} en ${esc.name}');" class="bg-red-600 text-white px-1 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid ${thirdBtnIcon} text-sm"></i>
             <span>${thirdBtnTxt}</span>
           </button>

@@ -171,6 +171,7 @@ html, body {
   right: 0;
   bottom: 0;
   display: flex;
+  width: 228px;
   z-index: 1;
   transform: translate3d(100%, 0, 0);
   transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1) !important;
@@ -178,8 +179,13 @@ html, body {
 }
 
 .swipe-btns button {
+  flex: 1 1 0;
+  min-width: 0;
+  width: 76px;
   touch-action: manipulation;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .swipe-btns button * {
@@ -196,12 +202,9 @@ html, body {
   will-change: transform;
 }
 
-.swipe-row.open-programacion .swipe-body {
-  transform: translate3d(-230px, 0, 0) !important;
-}
-
+.swipe-row.open-programacion .swipe-body,
 .swipe-row.open-escalas .swipe-body {
-  transform: translate3d(-235px, 0, 0) !important;
+  transform: translate3d(-228px, 0, 0) !important;
 }
 
 .swipe-row.open-programacion .swipe-btns,
