@@ -125,3 +125,4 @@ Puedes mantener un registro en este mismo formato:
 | **v1.0.0** | Octubre 2026 | Diego | Migración completa desde Google Apps Script a GitHub Pages. Integración de cámara real WebRTC, sonidos sintéticos y modo guiado. |
 | **v1.1.0** | Octubre 2026 | Diego | Optimización 100% nativa para teléfonos móviles (eliminación de notch artificial y barras negras). |
 | **v1.2.0** | Octubre 2026 | Diego | Botón interactivo de regulación de tamaño de texto e iconos (`A` / `A+` / `A++`) con persistencia local. |
+| **v1.3.0** | Octubre 2026 | Diego | Optimización de fluidez (GPU `translate3d`, eliminación de latencia táctil de 300ms, vibración háptica en móvil) y restricción de acceso únicamente mediante deslizamiento Swipe. |

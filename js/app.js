@@ -4,6 +4,30 @@
  * ========================================================
  */
 
+// Motor de respuesta háptica real (vibración nativa en celular)
+const haptics = {
+  light() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate(12); } catch (e) {}
+    }
+  },
+  medium() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate(25); } catch (e) {}
+    }
+  },
+  success() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate([15, 60, 25]); } catch (e) {}
+    }
+  },
+  alert() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate([35, 75, 35]); } catch (e) {}
+    }
+  }
+};
+
 // Sonidos sintéticos con Web Audio API (0 dependencias externas)
 const soundFx = {
   ctx: null,
@@ -44,10 +68,12 @@ const soundFx = {
   },
 
   tap() {
+    haptics.light();
     this.playTone(600, 'sine', 0.05, 0.08);
   },
 
   success() {
+    haptics.success();
     if (!this.enabled) return;
     setTimeout(() => this.playTone(523.25, 'triangle', 0.1, 0.15), 0); // C5
     setTimeout(() => this.playTone(659.25, 'triangle', 0.1, 0.15), 100); // E5
@@ -55,12 +81,14 @@ const soundFx = {
   },
 
   shutter() {
+    haptics.medium();
     if (!this.enabled) return;
     this.playTone(1200, 'square', 0.04, 0.25);
     setTimeout(() => this.playTone(800, 'sawtooth', 0.08, 0.2), 50);
   },
 
   alert() {
+    haptics.alert();
     if (!this.enabled) return;
     this.playTone(300, 'sawtooth', 0.15, 0.2);
     setTimeout(() => this.playTone(250, 'sawtooth', 0.15, 0.2), 150);
@@ -257,11 +285,11 @@ const app = {
       document.getElementById('btn-to-programacion')?.classList.add('highlight-step');
     } else if (isVisible('view-p02')) {
       if (r.status === 'PENDIENTE') {
-        msg = 'Toca la tarjeta de RUTA IDA o deslízala a la izquierda y pulsa INGRESAR.';
+        msg = 'Desliza la tarjeta de RUTA IDA a la izquierda y pulsa INGRESAR.';
       } else if (r.status === 'PROCESO') {
-        msg = 'Continúa en la RUTA IDA en proceso.';
+        msg = 'Continúa en la RUTA IDA: desliza a la izquierda y pulsa INGRESAR.';
       } else {
-        msg = '¡Ruta IDA completada! Ahora ingresa al RETORNO desbloqueado.';
+        msg = '¡Ruta IDA completada! Ahora desliza el RETORNO y pulsa INGRESAR.';
       }
     } else if (isVisible('view-p04')) {
       if (r.status === 'PENDIENTE') {
@@ -282,7 +310,7 @@ const app = {
     } else if (isVisible('view-p05')) {
       const pendingEsc = r.escalas.find(e => e.status !== 'COMPLETADO');
       if (pendingEsc) {
-        msg = `Toca la escala "${pendingEsc.name}" para registrarla.`;
+        msg = `Desliza la escala "${pendingEsc.name}" a la izquierda y pulsa INGRESAR.`;
       } else {
         msg = 'Todas las escalas listas. Regresa con la flecha a Inicio/Fin.';
       }
@@ -357,10 +385,14 @@ const app = {
         const diffY = Math.abs(startY - e.touches[0].clientY);
         if (diffY > Math.abs(diffX)) return;
 
-        if (diffX > 40) {
-          row.classList.add(row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion');
+        if (diffX > 35) {
+          const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
+          if (!row.classList.contains(cls)) {
+            row.classList.add(cls);
+            haptics.light();
+          }
           this.state.swipeTriggered = true;
-        } else if (diffX < -30) {
+        } else if (diffX < -25) {
           row.classList.remove('open-escalas', 'open-programacion');
         }
       }, { passive: true });
@@ -377,8 +409,12 @@ const app = {
 
       window.addEventListener('mousemove', e => {
         if (!isDown) return;
-        if (startX - e.clientX > 40) {
-          row.classList.add(row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion');
+        if (startX - e.clientX > 35) {
+          const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
+          if (!row.classList.contains(cls)) {
+            row.classList.add(cls);
+            haptics.light();
+          }
           isDown = false;
           this.state.swipeTriggered = true;
           setTimeout(() => { this.state.swipeTriggered = false; }, 120);
@@ -393,12 +429,32 @@ const app = {
 
   handleCardClick(event, routeKey) {
     if (this.state.swipeTriggered) return;
-    this.actionProgramacionIngresar(routeKey);
+    // REGLA: No se debe acceder presionando los destinos, solo deslizando.
+    const card = document.getElementById(routeKey === 'IDA' ? 'card-p02-ida' : 'card-p02-ret');
+    if (card) {
+      const isOpen = card.classList.contains('open-programacion');
+      document.querySelectorAll('.swipe-row').forEach(r => r.classList.remove('open-programacion', 'open-escalas'));
+      if (!isOpen) {
+        card.classList.add('open-programacion');
+        haptics.light();
+      }
+    }
   },
 
   handleEscalaCardClick(event, idx) {
     if (this.state.swipeTriggered) return;
-    this.actionEscalaClick(idx);
+    // REGLA: No se debe acceder presionando los destinos, solo deslizando.
+    const container = document.getElementById('p05-escalas-list');
+    const cards = container ? container.querySelectorAll('.swipe-row') : [];
+    if (cards && cards[idx]) {
+      const card = cards[idx];
+      const isOpen = card.classList.contains('open-escalas');
+      document.querySelectorAll('.swipe-row').forEach(r => r.classList.remove('open-programacion', 'open-escalas'));
+      if (!isOpen) {
+        card.classList.add('open-escalas');
+        haptics.light();
+      }
+    }
   },
 
   actionProgramacionIngresar(routeKey) {

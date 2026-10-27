@@ -25,6 +25,8 @@
 
 * {
   box-sizing: border-box;
+  /* Elimina el retraso táctil de 300ms en navegadores móviles */
+  touch-action: manipulation;
 }
 
 /* Redefinición proporcional de clases de tamaño para legibilidad móvil */
@@ -133,26 +135,28 @@ html, body {
   touch-action: pan-y;
 }
 
-/* Animaciones */
+/* Animaciones con Aceleración por Hardware (GPU) */
 .fade-in {
-  animation: fadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeIn 0.15s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: opacity, transform;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(3px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translate3d(0, 4px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 .slide-in-right {
-  animation: slideInRight 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+  animation: slideInRight 0.18s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform, opacity;
 }
 
 @keyframes slideInRight {
-  from { opacity: 0.8; transform: translateX(16px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { opacity: 0.85; transform: translate3d(18px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-/* Filas Swipe (Deslizar hacia la izquierda) */
+/* Filas Swipe con aceleración GPU fluida */
 .swipe-row {
   position: relative;
   overflow: hidden;
@@ -168,29 +172,32 @@ html, body {
   bottom: 0;
   display: flex;
   z-index: 1;
-  transform: translateX(100%);
-  transition: transform 0.2s ease-out;
+  transform: translate3d(100%, 0, 0);
+  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
 }
 
 .swipe-body {
   position: relative;
   background: #FFFFFF;
   z-index: 2;
-  transition: transform 0.2s ease-out;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
   cursor: pointer;
+  will-change: transform;
 }
 
 .swipe-row.open-programacion .swipe-body {
-  transform: translateX(-195px);
+  transform: translate3d(-195px, 0, 0);
 }
 
 .swipe-row.open-escalas .swipe-body {
-  transform: translateX(-215px);
+  transform: translate3d(-215px, 0, 0);
 }
 
 .swipe-row.open-programacion .swipe-btns,
 .swipe-row.open-escalas .swipe-btns {
-  transform: translateX(0);
+  transform: translate3d(0, 0, 0);
 }
 
 /* Inputs estilo Shalom */
@@ -225,12 +232,13 @@ html, body {
   -webkit-backdrop-filter: blur(4px);
 }
 
-/* Botones interactivos con respuesta táctil */
+/* Botones interactivos con respuesta táctil instantánea */
 .interactive-btn {
-  transition: transform 0.1s ease, filter 0.15s ease;
+  transition: transform 0.08s ease, filter 0.1s ease;
+  user-select: none;
 }
 .interactive-btn:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
   filter: brightness(0.92);
 }
 

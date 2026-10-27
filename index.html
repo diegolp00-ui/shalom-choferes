@@ -42,6 +42,8 @@
 
 * {
   box-sizing: border-box;
+  /* Elimina el retraso táctil de 300ms en navegadores móviles */
+  touch-action: manipulation;
 }
 
 /* Redefinición proporcional de clases de tamaño para legibilidad móvil */
@@ -150,26 +152,28 @@ html, body {
   touch-action: pan-y;
 }
 
-/* Animaciones */
+/* Animaciones con Aceleración por Hardware (GPU) */
 .fade-in {
-  animation: fadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeIn 0.15s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: opacity, transform;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(3px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translate3d(0, 4px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 .slide-in-right {
-  animation: slideInRight 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+  animation: slideInRight 0.18s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform, opacity;
 }
 
 @keyframes slideInRight {
-  from { opacity: 0.8; transform: translateX(16px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { opacity: 0.85; transform: translate3d(18px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-/* Filas Swipe (Deslizar hacia la izquierda) */
+/* Filas Swipe con aceleración GPU fluida */
 .swipe-row {
   position: relative;
   overflow: hidden;
@@ -185,29 +189,32 @@ html, body {
   bottom: 0;
   display: flex;
   z-index: 1;
-  transform: translateX(100%);
-  transition: transform 0.2s ease-out;
+  transform: translate3d(100%, 0, 0);
+  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
 }
 
 .swipe-body {
   position: relative;
   background: #FFFFFF;
   z-index: 2;
-  transition: transform 0.2s ease-out;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
   cursor: pointer;
+  will-change: transform;
 }
 
 .swipe-row.open-programacion .swipe-body {
-  transform: translateX(-195px);
+  transform: translate3d(-195px, 0, 0);
 }
 
 .swipe-row.open-escalas .swipe-body {
-  transform: translateX(-215px);
+  transform: translate3d(-215px, 0, 0);
 }
 
 .swipe-row.open-programacion .swipe-btns,
 .swipe-row.open-escalas .swipe-btns {
-  transform: translateX(0);
+  transform: translate3d(0, 0, 0);
 }
 
 /* Inputs estilo Shalom */
@@ -242,12 +249,13 @@ html, body {
   -webkit-backdrop-filter: blur(4px);
 }
 
-/* Botones interactivos con respuesta táctil */
+/* Botones interactivos con respuesta táctil instantánea */
 .interactive-btn {
-  transition: transform 0.1s ease, filter 0.15s ease;
+  transition: transform 0.08s ease, filter 0.1s ease;
+  user-select: none;
 }
 .interactive-btn:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
   filter: brightness(0.92);
 }
 
@@ -532,8 +540,8 @@ html, body {
           </header>
 
           <div class="bg-blue-50/90 border-b border-blue-200 px-3 py-1.5 text-[10px] text-blue-900 font-medium flex items-center space-x-1.5 shrink-0">
-            <i class="fa-solid fa-hand-pointer text-blue-600"></i>
-            <span>Toca una tarjeta o deslízala a la <b>IZQUIERDA</b> para <b>INGRESAR</b>.</span>
+            <i class="fa-solid fa-arrows-left-right text-blue-600"></i>
+            <span>Desliza la tarjeta a la <b>IZQUIERDA</b> y presiona <b>INGRESAR</b>.</span>
           </div>
 
           <div class="scroll-area p-3 space-y-3 pb-16">
@@ -837,7 +845,7 @@ html, body {
           </div>
 
           <div class="bg-blue-50 border-b border-blue-200 px-3 py-1.5 text-[10px] text-blue-900 flex justify-between items-center shrink-0">
-            <span>Toca una escala o desliza para: <b>INGRESAR</b></span>
+            <span>Desliza la escala a la <b>IZQUIERDA</b> y presiona: <b>INGRESAR</b></span>
             <i class="fa-solid fa-arrows-left-right text-xs text-blue-600"></i>
           </div>
 
@@ -1323,6 +1331,37 @@ html, body {
  */
 
 // Sonidos sintéticos con Web Audio API (0 dependencias externas)
+/**
+ * ========================================================
+ * APP SHALOM CHOFERES - MOTOR DE SIMULACIÓN Y CAPACITACIÓN
+ * ========================================================
+ */
+
+// Motor de respuesta háptica real (vibración nativa en celular)
+const haptics = {
+  light() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate(12); } catch (e) {}
+    }
+  },
+  medium() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate(25); } catch (e) {}
+    }
+  },
+  success() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate([15, 60, 25]); } catch (e) {}
+    }
+  },
+  alert() {
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate([35, 75, 35]); } catch (e) {}
+    }
+  }
+};
+
+// Sonidos sintéticos con Web Audio API (0 dependencias externas)
 const soundFx = {
   ctx: null,
   enabled: true,
@@ -1362,10 +1401,12 @@ const soundFx = {
   },
 
   tap() {
+    haptics.light();
     this.playTone(600, 'sine', 0.05, 0.08);
   },
 
   success() {
+    haptics.success();
     if (!this.enabled) return;
     setTimeout(() => this.playTone(523.25, 'triangle', 0.1, 0.15), 0); // C5
     setTimeout(() => this.playTone(659.25, 'triangle', 0.1, 0.15), 100); // E5
@@ -1373,12 +1414,14 @@ const soundFx = {
   },
 
   shutter() {
+    haptics.medium();
     if (!this.enabled) return;
     this.playTone(1200, 'square', 0.04, 0.25);
     setTimeout(() => this.playTone(800, 'sawtooth', 0.08, 0.2), 50);
   },
 
   alert() {
+    haptics.alert();
     if (!this.enabled) return;
     this.playTone(300, 'sawtooth', 0.15, 0.2);
     setTimeout(() => this.playTone(250, 'sawtooth', 0.15, 0.2), 150);
@@ -1575,11 +1618,11 @@ const app = {
       document.getElementById('btn-to-programacion')?.classList.add('highlight-step');
     } else if (isVisible('view-p02')) {
       if (r.status === 'PENDIENTE') {
-        msg = 'Toca la tarjeta de RUTA IDA o deslízala a la izquierda y pulsa INGRESAR.';
+        msg = 'Desliza la tarjeta de RUTA IDA a la izquierda y pulsa INGRESAR.';
       } else if (r.status === 'PROCESO') {
-        msg = 'Continúa en la RUTA IDA en proceso.';
+        msg = 'Continúa en la RUTA IDA: desliza a la izquierda y pulsa INGRESAR.';
       } else {
-        msg = '¡Ruta IDA completada! Ahora ingresa al RETORNO desbloqueado.';
+        msg = '¡Ruta IDA completada! Ahora desliza el RETORNO y pulsa INGRESAR.';
       }
     } else if (isVisible('view-p04')) {
       if (r.status === 'PENDIENTE') {
@@ -1600,7 +1643,7 @@ const app = {
     } else if (isVisible('view-p05')) {
       const pendingEsc = r.escalas.find(e => e.status !== 'COMPLETADO');
       if (pendingEsc) {
-        msg = `Toca la escala "${pendingEsc.name}" para registrarla.`;
+        msg = `Desliza la escala "${pendingEsc.name}" a la izquierda y pulsa INGRESAR.`;
       } else {
         msg = 'Todas las escalas listas. Regresa con la flecha a Inicio/Fin.';
       }
@@ -1675,10 +1718,14 @@ const app = {
         const diffY = Math.abs(startY - e.touches[0].clientY);
         if (diffY > Math.abs(diffX)) return;
 
-        if (diffX > 40) {
-          row.classList.add(row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion');
+        if (diffX > 35) {
+          const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
+          if (!row.classList.contains(cls)) {
+            row.classList.add(cls);
+            haptics.light();
+          }
           this.state.swipeTriggered = true;
-        } else if (diffX < -30) {
+        } else if (diffX < -25) {
           row.classList.remove('open-escalas', 'open-programacion');
         }
       }, { passive: true });
@@ -1695,8 +1742,12 @@ const app = {
 
       window.addEventListener('mousemove', e => {
         if (!isDown) return;
-        if (startX - e.clientX > 40) {
-          row.classList.add(row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion');
+        if (startX - e.clientX > 35) {
+          const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
+          if (!row.classList.contains(cls)) {
+            row.classList.add(cls);
+            haptics.light();
+          }
           isDown = false;
           this.state.swipeTriggered = true;
           setTimeout(() => { this.state.swipeTriggered = false; }, 120);
@@ -1711,12 +1762,32 @@ const app = {
 
   handleCardClick(event, routeKey) {
     if (this.state.swipeTriggered) return;
-    this.actionProgramacionIngresar(routeKey);
+    // REGLA: No se debe acceder presionando los destinos, solo deslizando.
+    const card = document.getElementById(routeKey === 'IDA' ? 'card-p02-ida' : 'card-p02-ret');
+    if (card) {
+      const isOpen = card.classList.contains('open-programacion');
+      document.querySelectorAll('.swipe-row').forEach(r => r.classList.remove('open-programacion', 'open-escalas'));
+      if (!isOpen) {
+        card.classList.add('open-programacion');
+        haptics.light();
+      }
+    }
   },
 
   handleEscalaCardClick(event, idx) {
     if (this.state.swipeTriggered) return;
-    this.actionEscalaClick(idx);
+    // REGLA: No se debe acceder presionando los destinos, solo deslizando.
+    const container = document.getElementById('p05-escalas-list');
+    const cards = container ? container.querySelectorAll('.swipe-row') : [];
+    if (cards && cards[idx]) {
+      const card = cards[idx];
+      const isOpen = card.classList.contains('open-escalas');
+      document.querySelectorAll('.swipe-row').forEach(r => r.classList.remove('open-programacion', 'open-escalas'));
+      if (!isOpen) {
+        card.classList.add('open-escalas');
+        haptics.light();
+      }
+    }
   },
 
   actionProgramacionIngresar(routeKey) {
