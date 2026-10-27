@@ -96,3 +96,10 @@ git push -u origin main
 - **Web Audio API** (Efectos de sonido interactivos)
 - **WebRTC / MediaDevices** (Cámara de captura de evidencia)
 - **Service Workers & PWA** (Soporte offline y experiencia de app móvil)
+
+---
+
+## 📖 Documentación y Mantenimiento Técnico
+
+Para ver cómo modificar rutas, paradas, choferes o enlaces de evaluación, consulta la **[Guía de Documentación Técnica](DOCUMENTACION.md)**.
+
