@@ -404,9 +404,13 @@ html, body {
         <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
         <span>Modo Guiado</span>
       </button>
-      <button onclick="app.showScreen('PERFIL')" class="hover:text-white px-2 py-1 bg-rose-900/80 rounded border border-rose-700 flex items-center space-x-1">
-        <i class="fa-solid fa-clipboard-check text-rose-300"></i>
-        <span>Ver Errores Chofer</span>
+      <a href="https://docs.google.com/spreadsheets/d/16XXrVrCvZZ7THAc36Uffm52hR5pXJ2ww1wmqwaRZqAE/edit?hl=es&gid=0#gid=0" target="_blank" rel="noopener" class="hover:text-white px-2.5 py-1 bg-emerald-800/90 rounded border border-emerald-600 flex items-center space-x-1 text-emerald-100 font-bold" title="Abrir Registro de Errores y Dashboard en Google Sheets">
+        <i class="fa-solid fa-table text-emerald-300"></i>
+        <span>Google Sheets (Errores)</span>
+      </a>
+      <button onclick="app.configureSheetsWebhook()" class="hover:text-white px-2 py-1 bg-slate-800/80 rounded border border-slate-700 flex items-center space-x-1" title="Configurar URL de Google Apps Script Webhook">
+        <i class="fa-solid fa-plug text-blue-400"></i>
+        <span>Webhook Sheets</span>
       </button>
       <button onclick="app.toggleMute()" class="hover:text-white px-2 py-1 bg-slate-800/80 rounded border border-slate-700 flex items-center space-x-1">
         <i id="btn-sound-icon" class="fa-solid fa-volume-high"></i>
@@ -417,36 +421,29 @@ html, body {
     <!-- Contenedor Principal de la App -->
     <div id="main-phone-box" class="phone-box flex flex-col relative w-full h-full">
 
-      <!-- Barra de Capacitación y Acciones Rápidas -->
-      <div class="bg-blue-50 border-b border-blue-200 text-app-header text-[10px] font-bold px-2.5 py-1.5 flex justify-between items-center z-20 shrink-0">
-        <span class="flex items-center space-x-1.5 shrink-0 mr-1">
-          <i class="fa-solid fa-graduation-cap text-blue-600 text-xs"></i>
-          <span class="font-black text-xs text-blue-900 tracking-wider">SHALOM</span>
-          <span id="top-clock" class="text-[10px] font-mono text-blue-800 font-bold ml-0.5 px-1 rounded bg-blue-100/70">10:20</span>
-          <button onclick="app.showScreen('PERFIL')" id="top-error-badge" class="ml-1 px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-300 text-[9px] font-extrabold flex items-center space-x-1 hover:bg-rose-200 transition" title="Ver errores registrados del conductor">
-            <i class="fa-solid fa-triangle-exclamation text-[9px]"></i>
-            <span id="top-error-count">0 Fallas</span>
-          </button>
-        </span>
-        <div class="flex items-center space-x-2 shrink-0">
-          <button onclick="app.cycleFontSize()" class="text-blue-900 bg-white/90 hover:bg-white px-1.5 py-0.5 rounded border border-blue-200 font-bold text-xs flex items-center space-x-1 shadow-sm active:scale-95" title="Regular tamaño de texto e iconos">
-            <i class="fa-solid fa-text-height text-[10px] text-blue-700"></i>
-            <span id="font-size-indicator" class="text-[10px] font-black text-blue-900">A</span>
-          </button>
-          <button onclick="app.toggleMute()" class="text-slate-600 hover:text-blue-900 px-1 py-0.5" title="Sonido">
-            <i class="fa-solid fa-volume-high text-xs"></i>
-          </button>
-          <button onclick="app.toggleModoGuiado()" class="text-amber-600 hover:text-amber-800 px-1 py-0.5" title="Modo Guiado">
-            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
-          </button>
-          <button onclick="app.showVideoModal()" class="text-blue-700 hover:text-blue-900 font-bold flex items-center space-x-1">
-            <i class="fa-solid fa-circle-play text-red-600 text-xs"></i>
-            <span>Videos</span>
-          </button>
-          <button onclick="app.reset()" class="text-blue-700 hover:text-red-600 underline font-semibold">
-            Salir/Reset
-          </button>
-        </div>
+      <!-- Barra de Utilidades para Capacitadores (Discreta) -->
+      <div class="bg-blue-50/70 border-b border-blue-100 px-2.5 py-1 flex justify-end items-center space-x-2 z-20 shrink-0">
+        <!-- Elementos ocultos para persistencia y compatibilidad -->
+        <span id="top-clock" class="hidden"></span>
+        <button id="top-error-badge" class="hidden"><span id="top-error-count"></span></button>
+
+        <button onclick="app.cycleFontSize()" class="text-blue-900 bg-white/90 hover:bg-white px-1.5 py-0.5 rounded border border-blue-200 font-bold text-xs flex items-center space-x-1 shadow-sm active:scale-95" title="Regular tamaño de texto e iconos">
+          <i class="fa-solid fa-text-height text-[10px] text-blue-700"></i>
+          <span id="font-size-indicator" class="text-[10px] font-black text-blue-900">A</span>
+        </button>
+        <button onclick="app.toggleMute()" class="text-slate-600 hover:text-blue-900 px-1 py-0.5" title="Sonido">
+          <i class="fa-solid fa-volume-high text-xs"></i>
+        </button>
+        <button onclick="app.toggleModoGuiado()" class="text-amber-600 hover:text-amber-800 px-1 py-0.5" title="Modo Guiado">
+          <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+        </button>
+        <button onclick="app.showVideoModal()" class="text-blue-700 hover:text-blue-900 font-bold flex items-center space-x-1 text-[11px]">
+          <i class="fa-solid fa-circle-play text-red-600 text-xs"></i>
+          <span>Videos</span>
+        </button>
+        <button onclick="app.reset()" class="text-blue-700 hover:text-red-600 underline font-semibold text-[11px]">
+          Salir/Reset
+        </button>
       </div>
 
       <!-- Banner Asistente de Capacitación (Paso a Paso) -->
@@ -1111,13 +1108,10 @@ html, body {
             <!-- Avatar oficial extraído del APK (Frame 5) -->
             <div class="flex flex-col items-center pt-1 pb-2">
               <img src="assets/images/user-default.png" alt="Avatar" class="w-24 h-24 rounded-full shadow border border-slate-200 object-cover" onerror="this.style.display='none'">
-              <span id="perfil-mode-badge" class="mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">
-                MODO EVALUACIÓN
-              </span>
             </div>
 
             <!-- Campos oficiales de Perfil (Frame 5) -->
-            <div class="space-y-2.5 border-b border-slate-200 pb-4">
+            <div class="space-y-2.5 pb-4">
               <div>
                 <label class="block text-[10px] font-bold text-blue-600 uppercase">NOMBRE</label>
                 <div id="perfil-nombre" class="text-xs font-semibold text-slate-800 py-1 border-b border-slate-200">EDWIN MELCHOR GALARZA AMARILLO</div>
@@ -1149,53 +1143,6 @@ html, body {
               <button onclick="soundFx.tap(); alert('Función informativa en el simulador: La contraseña en modo evaluación es siempre igual al DNI del conductor.');" class="w-full py-2.5 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow uppercase">
                 CAMBIAR CONTRASEÑA
               </button>
-            </div>
-
-            <!-- REPORTE DE EVALUACIÓN Y ERRORES COMETIDOS POR EL CHOFER -->
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-3">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h2 class="text-xs font-black text-app-header uppercase flex items-center space-x-1.5">
-                    <i class="fa-solid fa-clipboard-check text-blue-600"></i>
-                    <span>HISTORIAL DE EVALUACIÓN DEL CONDUCTOR</span>
-                  </h2>
-                  <p class="text-[10px] text-slate-500">Registro automático de errores operativos en la prueba</p>
-                </div>
-                <span id="perfil-score-badge" class="px-2.5 py-1 rounded-lg text-xs font-black bg-emerald-600 text-white">
-                  100 pts
-                </span>
-              </div>
-
-              <!-- Resumen numérico -->
-              <div class="grid grid-cols-3 gap-2 text-center font-mono">
-                <div class="bg-white p-2 rounded-lg border border-slate-200">
-                  <span class="text-[9px] text-slate-500 block uppercase font-bold">Intentos</span>
-                  <span id="perfil-stat-intentos" class="text-sm font-black text-slate-800">1</span>
-                </div>
-                <div class="bg-white p-2 rounded-lg border border-slate-200">
-                  <span class="text-[9px] text-slate-500 block uppercase font-bold">Errores</span>
-                  <span id="perfil-stat-errores" class="text-sm font-black text-red-600">0</span>
-                </div>
-                <div class="bg-white p-2 rounded-lg border border-slate-200">
-                  <span class="text-[9px] text-slate-500 block uppercase font-bold">Estado Ruta</span>
-                  <span id="perfil-stat-progreso" class="text-[11px] font-black text-blue-700">EN CURSO</span>
-                </div>
-              </div>
-
-              <!-- Lista detallada de errores -->
-              <div id="perfil-error-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
-
-              <!-- Botones de gestión de evaluación -->
-              <div class="grid grid-cols-2 gap-2 pt-1">
-                <button onclick="app.reiniciarIntentoConductor()" class="py-2 px-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-[10px] shadow flex items-center justify-center space-x-1">
-                  <i class="fa-solid fa-rotate-right"></i>
-                  <span>Nuevo Intento (Limpiar Ruta)</span>
-                </button>
-                <button onclick="app.limpiarErroresConductor()" class="py-2 px-2 bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-lg text-[10px] shadow flex items-center justify-center space-x-1">
-                  <i class="fa-solid fa-trash-can"></i>
-                  <span>Borrar Fallas</span>
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -2138,19 +2085,60 @@ const app = {
     soundFx.alert();
     const dni = this.state.driverDni || '99999999';
     const profile = this.ensureProfile(dni, this.state.driverName);
+    const penalty = severity === 'CRÍTICO' ? -25 : (severity === 'GRAVE' ? -15 : (severity === 'MEDIO' ? -10 : -5));
     const errEntry = {
       id: Date.now() + Math.random().toString(36).slice(2, 6),
-      code,
-      title,
-      detail,
-      severity,
-      screen: screen || this.state.activeRouteKey,
-      date: this.getNowDateStr(),
-      time: this.getNowTimeStr(true)
+      timestamp: new Date().toISOString(),
+      fecha: this.getNowDateStr(),
+      hora: this.getNowTimeStr(true),
+      dni: dni,
+      nombre: this.state.driverName,
+      placa: this.state.driverPlaca || 'BFS-863',
+      ruta: this.state.activeRouteKey,
+      pantalla: screen || this.state.activeRouteKey,
+      codigo: code,
+      gravedad: severity,
+      descripcion: title,
+      detalle: detail,
+      penalizacion: penalty
     };
     profile.errors.unshift(errEntry);
     this.saveProfilesToStorage();
     this.updateTopErrorBadge();
+    this.sendErrorToGoogleSheets(errEntry);
+  },
+
+  sendErrorToGoogleSheets(entry) {
+    const webhookUrl = localStorage.getItem('shalom_sheets_webhook_url');
+    if (!webhookUrl) return;
+    try {
+      fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      }).catch(err => {
+        console.warn('Error enviando a Google Sheets Webhook:', err);
+      });
+    } catch (e) {
+      console.warn('Excepción enviando a Google Sheets:', e);
+    }
+  },
+
+  configureSheetsWebhook() {
+    const current = localStorage.getItem('shalom_sheets_webhook_url') || '';
+    const val = prompt(
+      'Ingrese la URL de la aplicación web de Google Apps Script (Webhook) para sincronizar errores en vivo al Google Sheet:\n\n(Deje en blanco si desea desactivar)',
+      current
+    );
+    if (val !== null) {
+      localStorage.setItem('shalom_sheets_webhook_url', val.trim());
+      if (val.trim()) {
+        alert('URL de Webhook conectada exitosamente.');
+      } else {
+        alert('Webhook desactivado.');
+      }
+    }
   },
 
   showOperativeErrorModal(title, message) {
@@ -2169,13 +2157,8 @@ const app = {
     const countEl = document.getElementById('top-error-count');
     if (countEl) countEl.innerText = count;
     if (badge) {
-      badge.classList.remove('hidden');
-      badge.classList.add('flex');
-      if (count > 0) {
-        badge.className = 'flex items-center space-x-1 px-1.5 py-0.5 rounded bg-red-600/90 text-white border border-red-400 text-[9px] font-bold animate-pulse';
-      } else {
-        badge.className = 'flex items-center space-x-1 px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] font-bold';
-      }
+      badge.classList.add('hidden');
+      badge.classList.remove('flex');
     }
   },
 
@@ -2365,17 +2348,6 @@ const app = {
     const dni = this.state.driverDni;
     const profile = this.ensureProfile(dni, this.state.driverName);
 
-    const modeBadge = document.getElementById('perfil-mode-badge');
-    if (modeBadge) {
-      if (this.state.isDemoMode) {
-        modeBadge.innerText = 'MODO DEMO (PREDETERMINADO)';
-        modeBadge.className = 'mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700';
-      } else {
-        modeBadge.innerText = 'MODO EVALUACIÓN ACTIVO';
-        modeBadge.className = 'mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800';
-      }
-    }
-
     const setTxt = (id, val) => {
       const el = document.getElementById(id);
       if (el) el.innerText = val;
@@ -2388,69 +2360,6 @@ const app = {
 
     const celInput = document.getElementById('perfil-celular');
     if (celInput) celInput.value = profile.celular || '';
-
-    const errors = profile.errors || [];
-    const penalty = errors.reduce((acc, e) => {
-      if (e.severity === 'CRITICO') return acc + 25;
-      if (e.severity === 'GRAVE') return acc + 15;
-      if (e.severity === 'MEDIO') return acc + 10;
-      return acc + 5;
-    }, 0);
-    const score = Math.max(0, 100 - penalty);
-
-    const scoreBadge = document.getElementById('perfil-score-badge');
-    if (scoreBadge) {
-      scoreBadge.innerText = `${score} / 100 pts`;
-      if (score >= 85) {
-        scoreBadge.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-emerald-600 text-white';
-      } else if (score >= 60) {
-        scoreBadge.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-amber-500 text-white';
-      } else {
-        scoreBadge.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-red-600 text-white';
-      }
-    }
-
-    setTxt('perfil-stat-intentos', profile.attempts || 1);
-    setTxt('perfil-stat-errores', errors.length);
-
-    const rIda = this.state.routes.IDA;
-    const rRet = this.state.routes.RET;
-    let progTxt = 'PENDIENTE';
-    if (rIda.status === 'COMPLETADO' && rRet.status === 'COMPLETADO') progTxt = 'COMPLETADO';
-    else if (rIda.status !== 'PENDIENTE' || rRet.status === 'PROCESO') progTxt = 'EN CURSO';
-    setTxt('perfil-stat-progreso', progTxt);
-
-    const listEl = document.getElementById('perfil-error-list');
-    if (!listEl) return;
-
-    if (errors.length === 0) {
-      listEl.innerHTML = `
-        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center text-emerald-800 space-y-1">
-          <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
-          <div class="font-bold text-[11px]">Sin errores registrados en este perfil</div>
-          <p class="text-[10px] text-emerald-700">El conductor aún no ha cometido ninguna falta operativa en la simulación.</p>
-        </div>
-      `;
-    } else {
-      listEl.innerHTML = errors.map((err, i) => {
-        let badgeColor = 'bg-amber-100 text-amber-800 border-amber-300';
-        if (err.severity === 'CRITICO' || err.severity === 'GRAVE') {
-          badgeColor = 'bg-red-100 text-red-800 border-red-300';
-        }
-        return `
-          <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-sm space-y-1">
-            <div class="flex items-center justify-between">
-              <span class="px-1.5 py-0.5 rounded border text-[9px] font-black uppercase ${badgeColor}">
-                #${errors.length - i} &bull; ${err.severity}
-              </span>
-              <span class="text-[9px] font-mono text-slate-400">${err.date} ${err.time}</span>
-            </div>
-            <div class="font-bold text-slate-800 text-[11px]">${err.title}</div>
-            <p class="text-[10px] text-slate-600 leading-snug">${err.detail}</p>
-          </div>
-        `;
-      }).join('');
-    }
   },
 
   reiniciarIntentoConductor() {

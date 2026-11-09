@@ -284,19 +284,60 @@ const app = {
     soundFx.alert();
     const dni = this.state.driverDni || '99999999';
     const profile = this.ensureProfile(dni, this.state.driverName);
+    const penalty = severity === 'CRÍTICO' ? -25 : (severity === 'GRAVE' ? -15 : (severity === 'MEDIO' ? -10 : -5));
     const errEntry = {
       id: Date.now() + Math.random().toString(36).slice(2, 6),
-      code,
-      title,
-      detail,
-      severity,
-      screen: screen || this.state.activeRouteKey,
-      date: this.getNowDateStr(),
-      time: this.getNowTimeStr(true)
+      timestamp: new Date().toISOString(),
+      fecha: this.getNowDateStr(),
+      hora: this.getNowTimeStr(true),
+      dni: dni,
+      nombre: this.state.driverName,
+      placa: this.state.driverPlaca || 'BFS-863',
+      ruta: this.state.activeRouteKey,
+      pantalla: screen || this.state.activeRouteKey,
+      codigo: code,
+      gravedad: severity,
+      descripcion: title,
+      detalle: detail,
+      penalizacion: penalty
     };
     profile.errors.unshift(errEntry);
     this.saveProfilesToStorage();
     this.updateTopErrorBadge();
+    this.sendErrorToGoogleSheets(errEntry);
+  },
+
+  sendErrorToGoogleSheets(entry) {
+    const webhookUrl = localStorage.getItem('shalom_sheets_webhook_url');
+    if (!webhookUrl) return;
+    try {
+      fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      }).catch(err => {
+        console.warn('Error enviando a Google Sheets Webhook:', err);
+      });
+    } catch (e) {
+      console.warn('Excepción enviando a Google Sheets:', e);
+    }
+  },
+
+  configureSheetsWebhook() {
+    const current = localStorage.getItem('shalom_sheets_webhook_url') || '';
+    const val = prompt(
+      'Ingrese la URL de la aplicación web de Google Apps Script (Webhook) para sincronizar errores en vivo al Google Sheet:\n\n(Deje en blanco si desea desactivar)',
+      current
+    );
+    if (val !== null) {
+      localStorage.setItem('shalom_sheets_webhook_url', val.trim());
+      if (val.trim()) {
+        alert('URL de Webhook conectada exitosamente.');
+      } else {
+        alert('Webhook desactivado.');
+      }
+    }
   },
 
   showOperativeErrorModal(title, message) {
@@ -315,13 +356,8 @@ const app = {
     const countEl = document.getElementById('top-error-count');
     if (countEl) countEl.innerText = count;
     if (badge) {
-      badge.classList.remove('hidden');
-      badge.classList.add('flex');
-      if (count > 0) {
-        badge.className = 'flex items-center space-x-1 px-1.5 py-0.5 rounded bg-red-600/90 text-white border border-red-400 text-[9px] font-bold animate-pulse';
-      } else {
-        badge.className = 'flex items-center space-x-1 px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] font-bold';
-      }
+      badge.classList.add('hidden');
+      badge.classList.remove('flex');
     }
   },
 
@@ -511,17 +547,6 @@ const app = {
     const dni = this.state.driverDni;
     const profile = this.ensureProfile(dni, this.state.driverName);
 
-    const modeBadge = document.getElementById('perfil-mode-badge');
-    if (modeBadge) {
-      if (this.state.isDemoMode) {
-        modeBadge.innerText = 'MODO DEMO (PREDETERMINADO)';
-        modeBadge.className = 'mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700';
-      } else {
-        modeBadge.innerText = 'MODO EVALUACIÓN ACTIVO';
-        modeBadge.className = 'mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800';
-      }
-    }
-
     const setTxt = (id, val) => {
       const el = document.getElementById(id);
       if (el) el.innerText = val;
@@ -534,69 +559,6 @@ const app = {
 
     const celInput = document.getElementById('perfil-celular');
     if (celInput) celInput.value = profile.celular || '';
-
-    const errors = profile.errors || [];
-    const penalty = errors.reduce((acc, e) => {
-      if (e.severity === 'CRITICO') return acc + 25;
-      if (e.severity === 'GRAVE') return acc + 15;
-      if (e.severity === 'MEDIO') return acc + 10;
-      return acc + 5;
-    }, 0);
-    const score = Math.max(0, 100 - penalty);
-
-    const scoreBadge = document.getElementById('perfil-score-badge');
-    if (scoreBadge) {
-      scoreBadge.innerText = `${score} / 100 pts`;
-      if (score >= 85) {
-        scoreBadge.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-emerald-600 text-white';
-      } else if (score >= 60) {
-        scoreBadge.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-amber-500 text-white';
-      } else {
-        scoreBadge.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-red-600 text-white';
-      }
-    }
-
-    setTxt('perfil-stat-intentos', profile.attempts || 1);
-    setTxt('perfil-stat-errores', errors.length);
-
-    const rIda = this.state.routes.IDA;
-    const rRet = this.state.routes.RET;
-    let progTxt = 'PENDIENTE';
-    if (rIda.status === 'COMPLETADO' && rRet.status === 'COMPLETADO') progTxt = 'COMPLETADO';
-    else if (rIda.status !== 'PENDIENTE' || rRet.status === 'PROCESO') progTxt = 'EN CURSO';
-    setTxt('perfil-stat-progreso', progTxt);
-
-    const listEl = document.getElementById('perfil-error-list');
-    if (!listEl) return;
-
-    if (errors.length === 0) {
-      listEl.innerHTML = `
-        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center text-emerald-800 space-y-1">
-          <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
-          <div class="font-bold text-[11px]">Sin errores registrados en este perfil</div>
-          <p class="text-[10px] text-emerald-700">El conductor aún no ha cometido ninguna falta operativa en la simulación.</p>
-        </div>
-      `;
-    } else {
-      listEl.innerHTML = errors.map((err, i) => {
-        let badgeColor = 'bg-amber-100 text-amber-800 border-amber-300';
-        if (err.severity === 'CRITICO' || err.severity === 'GRAVE') {
-          badgeColor = 'bg-red-100 text-red-800 border-red-300';
-        }
-        return `
-          <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-sm space-y-1">
-            <div class="flex items-center justify-between">
-              <span class="px-1.5 py-0.5 rounded border text-[9px] font-black uppercase ${badgeColor}">
-                #${errors.length - i} &bull; ${err.severity}
-              </span>
-              <span class="text-[9px] font-mono text-slate-400">${err.date} ${err.time}</span>
-            </div>
-            <div class="font-bold text-slate-800 text-[11px]">${err.title}</div>
-            <p class="text-[10px] text-slate-600 leading-snug">${err.detail}</p>
-          </div>
-        `;
-      }).join('');
-    }
   },
 
   reiniciarIntentoConductor() {
