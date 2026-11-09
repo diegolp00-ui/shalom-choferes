@@ -2187,10 +2187,22 @@ const app = {
     this.onLoginDniInput(dni);
   },
 
-  loginSubmit() {
+  SHALOM_FLEET_PLACAS: [
+    'BFS-863', 'CCY-904', 'BTR-721', 'D4O-812', 'C7M-745', 
+    'B9V-834', 'AYI-890', 'F3U-789', 'T8C-942', 'V2K-815', 
+    'B8Q-910', 'C5D-723', 'F8M-719', 'C3L-841', 'W2P-860'
+  ],
+
+  getRandomPlaca() {
+    const list = this.SHALOM_FLEET_PLACAS;
+    return list[Math.floor(Math.random() * list.length)];
+  },
+
+  async loginSubmit() {
     const user = (document.getElementById('login-input-user')?.value || '').trim();
     const pass = (document.getElementById('login-input-pass')?.value || '').trim();
     const errEl = document.getElementById('login-error-msg');
+    const submitBtn = document.getElementById('btn-login-submit');
 
     if (!user || user.length < 8) {
       soundFx.alert();
@@ -2223,15 +2235,51 @@ const app = {
     this.state.isDemoMode = isDemo;
     this.state.driverDni = user;
 
-    const known = KNOWN_DRIVERS[user];
-    const resolvedName = isDemo
-      ? 'pruebashalom'
-      : ((known && known.name) || (this.state.profiles[user]?.name) || `CONDUCTOR DNI ${user}`);
+    // Asignar placa aleatoria de la flota Shalom en cada inicio de sesión (unidad no fija)
+    const assignedPlaca = isDemo ? 'CCY-904' : this.getRandomPlaca();
+
+    let resolvedName = isDemo ? 'pruebashalom' : ((this.state.profiles[user]?.name) || `CONDUCTOR DNI ${user}`);
+    let resolvedCel = '';
+    let resolvedCat = 'A3C';
+
+    if (!isDemo && this.DEFAULT_WEBHOOK_URL) {
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-1"></i> VALIDANDO...';
+      }
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
+        const res = await fetch(`${this.DEFAULT_WEBHOOK_URL}?action=getDriver&dni=${encodeURIComponent(user)}`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          const info = await res.json();
+          if (info && info.found && info.name) {
+            resolvedName = info.name;
+            if (info.celular) resolvedCel = info.celular;
+            if (info.categoria) resolvedCat = info.categoria;
+          }
+        }
+      } catch (e) {
+        console.log('Driver remote lookup skipped or timeout:', e);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'INGRESAR';
+        }
+      }
+    }
 
     const profile = this.ensureProfile(user, resolvedName);
+    profile.placa = assignedPlaca;
+    if (resolvedCel) profile.celular = resolvedCel;
+    profile.categoria = resolvedCat;
+
     this.state.driverName = profile.name;
     this.state.driverCategoria = profile.categoria;
-    this.state.driverGrupo = profile.grupo;
+    this.state.driverGrupo = profile.grupo || 'DISTRIBUCION-LIMA';
     this.state.driverPlaca = profile.placa;
     this.state.driverCelular = profile.celular || '';
 
