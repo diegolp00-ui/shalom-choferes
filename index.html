@@ -3482,17 +3482,17 @@ const app = {
       return;
     }
 
-    if (Number(kmVal) < minKm) {
+    if (Number(kmVal) <= minKm) {
       this.recordError(
-        'ERR_KM_LLEGADA_MENOR',
+        'ERR_KM_LLEGADA_MENOR_IGUAL',
         `Kilometraje de LLEGADA incoherente en ${esc.name}`,
-        `Ingresó ${kmVal} Km en LLEGADA a ${esc.name}, menor al kilometraje anterior (${minKm} Km).`,
+        `Ingresó ${kmVal} Km en LLEGADA a ${esc.name}, igual o menor al kilometraje del punto previo (${minKm} Km). Debe existir avance en el odómetro entre agencias.`,
         'GRAVE',
         `P07_${esc.name}`
       );
       this.showOperativeErrorModal(
         'Kilometraje Incoherente',
-        `El kilometraje de llegada (${kmVal} Km) no puede ser menor al último kilometraje registrado (${minKm} Km).`
+        `El kilometraje de llegada (${kmVal} Km) no puede ser igual ni menor al punto anterior (${minKm} Km). Debe registrar el kilometraje real de avance.`
       );
       return;
     }
