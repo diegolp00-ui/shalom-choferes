@@ -447,7 +447,7 @@ html, body {
       </div>
 
       <!-- Banner Asistente de Capacitación (Paso a Paso) -->
-      <div id="training-guide-banner" class="training-assistant-banner">
+      <div id="training-guide-banner" class="training-assistant-banner" style="display: none;">
         <div class="flex items-center space-x-2 truncate">
           <span class="step-pill">GUÍA</span>
           <span id="guia-step-text" class="truncate font-semibold text-[11px]">Ingresa con tu DNI (Usuario = DNI, Clave = DNI).</span>
@@ -495,15 +495,6 @@ html, body {
                 </div>
               </div>
 
-              <!-- Input Material Outlined: NOMBRE DEL CHOFER (Visible cuando ingresa un DNI distinto a 99999999) -->
-              <div id="box-login-driver-name" class="hidden relative border border-amber-300/90 rounded-xl px-3.5 py-2.5 bg-blue-950/30">
-                <label class="absolute -top-2 left-3 px-1.5 bg-[#31549e] text-[9px] font-bold text-amber-300 uppercase tracking-wider">NOMBRE COMPLETO DEL CHOFER</label>
-                <div class="flex items-center space-x-3">
-                  <i class="fa-solid fa-id-card text-amber-300 text-xs"></i>
-                  <input type="text" id="login-input-name" value="" class="w-full bg-transparent text-xs font-semibold uppercase outline-none text-white placeholder-blue-200/50" placeholder="APELLIDOS Y NOMBRES">
-                </div>
-              </div>
-
               <!-- Mensaje de error de login si falla -->
               <div id="login-error-msg" class="hidden bg-rose-600/90 border border-rose-300 text-white rounded-lg p-2 text-[10px] font-medium flex items-center space-x-2">
                 <i class="fa-solid fa-circle-exclamation text-sm shrink-0"></i>
@@ -516,17 +507,13 @@ html, body {
                 </button>
               </div>
 
-              <!-- Accesos rápidos para pruebas / demostración -->
+              <!-- Acceso rápido para demostración -->
               <div class="pt-2 flex flex-col items-center space-y-1.5 text-[10px] text-blue-100/90">
-                <span class="text-[9px] uppercase tracking-wider text-blue-200/80">Accesos rápidos de prueba:</span>
-                <div class="flex space-x-2">
-                  <button type="button" onclick="app.fillQuickLogin('41422665', 'EDWIN MELCHOR GALARZA AMARILLO')" class="px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white font-semibold border border-white/30 transition">
-                    Chofer Real (41422665)
-                  </button>
-                  <button type="button" onclick="app.fillQuickLogin('99999999', 'pruebashalom')" class="px-2.5 py-1 rounded-full bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 font-semibold border border-amber-300/40 transition">
-                    Modo Demo (99999999)
-                  </button>
-                </div>
+                <span class="text-[9px] uppercase tracking-wider text-blue-200/80">Acceso rápido de prueba:</span>
+                <button type="button" onclick="app.fillQuickLogin('99999999')" class="px-3.5 py-1.5 rounded-full bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 font-semibold border border-amber-300/40 transition flex items-center space-x-1.5 active:scale-95">
+                  <i class="fa-solid fa-user-gear text-[11px]"></i>
+                  <span>Modo Demo (99999999)</span>
+                </button>
               </div>
             </div>
           </div>
@@ -1401,14 +1388,12 @@ html, body {
           </header>
           <div class="scroll-area p-4 space-y-3 text-xs">
             <div class="bg-blue-50 border border-blue-200 rounded-xl p-3.5 space-y-2">
-              <h3 class="font-bold text-app-header text-xs uppercase">Reporte de Desempeño en el Simulador</h3>
-              <p class="text-[11px] text-slate-600">Revise los errores registrados durante su prueba práctica o abra el formulario oficial de capacitación.</p>
-              <div class="flex space-x-2 pt-1">
-                <button onclick="app.showScreen('PERFIL')" class="flex-1 py-2 bg-app-header text-white font-bold rounded-lg text-xs shadow">
-                  Ver Mi Perfil y Fallas
-                </button>
-                <button onclick="app.openEvaluacionModal()" class="flex-1 py-2 bg-amber-600 text-white font-bold rounded-lg text-xs shadow">
-                  Cuestionario Oficial
+              <h3 class="font-bold text-app-header text-xs uppercase">Evaluaciones de Capacitación</h3>
+              <p class="text-[11px] text-slate-600">Acceda a los cuestionarios de inducción y evaluación teórica del programa de choferes Shalom.</p>
+              <div class="pt-1">
+                <button onclick="app.openEvaluacionModal()" class="w-full py-2.5 bg-app-header text-white font-bold rounded-lg text-xs shadow flex items-center justify-center space-x-2">
+                  <i class="fa-solid fa-graduation-cap"></i>
+                  <span>Abrir Evaluación Oficial</span>
                 </button>
               </div>
             </div>
@@ -1444,9 +1429,6 @@ html, body {
           <p id="modal-error-op-msg" class="text-slate-700 text-xs font-medium leading-relaxed">
             No puede ingresar porque aun tiene una ESCALA en PROCESO
           </p>
-          <div class="bg-red-50 border border-red-200 rounded-lg p-2 text-[10px] text-red-700 font-semibold">
-            <i class="fa-solid fa-clipboard-list mr-1"></i> Esta acción ha sido registrada en su historial de evaluación.
-          </div>
           <button onclick="document.getElementById('modal-error-operacion').classList.add('hidden')" class="w-full py-2 bg-app-header text-white font-bold rounded-lg text-xs shadow">
             Entendido
           </button>
@@ -1961,7 +1943,7 @@ const app = {
     driverCelular: '',
     fotoTomada: false,
     fotoDataUrl: null,
-    modoGuiado: true,
+    modoGuiado: false,
     currentStepIdx: 1,
     cameraStream: null,
     profiles: {},
@@ -2082,7 +2064,6 @@ const app = {
   },
 
   recordError(code, title, detail, severity = 'GRAVE', screen = '') {
-    soundFx.alert();
     const dni = this.state.driverDni || '99999999';
     const profile = this.ensureProfile(dni, this.state.driverName);
     const penalty = severity === 'CRÍTICO' ? -25 : (severity === 'GRAVE' ? -15 : (severity === 'MEDIO' ? -10 : -5));
@@ -2142,6 +2123,7 @@ const app = {
   },
 
   showOperativeErrorModal(title, message) {
+    soundFx.alert();
     const tEl = document.getElementById('modal-error-op-title');
     const mEl = document.getElementById('modal-error-op-msg');
     if (tEl) tEl.innerText = title;
@@ -2163,42 +2145,22 @@ const app = {
   },
 
   onLoginDniInput(val) {
-    const clean = (val || '').trim();
     const errEl = document.getElementById('login-error-msg');
     if (errEl) errEl.classList.add('hidden');
-
-    const boxName = document.getElementById('box-login-driver-name');
-    const inputName = document.getElementById('login-input-name');
-    if (!boxName || !inputName) return;
-
-    if (clean.length >= 8 && clean !== '99999999') {
-      boxName.classList.remove('hidden');
-      const savedProfile = this.state.profiles[clean];
-      if (KNOWN_DRIVERS[clean]) {
-        inputName.value = KNOWN_DRIVERS[clean].name;
-      } else if (savedProfile && savedProfile.name) {
-        inputName.value = savedProfile.name;
-      }
-    } else {
-      boxName.classList.add('hidden');
-    }
   },
 
-  fillQuickLogin(dni, name) {
+  fillQuickLogin(dni) {
     soundFx.tap();
     const uEl = document.getElementById('login-input-user');
     const pEl = document.getElementById('login-input-pass');
-    const nEl = document.getElementById('login-input-name');
     if (uEl) uEl.value = dni;
     if (pEl) pEl.value = dni;
     this.onLoginDniInput(dni);
-    if (nEl && name) nEl.value = name;
   },
 
   loginSubmit() {
     const user = (document.getElementById('login-input-user')?.value || '').trim();
     const pass = (document.getElementById('login-input-pass')?.value || '').trim();
-    const customName = (document.getElementById('login-input-name')?.value || '').trim().toUpperCase();
     const errEl = document.getElementById('login-error-msg');
 
     if (!user || user.length < 8) {
@@ -2235,7 +2197,7 @@ const app = {
     const known = KNOWN_DRIVERS[user];
     const resolvedName = isDemo
       ? 'pruebashalom'
-      : (customName || (known && known.name) || (this.state.profiles[user]?.name) || `CONDUCTOR ${user}`);
+      : ((known && known.name) || (this.state.profiles[user]?.name) || `CONDUCTOR DNI ${user}`);
 
     const profile = this.ensureProfile(user, resolvedName);
     this.state.driverName = profile.name;
@@ -2486,6 +2448,14 @@ const app = {
   },
 
   updateGuiaPaso() {
+    const banner = document.getElementById('training-guide-banner');
+    if (!this.state.modoGuiado) {
+      document.querySelectorAll('.highlight-step').forEach(el => el.classList.remove('highlight-step'));
+      if (banner) banner.style.display = 'none';
+      return;
+    }
+    if (banner) banner.style.display = 'flex';
+
     const textEl = document.getElementById('guia-step-text');
     if (!textEl) return;
 
@@ -2503,7 +2473,7 @@ const app = {
       msg = 'Ingresa tu DNI en Usuario y tu mismo DNI en Contraseña, luego pulsa INGRESAR.';
       document.getElementById('btn-login-submit')?.classList.add('highlight-step');
     } else if (isVisible('view-p01')) {
-      msg = 'Selecciona "Programación" para operar tu ruta o "Perfil" para revisar tu evaluación.';
+      msg = 'Selecciona "Programación" para iniciar y operar tu ruta asignada.';
       document.getElementById('btn-to-programacion')?.classList.add('highlight-step');
     } else if (isVisible('view-p02')) {
       if (r.status === 'PENDIENTE') {
@@ -2562,7 +2532,7 @@ const app = {
         msg = 'Escala finalizada. Regresa con la flecha superior.';
       }
     } else if (isVisible('view-perfil')) {
-      msg = 'Aquí puedes auditar los datos del chofer y todos los errores registrados en su evaluación.';
+      msg = 'Aquí puedes consultar los datos del conductor y el vehículo asignado.';
     } else {
       msg = 'Módulo informativo oficial de Shalom Choferes.';
     }

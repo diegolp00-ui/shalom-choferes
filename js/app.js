@@ -160,7 +160,7 @@ const app = {
     driverCelular: '',
     fotoTomada: false,
     fotoDataUrl: null,
-    modoGuiado: true,
+    modoGuiado: false,
     currentStepIdx: 1,
     cameraStream: null,
     profiles: {},
@@ -281,7 +281,6 @@ const app = {
   },
 
   recordError(code, title, detail, severity = 'GRAVE', screen = '') {
-    soundFx.alert();
     const dni = this.state.driverDni || '99999999';
     const profile = this.ensureProfile(dni, this.state.driverName);
     const penalty = severity === 'CRÍTICO' ? -25 : (severity === 'GRAVE' ? -15 : (severity === 'MEDIO' ? -10 : -5));
@@ -341,6 +340,7 @@ const app = {
   },
 
   showOperativeErrorModal(title, message) {
+    soundFx.alert();
     const tEl = document.getElementById('modal-error-op-title');
     const mEl = document.getElementById('modal-error-op-msg');
     if (tEl) tEl.innerText = title;
@@ -362,42 +362,22 @@ const app = {
   },
 
   onLoginDniInput(val) {
-    const clean = (val || '').trim();
     const errEl = document.getElementById('login-error-msg');
     if (errEl) errEl.classList.add('hidden');
-
-    const boxName = document.getElementById('box-login-driver-name');
-    const inputName = document.getElementById('login-input-name');
-    if (!boxName || !inputName) return;
-
-    if (clean.length >= 8 && clean !== '99999999') {
-      boxName.classList.remove('hidden');
-      const savedProfile = this.state.profiles[clean];
-      if (KNOWN_DRIVERS[clean]) {
-        inputName.value = KNOWN_DRIVERS[clean].name;
-      } else if (savedProfile && savedProfile.name) {
-        inputName.value = savedProfile.name;
-      }
-    } else {
-      boxName.classList.add('hidden');
-    }
   },
 
-  fillQuickLogin(dni, name) {
+  fillQuickLogin(dni) {
     soundFx.tap();
     const uEl = document.getElementById('login-input-user');
     const pEl = document.getElementById('login-input-pass');
-    const nEl = document.getElementById('login-input-name');
     if (uEl) uEl.value = dni;
     if (pEl) pEl.value = dni;
     this.onLoginDniInput(dni);
-    if (nEl && name) nEl.value = name;
   },
 
   loginSubmit() {
     const user = (document.getElementById('login-input-user')?.value || '').trim();
     const pass = (document.getElementById('login-input-pass')?.value || '').trim();
-    const customName = (document.getElementById('login-input-name')?.value || '').trim().toUpperCase();
     const errEl = document.getElementById('login-error-msg');
 
     if (!user || user.length < 8) {
@@ -434,7 +414,7 @@ const app = {
     const known = KNOWN_DRIVERS[user];
     const resolvedName = isDemo
       ? 'pruebashalom'
-      : (customName || (known && known.name) || (this.state.profiles[user]?.name) || `CONDUCTOR ${user}`);
+      : ((known && known.name) || (this.state.profiles[user]?.name) || `CONDUCTOR DNI ${user}`);
 
     const profile = this.ensureProfile(user, resolvedName);
     this.state.driverName = profile.name;
@@ -685,6 +665,14 @@ const app = {
   },
 
   updateGuiaPaso() {
+    const banner = document.getElementById('training-guide-banner');
+    if (!this.state.modoGuiado) {
+      document.querySelectorAll('.highlight-step').forEach(el => el.classList.remove('highlight-step'));
+      if (banner) banner.style.display = 'none';
+      return;
+    }
+    if (banner) banner.style.display = 'flex';
+
     const textEl = document.getElementById('guia-step-text');
     if (!textEl) return;
 
@@ -702,7 +690,7 @@ const app = {
       msg = 'Ingresa tu DNI en Usuario y tu mismo DNI en Contraseña, luego pulsa INGRESAR.';
       document.getElementById('btn-login-submit')?.classList.add('highlight-step');
     } else if (isVisible('view-p01')) {
-      msg = 'Selecciona "Programación" para operar tu ruta o "Perfil" para revisar tu evaluación.';
+      msg = 'Selecciona "Programación" para iniciar y operar tu ruta asignada.';
       document.getElementById('btn-to-programacion')?.classList.add('highlight-step');
     } else if (isVisible('view-p02')) {
       if (r.status === 'PENDIENTE') {
@@ -761,7 +749,7 @@ const app = {
         msg = 'Escala finalizada. Regresa con la flecha superior.';
       }
     } else if (isVisible('view-perfil')) {
-      msg = 'Aquí puedes auditar los datos del chofer y todos los errores registrados en su evaluación.';
+      msg = 'Aquí puedes consultar los datos del conductor y el vehículo asignado.';
     } else {
       msg = 'Módulo informativo oficial de Shalom Choferes.';
     }
