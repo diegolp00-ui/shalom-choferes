@@ -1648,8 +1648,8 @@ html, body {
           </div>
 
           <div>
-            <label class="block text-[10px] font-bold text-blue-600 uppercase mb-1">PRECINTO</label>
-            <input type="text" id="input-p09-precinto" value="0094821" placeholder="N° de precinto" class="app-input w-full text-xs font-mono">
+            <label class="block text-[10px] font-bold text-blue-600 uppercase mb-1">PRECINTO <span class="text-[9px] font-normal text-slate-400 lowercase">(opcional)</span></label>
+            <input type="text" id="input-p09-precinto" value="" placeholder="N° de precinto (opcional)" class="app-input w-full text-xs font-mono">
           </div>
 
           <div class="grid grid-cols-2 gap-2">
@@ -3513,22 +3513,11 @@ const app = {
       return;
     }
 
-    if (!precVal) {
-      this.recordError(
-        'ERR_PRECINTO_VACIO',
-        `No ingresó número de PRECINTO al salir de ${esc.name}`,
-        `El conductor intentó registrar SALIDA de ${esc.name} dejando el campo PRECINTO en blanco.`,
-        'MEDIO',
-        `P07_${esc.name}`
-      );
-      this.showOperativeErrorModal('Precinto Requerido', 'Debe ingresar el número de PRECINTO antes de confirmar la salida.');
-      return;
-    }
-
+    // Requerimiento: Por el momento no deben registrar el precinto (no es obligatorio)
     document.getElementById('modal-p09')?.classList.add('hidden');
     const nowTime = this.getNowTimeStr(false);
     esc.km = Number(kmVal);
-    esc.precinto = precVal;
+    esc.precinto = precVal || '';
     esc.salida = { time: nowTime, km: Number(kmVal) };
     esc.status = 'COMPLETADO';
 

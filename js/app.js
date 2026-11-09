@@ -1730,22 +1730,11 @@ const app = {
       return;
     }
 
-    if (!precVal) {
-      this.recordError(
-        'ERR_PRECINTO_VACIO',
-        `No ingresó número de PRECINTO al salir de ${esc.name}`,
-        `El conductor intentó registrar SALIDA de ${esc.name} dejando el campo PRECINTO en blanco.`,
-        'MEDIO',
-        `P07_${esc.name}`
-      );
-      this.showOperativeErrorModal('Precinto Requerido', 'Debe ingresar el número de PRECINTO antes de confirmar la salida.');
-      return;
-    }
-
+    // Requerimiento: Por el momento no deben registrar el precinto (no es obligatorio)
     document.getElementById('modal-p09')?.classList.add('hidden');
     const nowTime = this.getNowTimeStr(false);
     esc.km = Number(kmVal);
-    esc.precinto = precVal;
+    esc.precinto = precVal || '';
     esc.salida = { time: nowTime, km: Number(kmVal) };
     esc.status = 'COMPLETADO';
 
