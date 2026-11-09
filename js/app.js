@@ -174,6 +174,7 @@ const app = {
     this.renderEscalasView();
     this.startClock();
     this.updateGuiaPaso();
+    this.flushPendingErrors();
 
     // Registrar Service Worker para PWA (offline)
     if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
@@ -303,11 +304,33 @@ const app = {
     profile.errors.unshift(errEntry);
     this.saveProfilesToStorage();
     this.updateTopErrorBadge();
+    this.enqueuePendingError(errEntry);
     this.sendErrorToGoogleSheets(errEntry);
   },
 
-  sendErrorToGoogleSheets(entry) {
-    const webhookUrl = localStorage.getItem('shalom_sheets_webhook_url');
+  DEFAULT_WEBHOOK_URL: '',
+
+  enqueuePendingError(entry) {
+    try {
+      const q = JSON.parse(localStorage.getItem('shalom_pending_sheet_errors') || '[]');
+      q.push(entry);
+      localStorage.setItem('shalom_pending_sheet_errors', JSON.stringify(q));
+    } catch (e) {}
+  },
+
+  flushPendingErrors() {
+    const webhookUrl = localStorage.getItem('shalom_sheets_webhook_url') || this.DEFAULT_WEBHOOK_URL;
+    if (!webhookUrl) return;
+    try {
+      const q = JSON.parse(localStorage.getItem('shalom_pending_sheet_errors') || '[]');
+      if (!q.length) return;
+      q.forEach(entry => this.sendErrorToGoogleSheets(entry, false));
+      localStorage.setItem('shalom_pending_sheet_errors', '[]');
+    } catch (e) {}
+  },
+
+  sendErrorToGoogleSheets(entry, canQueue = true) {
+    const webhookUrl = localStorage.getItem('shalom_sheets_webhook_url') || this.DEFAULT_WEBHOOK_URL;
     if (!webhookUrl) return;
     try {
       fetch(webhookUrl, {
@@ -324,15 +347,18 @@ const app = {
   },
 
   configureSheetsWebhook() {
-    const current = localStorage.getItem('shalom_sheets_webhook_url') || '';
+    const current = localStorage.getItem('shalom_sheets_webhook_url') || this.DEFAULT_WEBHOOK_URL || '';
+    const pendingCount = (JSON.parse(localStorage.getItem('shalom_pending_sheet_errors') || '[]')).length;
     const val = prompt(
-      'Ingrese la URL de la aplicación web de Google Apps Script (Webhook) para sincronizar errores en vivo al Google Sheet:\n\n(Deje en blanco si desea desactivar)',
+      `CONFIGURACIÓN DE GOOGLE SHEETS WEBHOOK\n\nEstado actual: ${current ? 'CONECTADO ✅' : 'SIN CONECTAR ⚠️'}\nErrores en cola pendientes: ${pendingCount}\n\nPegue la URL de la aplicación web de Google Apps Script (termina en /exec):\n(O deje en blanco para limpiar)`,
       current
     );
     if (val !== null) {
-      localStorage.setItem('shalom_sheets_webhook_url', val.trim());
-      if (val.trim()) {
-        alert('URL de Webhook conectada exitosamente.');
+      const clean = val.trim();
+      localStorage.setItem('shalom_sheets_webhook_url', clean);
+      if (clean) {
+        alert('URL de Webhook conectada exitosamente.\nSe sincronizarán los errores con la hoja de cálculo.');
+        this.flushPendingErrors();
       } else {
         alert('Webhook desactivado.');
       }
