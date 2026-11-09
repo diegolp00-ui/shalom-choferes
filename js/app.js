@@ -95,50 +95,80 @@ const soundFx = {
   }
 };
 
+const KNOWN_DRIVERS = {
+  '99999999': {
+    name: 'pruebashalom',
+    categoria: 'A3C',
+    grupo: 'CAPACITACION-SHALOM',
+    placa: 'CCY-904',
+    celular: '999888777'
+  },
+  '41422665': {
+    name: 'EDWIN MELCHOR GALARZA AMARILLO',
+    categoria: 'A2B',
+    grupo: 'SUCURSALES-HUACHIPA',
+    placa: 'BFS-863',
+    celular: '987654321'
+  }
+};
+
+function getFreshRoutes(isDemo) {
+  return {
+    IDA: {
+      title: 'IDA - HUACHIPA CO - LA MARINA - MAGDALENA AYACUCHO 2',
+      progNumber: '948836',
+      status: 'PENDIENTE',
+      kmInicio: isDemo ? 29726 : '',
+      kmFin: isDemo ? 29764 : '',
+      candados: isDemo ? 2 : '',
+      candadosFin: isDemo ? 2 : '',
+      evidenciaAdjuntada: false,
+      escalas: [
+        { name: 'HUACHIPA CO', isOrigin: true, isDest: false, status: 'PENDIENTE', km: isDemo ? 29726 : '', llegada: null, salida: null, precinto: isDemo ? '0094821' : '', embarcados: 97, grt: 95, llegadaPrev: '--:--', salidaPrev: '12:50' },
+        { name: 'MAGDALENA DEL MAR', isOrigin: false, isDest: false, status: 'PENDIENTE', km: isDemo ? 29762 : '', llegada: null, salida: null, precinto: isDemo ? '0094822' : '', embarcados: 0, grt: 0, llegadaPrev: '13:00', salidaPrev: '13:10' },
+        { name: 'AV. LA MARINA', isOrigin: false, isDest: true, status: 'PENDIENTE', km: isDemo ? 29764 : '', llegada: null, salida: null, precinto: '', embarcados: 0, grt: 0, llegadaPrev: '13:30', salidaPrev: '--:--' }
+      ]
+    },
+    RET: {
+      title: 'RET- LA MARINA - HUACHIPA 1',
+      progNumber: '948836',
+      status: 'BLOQUEADO',
+      kmInicio: isDemo ? 29764 : '',
+      kmFin: isDemo ? 29800 : '',
+      candados: isDemo ? 2 : '',
+      candadosFin: isDemo ? 2 : '',
+      evidenciaAdjuntada: false,
+      escalas: [
+        { name: 'AV. LA MARINA', isOrigin: true, isDest: false, status: 'PENDIENTE', km: isDemo ? 29764 : '', llegada: null, salida: null, precinto: isDemo ? '0094850' : '', embarcados: 370, grt: 368, llegadaPrev: '--:--', salidaPrev: '15:00' },
+        { name: 'HUACHIPA CO', isOrigin: false, isDest: true, status: 'PENDIENTE', km: isDemo ? 29800 : '', llegada: null, salida: null, precinto: '', embarcados: 0, grt: 0, llegadaPrev: '15:30', salidaPrev: '--:--' }
+      ]
+    }
+  };
+}
+
 const app = {
   state: {
+    isDemoMode: true,
     activeRouteKey: 'IDA',
     selectedEscalaIdx: 0,
     swipeTriggered: false,
     driverDni: '99999999',
     driverName: 'pruebashalom',
+    driverCategoria: 'A2B',
+    driverGrupo: 'SUCURSALES-HUACHIPA',
+    driverPlaca: 'BFS-863',
+    driverCelular: '',
     fotoTomada: false,
     fotoDataUrl: null,
     modoGuiado: true,
     currentStepIdx: 1,
     cameraStream: null,
-    routes: {
-      IDA: {
-        title: 'IDA - HUACHIPA CO - LA MARINA - MAGDALENA AYACUCHO 2',
-        progNumber: '948836',
-        status: 'PENDIENTE',
-        kmInicio: 29726,
-        kmFin: 29764,
-        candados: 2,
-        evidenciaAdjuntada: false,
-        escalas: [
-          { name: 'HUACHIPA CO', isOrigin: true, isDest: false, status: 'PENDIENTE', km: 29726, llegada: null, salida: null, embarcados: 97, grt: 95, llegadaPrev: '--:--', salidaPrev: '12:50' },
-          { name: 'MAGDALENA DEL MAR', isOrigin: false, isDest: false, status: 'PENDIENTE', km: 29762, llegada: null, salida: null, embarcados: 0, grt: 0, llegadaPrev: '13:00', salidaPrev: '13:10' },
-          { name: 'AV. LA MARINA', isOrigin: false, isDest: true, status: 'PENDIENTE', km: 29764, llegada: null, salida: null, embarcados: 0, grt: 0, llegadaPrev: '13:30', salidaPrev: '--:--' }
-        ]
-      },
-      RET: {
-        title: 'RET- LA MARINA - HUACHIPA 1',
-        progNumber: '948836',
-        status: 'BLOQUEADO',
-        kmInicio: 29764,
-        kmFin: 29800,
-        candados: 2,
-        evidenciaAdjuntada: false,
-        escalas: [
-          { name: 'AV. LA MARINA', isOrigin: true, isDest: false, status: 'PENDIENTE', km: 29764, llegada: null, salida: null, embarcados: 370, grt: 368, llegadaPrev: '--:--', salidaPrev: '15:00' },
-          { name: 'HUACHIPA CO', isOrigin: false, isDest: true, status: 'PENDIENTE', km: 29800, llegada: null, salida: null, embarcados: 0, grt: 0, llegadaPrev: '15:30', salidaPrev: '--:--' }
-        ]
-      }
-    }
+    profiles: {},
+    routes: getFreshRoutes(true)
   },
 
   init() {
+    this.loadProfilesFromStorage();
     this.bindEvents();
     this.initFontSize();
     this.renderEscalasView();
@@ -155,29 +185,468 @@ const app = {
     }
   },
 
+  getNowDateStr() {
+    if (this.state.isDemoMode) return '2026-06-19';
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  },
+
+  getNowTimeStr(withSeconds = true) {
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    const ss = String(d.getSeconds()).padStart(2, '0');
+    return withSeconds ? `${hh}:${min}:${ss}` : `${hh}:${min}`;
+  },
+
   startClock() {
     const updateTime = () => {
       const d = new Date();
-      const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const shortTime = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const clockEl = document.getElementById('top-clock');
-      if (clockEl) clockEl.innerText = timeStr;
+      if (clockEl) clockEl.innerText = shortTime;
+
+      const dateStr = this.getNowDateStr();
+      const fullTimeStr = this.state.isDemoMode ? '10:20:12' : this.getNowTimeStr(true);
+
+      document.querySelectorAll('.live-date-label').forEach(el => {
+        el.innerText = dateStr;
+      });
+      if (!this.state.isDemoMode) {
+        document.querySelectorAll('.live-time-label').forEach(el => {
+          el.innerText = fullTimeStr;
+        });
+        const r = this.state.routes[this.state.activeRouteKey];
+        if (r && r.status === 'PENDIENTE') {
+          const p04InFecha = document.getElementById('p04-inicio-fecha');
+          const p04InHora = document.getElementById('p04-inicio-hora');
+          if (p04InFecha) p04InFecha.innerText = dateStr;
+          if (p04InHora) p04InHora.innerText = fullTimeStr;
+        }
+        if (r && r.status !== 'COMPLETADO') {
+          const p04FinFecha = document.getElementById('p04-fin-fecha');
+          const p04FinHora = document.getElementById('p04-fin-hora');
+          if (p04FinFecha) p04FinFecha.innerText = dateStr;
+          if (p04FinHora) p04FinHora.innerText = fullTimeStr;
+        }
+      }
     };
     updateTime();
     setInterval(updateTime, 1000);
   },
 
+  // ================== GESTIÓN DE PERFILES Y AUDITORÍA DE ERRORES ==================
+  loadProfilesFromStorage() {
+    try {
+      const raw = localStorage.getItem('shalom_profiles_v1');
+      this.state.profiles = raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      this.state.profiles = {};
+    }
+  },
+
+  saveProfilesToStorage() {
+    try {
+      localStorage.setItem('shalom_profiles_v1', JSON.stringify(this.state.profiles));
+    } catch (e) {
+      console.warn('No se pudo guardar en localStorage:', e);
+    }
+  },
+
+  ensureProfile(dni, name) {
+    if (!this.state.profiles[dni]) {
+      const known = KNOWN_DRIVERS[dni] || {};
+      this.state.profiles[dni] = {
+        dni,
+        name: name || known.name || `CONDUCTOR DNI ${dni}`,
+        categoria: known.categoria || 'A3C',
+        grupo: known.grupo || 'SUCURSALES-HUACHIPA',
+        placa: known.placa || 'BFS-863',
+        celular: known.celular || '',
+        attempts: 1,
+        errors: [],
+        lastLogin: new Date().toISOString()
+      };
+    } else {
+      if (name && name !== `CONDUCTOR DNI ${dni}`) {
+        this.state.profiles[dni].name = name;
+      }
+      this.state.profiles[dni].lastLogin = new Date().toISOString();
+    }
+    this.saveProfilesToStorage();
+    return this.state.profiles[dni];
+  },
+
+  recordError(code, title, detail, severity = 'GRAVE', screen = '') {
+    soundFx.alert();
+    const dni = this.state.driverDni || '99999999';
+    const profile = this.ensureProfile(dni, this.state.driverName);
+    const errEntry = {
+      id: Date.now() + Math.random().toString(36).slice(2, 6),
+      code,
+      title,
+      detail,
+      severity,
+      screen: screen || this.state.activeRouteKey,
+      date: this.getNowDateStr(),
+      time: this.getNowTimeStr(true)
+    };
+    profile.errors.unshift(errEntry);
+    this.saveProfilesToStorage();
+    this.updateTopErrorBadge();
+  },
+
+  showOperativeErrorModal(title, message) {
+    const tEl = document.getElementById('modal-error-op-title');
+    const mEl = document.getElementById('modal-error-op-msg');
+    if (tEl) tEl.innerText = title;
+    if (mEl) mEl.innerText = message;
+    document.getElementById('modal-error-operacion')?.classList.remove('hidden');
+  },
+
+  updateTopErrorBadge() {
+    const dni = this.state.driverDni;
+    const profile = this.state.profiles[dni];
+    const count = profile && Array.isArray(profile.errors) ? profile.errors.length : 0;
+    const badge = document.getElementById('top-error-badge');
+    const countEl = document.getElementById('top-error-count');
+    if (countEl) countEl.innerText = count;
+    if (badge) {
+      badge.classList.remove('hidden');
+      badge.classList.add('flex');
+      if (count > 0) {
+        badge.className = 'flex items-center space-x-1 px-1.5 py-0.5 rounded bg-red-600/90 text-white border border-red-400 text-[9px] font-bold animate-pulse';
+      } else {
+        badge.className = 'flex items-center space-x-1 px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] font-bold';
+      }
+    }
+  },
+
+  onLoginDniInput(val) {
+    const clean = (val || '').trim();
+    const errEl = document.getElementById('login-error-msg');
+    if (errEl) errEl.classList.add('hidden');
+
+    const boxName = document.getElementById('box-login-driver-name');
+    const inputName = document.getElementById('login-input-name');
+    if (!boxName || !inputName) return;
+
+    if (clean.length >= 8 && clean !== '99999999') {
+      boxName.classList.remove('hidden');
+      const savedProfile = this.state.profiles[clean];
+      if (KNOWN_DRIVERS[clean]) {
+        inputName.value = KNOWN_DRIVERS[clean].name;
+      } else if (savedProfile && savedProfile.name) {
+        inputName.value = savedProfile.name;
+      }
+    } else {
+      boxName.classList.add('hidden');
+    }
+  },
+
+  fillQuickLogin(dni, name) {
+    soundFx.tap();
+    const uEl = document.getElementById('login-input-user');
+    const pEl = document.getElementById('login-input-pass');
+    const nEl = document.getElementById('login-input-name');
+    if (uEl) uEl.value = dni;
+    if (pEl) pEl.value = dni;
+    this.onLoginDniInput(dni);
+    if (nEl && name) nEl.value = name;
+  },
+
+  loginSubmit() {
+    const user = (document.getElementById('login-input-user')?.value || '').trim();
+    const pass = (document.getElementById('login-input-pass')?.value || '').trim();
+    const customName = (document.getElementById('login-input-name')?.value || '').trim().toUpperCase();
+    const errEl = document.getElementById('login-error-msg');
+
+    if (!user || user.length < 8) {
+      soundFx.alert();
+      if (errEl) {
+        errEl.innerText = 'Ingrese un número de DNI válido (mínimo 8 dígitos).';
+        errEl.classList.remove('hidden');
+      }
+      return;
+    }
+
+    if (user !== pass) {
+      if (errEl) {
+        errEl.innerText = 'Credenciales incorrectas: Su CONTRASEÑA debe ser exactamente igual a su DNI.';
+        errEl.classList.remove('hidden');
+      }
+      this.state.driverDni = user;
+      this.recordError(
+        'ERR_LOGIN_FALLIDO',
+        'Error de autenticación (DNI ≠ Contraseña)',
+        `El usuario ingresó el DNI ${user} pero la clave no coincidió con su DNI.`,
+        'LEVE',
+        'LOGIN'
+      );
+      return;
+    }
+
+    if (errEl) errEl.classList.add('hidden');
+
+    const isDemo = (user === '99999999');
+    this.state.isDemoMode = isDemo;
+    this.state.driverDni = user;
+
+    const known = KNOWN_DRIVERS[user];
+    const resolvedName = isDemo
+      ? 'pruebashalom'
+      : (customName || (known && known.name) || (this.state.profiles[user]?.name) || `CONDUCTOR ${user}`);
+
+    const profile = this.ensureProfile(user, resolvedName);
+    this.state.driverName = profile.name;
+    this.state.driverCategoria = profile.categoria;
+    this.state.driverGrupo = profile.grupo;
+    this.state.driverPlaca = profile.placa;
+    this.state.driverCelular = profile.celular || '';
+
+    // Reiniciar estado de rutas según el modo (Demo = valores predeterminados; Evaluación = campos vacíos)
+    this.state.activeRouteKey = 'IDA';
+    this.state.selectedEscalaIdx = 0;
+    this.state.routes = getFreshRoutes(isDemo);
+
+    this.syncDriverUI();
+    this.updateTopErrorBadge();
+
+    soundFx.success();
+    this.showScreen('P01');
+
+    // Mostrar popup oficial "Hola \n [NOMBRE COMPLETO]" (Frame 4 del video)
+    const holaNameEl = document.getElementById('modal-hola-name');
+    if (holaNameEl) holaNameEl.innerText = this.state.driverName;
+    document.getElementById('modal-hola')?.classList.remove('hidden');
+  },
+
+  closeModalHola() {
+    soundFx.tap();
+    document.getElementById('modal-hola')?.classList.add('hidden');
+  },
+
+  logout() {
+    soundFx.tap();
+    this.showScreen('LOGIN');
+  },
+
+  syncDriverUI() {
+    const dni = this.state.driverDni;
+    const name = this.state.driverName;
+    const placa = this.state.driverPlaca || 'BFS-863';
+    const isDemo = this.state.isDemoMode;
+    const dateStr = this.getNowDateStr();
+    const timeStr = isDemo ? '10:20:20' : this.getNowTimeStr(true);
+
+    // Subtítulo en Programación y vistas secundarias
+    const subTitle = document.getElementById('p02-driver-subtitle');
+    if (subTitle) subTitle.innerText = `${dni} - ${name} - Q${dni}`;
+
+    document.querySelectorAll('.driver-header-subtitle').forEach(el => {
+      el.innerText = `${dni} - ${name}`;
+    });
+
+    const pdfCond = document.getElementById('pdf-conductor-cell');
+    if (pdfCond) pdfCond.innerText = name;
+
+    // Tarjetas en P02
+    const p02IdaFecha = document.getElementById('p02-ida-fecha');
+    const p02RetFecha = document.getElementById('p02-ret-fecha');
+    const p02IdaPlaca = document.getElementById('p02-ida-placa');
+    const p02RetPlaca = document.getElementById('p02-ret-placa');
+
+    if (p02IdaFecha) p02IdaFecha.innerText = isDemo ? '2026-06-19 10:00:00' : `${dateStr} 10:00:00`;
+    if (p02RetFecha) p02RetFecha.innerText = isDemo ? '2026-06-19 12:50:06' : `${dateStr} 12:50:06`;
+    if (p02IdaPlaca) p02IdaPlaca.innerText = placa;
+    if (p02RetPlaca) p02RetPlaca.innerText = placa;
+
+    // Resetear badges de tarjetas en P02
+    const badgeIda = document.getElementById('badge-p02-ida');
+    if (badgeIda) {
+      badgeIda.innerText = 'PENDIENTE';
+      badgeIda.className = 'px-2 py-0.5 rounded text-[10px] font-black bg-app-fucsia text-white';
+    }
+    const badgeRet = document.getElementById('badge-p02-ret');
+    if (badgeRet) {
+      badgeRet.innerText = 'BLOQUEADO';
+      badgeRet.className = 'px-2 py-0.5 rounded text-[10px] font-black bg-slate-300 text-slate-600';
+    }
+    document.getElementById('card-p02-ret')?.classList.add('opacity-60');
+    document.getElementById('p02-ida-details-closed')?.classList.add('hidden');
+    document.getElementById('p02-ret-details-closed')?.classList.add('hidden');
+    const difIda = document.getElementById('lbl-p02-ida-difkm');
+    if (difIda) difIda.innerText = '0';
+    const difRet = document.getElementById('lbl-p02-ret-difkm');
+    if (difRet) difRet.innerText = '0';
+
+    // Datos de Chofer 1 en P04 (Inicio y Fin de Ruta)
+    const p04Dni = document.getElementById('p04-driver-dni');
+    const p04Name = document.getElementById('p04-driver-name');
+    const p04FinDni = document.getElementById('p04-fin-driver-dni');
+    const p04FinName = document.getElementById('p04-fin-driver-name');
+    if (p04Dni) p04Dni.innerText = dni;
+    if (p04Name) p04Name.innerText = name;
+    if (p04FinDni) p04FinDni.innerText = dni;
+    if (p04FinName) p04FinName.innerText = name;
+
+    // Fechas y horas en P04
+    const p04InFecha = document.getElementById('p04-inicio-fecha');
+    const p04InHora = document.getElementById('p04-inicio-hora');
+    const p04FinFecha = document.getElementById('p04-fin-fecha');
+    const p04FinHora = document.getElementById('p04-fin-hora');
+    if (p04InFecha) p04InFecha.innerText = dateStr;
+    if (p04InHora) p04InHora.innerText = timeStr;
+    if (p04FinFecha) p04FinFecha.innerText = dateStr;
+    if (p04FinHora) p04FinHora.innerText = isDemo ? '12:34:45' : timeStr;
+
+    const p04HeaderSub = document.getElementById('p04-header-sub');
+    if (p04HeaderSub) p04HeaderSub.innerText = `- ${placa} - ${dateStr} 10:00:00`;
+  },
+
+  renderPerfilView() {
+    const dni = this.state.driverDni;
+    const profile = this.ensureProfile(dni, this.state.driverName);
+
+    const modeBadge = document.getElementById('perfil-mode-badge');
+    if (modeBadge) {
+      if (this.state.isDemoMode) {
+        modeBadge.innerText = 'MODO DEMO (PREDETERMINADO)';
+        modeBadge.className = 'mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700';
+      } else {
+        modeBadge.innerText = 'MODO EVALUACIÓN ACTIVO';
+        modeBadge.className = 'mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800';
+      }
+    }
+
+    const setTxt = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.innerText = val;
+    };
+    setTxt('perfil-nombre', profile.name);
+    setTxt('perfil-alias', profile.dni);
+    setTxt('perfil-brevete', `Q${profile.dni}`);
+    setTxt('perfil-categoria', profile.categoria || 'A2B');
+    setTxt('perfil-grupo', profile.grupo || 'SUCURSALES-HUACHIPA');
+
+    const celInput = document.getElementById('perfil-celular');
+    if (celInput) celInput.value = profile.celular || '';
+
+    const errors = profile.errors || [];
+    const penalty = errors.reduce((acc, e) => {
+      if (e.severity === 'CRITICO') return acc + 25;
+      if (e.severity === 'GRAVE') return acc + 15;
+      if (e.severity === 'MEDIO') return acc + 10;
+      return acc + 5;
+    }, 0);
+    const score = Math.max(0, 100 - penalty);
+
+    const scoreBadge = document.getElementById('perfil-score-badge');
+    if (scoreBadge) {
+      scoreBadge.innerText = `${score} / 100 pts`;
+      if (score >= 85) {
+        scoreBadge.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-emerald-600 text-white';
+      } else if (score >= 60) {
+        scoreBadge.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-amber-500 text-white';
+      } else {
+        scoreBadge.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-red-600 text-white';
+      }
+    }
+
+    setTxt('perfil-stat-intentos', profile.attempts || 1);
+    setTxt('perfil-stat-errores', errors.length);
+
+    const rIda = this.state.routes.IDA;
+    const rRet = this.state.routes.RET;
+    let progTxt = 'PENDIENTE';
+    if (rIda.status === 'COMPLETADO' && rRet.status === 'COMPLETADO') progTxt = 'COMPLETADO';
+    else if (rIda.status !== 'PENDIENTE' || rRet.status === 'PROCESO') progTxt = 'EN CURSO';
+    setTxt('perfil-stat-progreso', progTxt);
+
+    const listEl = document.getElementById('perfil-error-list');
+    if (!listEl) return;
+
+    if (errors.length === 0) {
+      listEl.innerHTML = `
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center text-emerald-800 space-y-1">
+          <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
+          <div class="font-bold text-[11px]">Sin errores registrados en este perfil</div>
+          <p class="text-[10px] text-emerald-700">El conductor aún no ha cometido ninguna falta operativa en la simulación.</p>
+        </div>
+      `;
+    } else {
+      listEl.innerHTML = errors.map((err, i) => {
+        let badgeColor = 'bg-amber-100 text-amber-800 border-amber-300';
+        if (err.severity === 'CRITICO' || err.severity === 'GRAVE') {
+          badgeColor = 'bg-red-100 text-red-800 border-red-300';
+        }
+        return `
+          <div class="bg-white border border-slate-200 rounded-lg p-2.5 shadow-sm space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="px-1.5 py-0.5 rounded border text-[9px] font-black uppercase ${badgeColor}">
+                #${errors.length - i} &bull; ${err.severity}
+              </span>
+              <span class="text-[9px] font-mono text-slate-400">${err.date} ${err.time}</span>
+            </div>
+            <div class="font-bold text-slate-800 text-[11px]">${err.title}</div>
+            <p class="text-[10px] text-slate-600 leading-snug">${err.detail}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  },
+
+  reiniciarIntentoConductor() {
+    soundFx.tap();
+    const dni = this.state.driverDni;
+    const profile = this.ensureProfile(dni, this.state.driverName);
+    profile.attempts = (profile.attempts || 1) + 1;
+    this.saveProfilesToStorage();
+
+    this.state.activeRouteKey = 'IDA';
+    this.state.selectedEscalaIdx = 0;
+    this.state.routes = getFreshRoutes(this.state.isDemoMode);
+    this.syncDriverUI();
+    this.renderPerfilView();
+    this.openExitoModal('Se ha iniciado un nuevo intento con los campos en blanco para el conductor.', () => {
+      this.showScreen('P02');
+    });
+  },
+
+  limpiarErroresConductor() {
+    soundFx.tap();
+    const dni = this.state.driverDni;
+    const profile = this.ensureProfile(dni, this.state.driverName);
+    profile.errors = [];
+    profile.attempts = 1;
+    this.saveProfilesToStorage();
+    this.updateTopErrorBadge();
+    this.renderPerfilView();
+  },
+
   showScreen(screenId) {
     this.closeAllSwipes();
     soundFx.tap();
-    ['login', 'p01', 'p02', 'p04', 'p05', 'p07'].forEach(s => {
+    const allScreens = [
+      'login', 'p01', 'p02', 'p04', 'p05', 'p07',
+      'perfil', 'cargueros', 'pdf', 'cdtalleres', 'lavado', 'grifos', 'manifiesto', 'evaluaciones'
+    ];
+    allScreens.forEach(s => {
       const el = document.getElementById(`view-${s}`);
       if (el) el.classList.add('hidden');
     });
-    const target = document.getElementById(`view-${screenId.toLowerCase()}`);
+    const norm = screenId.toLowerCase();
+    if (norm === 'perfil') {
+      this.renderPerfilView();
+    }
+    const target = document.getElementById(`view-${norm}`);
     if (target) {
       target.classList.remove('hidden');
       target.classList.remove('slide-in-right');
-      void target.offsetWidth; // re-trigger animation
+      void target.offsetWidth;
       target.classList.add('slide-in-right');
     }
     this.closeDropdown();
@@ -194,18 +663,6 @@ const app = {
       passInput.type = 'password';
       eye.className = 'fa-solid fa-eye text-xs';
     }
-  },
-
-  loginSubmit() {
-    const user = document.getElementById('login-input-user').value.trim() || '99999999';
-    this.state.driverDni = user;
-    const subTitle = document.getElementById('p02-driver-subtitle');
-    if (subTitle) subTitle.innerText = `${user} - ${this.state.driverName} - Q${user}`;
-    const p04Dni = document.getElementById('p04-driver-dni');
-    if (p04Dni) p04Dni.innerText = user;
-
-    soundFx.success();
-    this.showScreen('P01');
   },
 
   showVideoModal() {
@@ -269,7 +726,6 @@ const app = {
     const textEl = document.getElementById('guia-step-text');
     if (!textEl) return;
 
-    // Quitar resaltados previos
     document.querySelectorAll('.highlight-step').forEach(el => el.classList.remove('highlight-step'));
 
     const r = this.state.routes[this.state.activeRouteKey];
@@ -281,10 +737,10 @@ const app = {
     };
 
     if (isVisible('view-login')) {
-      msg = 'Presiona INGRESAR con tus credenciales.';
+      msg = 'Ingresa tu DNI en Usuario y tu mismo DNI en Contraseña, luego pulsa INGRESAR.';
       document.getElementById('btn-login-submit')?.classList.add('highlight-step');
     } else if (isVisible('view-p01')) {
-      msg = 'Selecciona el módulo "PROGRAMACIÓN" para ver tu ruta.';
+      msg = 'Selecciona "Programación" para operar tu ruta o "Perfil" para revisar tu evaluación.';
       document.getElementById('btn-to-programacion')?.classList.add('highlight-step');
     } else if (isVisible('view-p02')) {
       if (r.status === 'PENDIENTE') {
@@ -296,12 +752,14 @@ const app = {
       }
     } else if (isVisible('view-p04')) {
       if (r.status === 'PENDIENTE') {
-        msg = 'Verifica kilometraje inicial y pulsa "GRABAR INICIO DE RUTA".';
+        msg = this.state.isDemoMode
+          ? 'Verifica kilometraje inicial y pulsa "GRABAR INICIO DE RUTA".'
+          : 'Escribe el KILOMETRAJE inicial y N° CANDADOS, luego pulsa "GRABAR INICIO DE RUTA".';
         document.getElementById('btn-p04-grabar-inicio')?.classList.add('highlight-step');
       } else {
         const allEscalasDone = r.escalas.every(e => e.status === 'COMPLETADO');
         if (allEscalasDone && r.status !== 'COMPLETADO') {
-          msg = 'Todas las escalas están completadas. Pulsa "GRABAR FINAL DE RUTA".';
+          msg = 'Todas las escalas están completadas. Ingresa KM Final y pulsa "GRABAR FINAL DE RUTA".';
           document.getElementById('btn-p04-grabar-fin')?.classList.add('highlight-step');
         } else if (r.status === 'COMPLETADO') {
           msg = 'Ruta finalizada. Regresa a programación con la flecha izquierda.';
@@ -340,6 +798,10 @@ const app = {
       } else {
         msg = 'Escala finalizada. Regresa con la flecha superior.';
       }
+    } else if (isVisible('view-perfil')) {
+      msg = 'Aquí puedes auditar los datos del chofer y todos los errores registrados en su evaluación.';
+    } else {
+      msg = 'Módulo informativo oficial de Shalom Choferes.';
     }
 
     textEl.innerText = msg;
@@ -362,7 +824,6 @@ const app = {
     });
     window.addEventListener('click', () => this.closeDropdown());
 
-    // Al tocar en cualquier lugar fuera de los botones de acción, cerrar las tarjetas abiertas y volver a su lugar
     document.addEventListener('pointerdown', (e) => {
       if (e.target.closest('.swipe-btns')) return;
       const hasOpen = document.querySelector('.swipe-row.open-programacion, .swipe-row.open-escalas');
@@ -383,6 +844,21 @@ const app = {
   goToHojaRuta() {
     this.closeDropdown();
     this.closeAllSwipes();
+    const r = this.state.routes[this.state.activeRouteKey];
+    if (r.status === 'PENDIENTE') {
+      this.recordError(
+        'ERR_HOJA_RUTA_SIN_INICIO',
+        'Intentó abrir Hoja de Ruta sin grabar Inicio de Ruta',
+        `El conductor intentó entrar a las escalas de ${this.state.activeRouteKey} antes de grabar el Inicio de Ruta (kilometraje y candados).`,
+        'GRAVE',
+        'P04_INICIO_RUTA'
+      );
+      this.showOperativeErrorModal(
+        'Inicio de Ruta Pendiente',
+        'Primero debe registrar el KILOMETRAJE, N° CANDADOS y presionar "GRABAR INICIO DE RUTA" antes de pasar a la Hoja de Ruta.'
+      );
+      return;
+    }
     document.getElementById('modal-p03')?.classList.add('hidden');
     document.getElementById('modal-confirm-inicio')?.classList.add('hidden');
     this.renderEscalasView();
@@ -418,7 +894,6 @@ const app = {
         const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
         const isOpen = row.classList.contains(cls);
 
-        // Deslizar hacia la izquierda para abrir
         if (diffX > 30) {
           if (!isOpen) {
             this.closeAllSwipes();
@@ -426,9 +901,7 @@ const app = {
             haptics.light();
           }
           this.state.swipeTriggered = true;
-        } 
-        // Deslizar hacia la derecha para volver a su lugar de inmediato
-        else if (diffX < -15) {
+        } else if (diffX < -15) {
           if (isOpen) {
             row.classList.remove(cls);
             haptics.light();
@@ -488,14 +961,12 @@ const app = {
     if (!card) return;
     const isOpen = card.classList.contains('open-programacion');
     if (isOpen) {
-      // Si ya está abierta, al tocarla vuelve de inmediato a su lugar original
       card.classList.remove('open-programacion');
       haptics.light();
       soundFx.tap();
       return;
     }
     if (this.state.swipeTriggered) return;
-    // Si está cerrada, abre las opciones para que el chofer pueda presionar INGRESAR
     this.closeAllSwipes();
     card.classList.add('open-programacion');
     haptics.light();
@@ -510,14 +981,12 @@ const app = {
     const card = cards[idx];
     const isOpen = card.classList.contains('open-escalas');
     if (isOpen) {
-      // Si ya está abierta, al tocarla vuelve de inmediato a su lugar original
       card.classList.remove('open-escalas');
       haptics.light();
       soundFx.tap();
       return;
     }
     if (this.state.swipeTriggered) return;
-    // Si está cerrada, abre las opciones para que el chofer pueda presionar INGRESAR
     this.closeAllSwipes();
     card.classList.add('open-escalas');
     haptics.light();
@@ -528,8 +997,17 @@ const app = {
     this.closeAllSwipes();
     const r = this.state.routes[routeKey];
     if (r.status === 'BLOQUEADO') {
-      soundFx.alert();
-      alert('Debe completar la RUTA IDA para acceder al retorno (Lámina 62 de capacitación).');
+      this.recordError(
+        'ERR_RUTA_RETORNO_BLOQUEADA',
+        'Intentó ingresar a RUTA RETORNO sin cerrar RUTA IDA',
+        'El conductor intentó abrir la programación de RETORNO cuando la RUTA IDA aún no ha sido completada (Lámina 62).',
+        'GRAVE',
+        'P02_PROGRAMACION'
+      );
+      this.showOperativeErrorModal(
+        'Ruta Retorno Bloqueada',
+        'Debe completar y grabar el FINAL DE RUTA de la RUTA IDA para poder acceder al RETORNO (Lámina 62).'
+      );
       return;
     }
     soundFx.tap();
@@ -552,16 +1030,39 @@ const app = {
     this.showScreen('P04');
   },
 
+  enableEditKmInicio() {
+    soundFx.tap();
+    const kmIn = document.getElementById('input-p04-km-inicio');
+    if (kmIn) {
+      kmIn.disabled = false;
+      kmIn.focus();
+    }
+  },
+
+  enableEditKmFin() {
+    soundFx.tap();
+    const kmFin = document.getElementById('input-p04-km-fin');
+    if (kmFin) {
+      kmFin.disabled = false;
+      kmFin.focus();
+    }
+  },
+
   setupP04() {
     const r = this.state.routes[this.state.activeRouteKey];
     const hTitle = document.getElementById('p04-header-title');
     if (hTitle) {
       hTitle.innerText = this.state.activeRouteKey === 'IDA' ? 'IDA - HUACHIPA CO - LA MA...' : 'RET - LA MARINA - HUACHIPA 1';
     }
+    const hSub = document.getElementById('p04-header-sub');
+    if (hSub) {
+      hSub.innerText = `- ${this.state.driverPlaca || 'BFS-863'} - ${this.getNowDateStr()} 10:00:00`;
+    }
+
     const kmIn = document.getElementById('input-p04-km-inicio');
-    if (kmIn) kmIn.value = r.kmInicio;
+    if (kmIn) kmIn.value = r.kmInicio !== undefined && r.kmInicio !== null ? r.kmInicio : '';
     const canIn = document.getElementById('input-p04-candados-inicio');
-    if (canIn) canIn.value = r.candados;
+    if (canIn) canIn.value = r.candados !== undefined && r.candados !== null ? r.candados : '';
 
     const btnGrabarInicio = document.getElementById('btn-p04-grabar-inicio');
     const pencilInicio = document.getElementById('p04-pencil-inicio');
@@ -587,11 +1088,13 @@ const app = {
       boxFin?.classList.remove('opacity-50');
       if (kmFinInput) {
         kmFinInput.disabled = false;
-        kmFinInput.value = r.kmFin;
+        kmFinInput.value = r.kmFin !== undefined && r.kmFin !== null ? r.kmFin : '';
       }
-      if (candadosFinInput) candadosFinInput.disabled = false;
+      if (candadosFinInput) {
+        candadosFinInput.disabled = false;
+        candadosFinInput.value = r.candadosFin !== undefined && r.candadosFin !== null ? r.candadosFin : '';
+      }
       if (btnFin) {
-        btnFin.disabled = false;
         btnFin.classList.remove('bg-slate-400', 'cursor-not-allowed');
         btnFin.classList.add('bg-app-header', 'hover:bg-blue-900');
       }
@@ -599,16 +1102,23 @@ const app = {
     } else if (r.status === 'COMPLETADO') {
       boxFin?.classList.remove('opacity-50');
       pencilFin?.classList.remove('hidden');
-      if (btnFin) {
-        btnFin.classList.add('bg-slate-400', 'cursor-not-allowed');
-        btnFin.disabled = true;
-      }
-    } else {
-      boxFin?.classList.add('opacity-50');
       if (kmFinInput) kmFinInput.disabled = true;
       if (candadosFinInput) candadosFinInput.disabled = true;
       if (btnFin) {
-        btnFin.disabled = true;
+        btnFin.classList.add('bg-slate-400', 'cursor-not-allowed');
+      }
+    } else {
+      boxFin?.classList.add('opacity-50');
+      if (kmFinInput) {
+        kmFinInput.disabled = true;
+        kmFinInput.value = r.kmFin !== undefined && r.kmFin !== null ? r.kmFin : '';
+      }
+      if (candadosFinInput) {
+        candadosFinInput.disabled = true;
+        candadosFinInput.value = r.candadosFin !== undefined && r.candadosFin !== null ? r.candadosFin : '';
+      }
+      if (btnFin) {
+        btnFin.classList.remove('bg-app-header', 'hover:bg-blue-900');
         btnFin.classList.add('bg-slate-400');
       }
       pencilFin?.classList.add('hidden');
@@ -618,8 +1128,69 @@ const app = {
   },
 
   submitP04Inicio() {
-    soundFx.tap();
     const r = this.state.routes[this.state.activeRouteKey];
+    if (r.status !== 'PENDIENTE') return;
+
+    const kmVal = (document.getElementById('input-p04-km-inicio')?.value || '').trim();
+    const canVal = (document.getElementById('input-p04-candados-inicio')?.value || '').trim();
+
+    if (!kmVal || isNaN(Number(kmVal)) || Number(kmVal) <= 0) {
+      this.recordError(
+        'ERR_KM_INICIO_VACIO',
+        'Intentó grabar Inicio de Ruta sin Kilometraje válido',
+        `El conductor presionó GRABAR INICIO DE RUTA dejando el campo KILOMETRAJE vacío o en cero (${kmVal || 'vacío'}).`,
+        'MEDIO',
+        'P04_INICIO_RUTA'
+      );
+      this.showOperativeErrorModal(
+        'Kilometraje Requerido',
+        'Debe digitar el KILOMETRAJE inicial del odómetro antes de grabar el Inicio de Ruta.'
+      );
+      return;
+    }
+
+    if (canVal === '' || isNaN(Number(canVal)) || Number(canVal) < 0) {
+      this.recordError(
+        'ERR_CANDADOS_INICIO_VACIO',
+        'Intentó grabar Inicio de Ruta sin N° de Candados',
+        'El conductor presionó GRABAR INICIO DE RUTA sin registrar la cantidad de candados.',
+        'MEDIO',
+        'P04_INICIO_RUTA'
+      );
+      this.showOperativeErrorModal(
+        'N° de Candados Requerido',
+        'Debe indicar el N° DE CANDADOS colocados en la unidad antes de grabar el Inicio de Ruta.'
+      );
+      return;
+    }
+
+    // Si estamos en RETORNO, validar que el KM de inicio no sea menor al KM final de IDA
+    if (this.state.activeRouteKey === 'RET') {
+      const idaFinKm = Number(this.state.routes.IDA.kmFin) || 0;
+      if (idaFinKm > 0 && Number(kmVal) < idaFinKm) {
+        this.recordError(
+          'ERR_KM_INICIO_RET_INCOHERENTE',
+          'Kilometraje inicial de Retorno menor al final de Ida',
+          `Ingresó ${kmVal} Km en inicio de Retorno, el cual es menor al Km final de Ida (${idaFinKm} Km).`,
+          'GRAVE',
+          'P04_INICIO_RUTA'
+        );
+        this.showOperativeErrorModal(
+          'Kilometraje Incoherente',
+          `El kilometraje inicial de Retorno (${kmVal} Km) no puede ser menor al kilometraje con el que cerró la Ruta Ida (${idaFinKm} Km).`
+        );
+        return;
+      }
+    }
+
+    r.kmInicio = Number(kmVal);
+    r.candados = Number(canVal);
+    // En la primera escala (Origen), su KM base es el KM de inicio de ruta
+    if (r.escalas && r.escalas[0]) {
+      r.escalas[0].km = Number(kmVal);
+    }
+
+    soundFx.tap();
     const txt = document.getElementById('modal-confirm-inicio-txt');
     if (txt) txt.innerText = `Está seguro iniciar el proceso de INICIO DE RUTA ${r.title}`;
     document.getElementById('modal-confirm-inicio')?.classList.remove('hidden');
@@ -629,6 +1200,11 @@ const app = {
     document.getElementById('modal-confirm-inicio')?.classList.add('hidden');
     const r = this.state.routes[this.state.activeRouteKey];
     r.status = 'PROCESO';
+
+    const p04InFecha = document.getElementById('p04-inicio-fecha');
+    const p04InHora = document.getElementById('p04-inicio-hora');
+    if (p04InFecha) p04InFecha.innerText = this.getNowDateStr();
+    if (p04InHora) p04InHora.innerText = this.state.isDemoMode ? '10:20:20' : this.getNowTimeStr(true);
 
     if (this.state.activeRouteKey === 'IDA') {
       const badge = document.getElementById('badge-p02-ida');
@@ -677,6 +1253,7 @@ const app = {
 
       const thirdBtnTxt = esc.status === 'PROCESO' ? 'CANCELAR' : 'OMITIR';
       const thirdBtnIcon = esc.status === 'PROCESO' ? 'fa-xmark' : 'fa-ban';
+      const kmLabel = esc.km !== '' && esc.km !== null && esc.km !== undefined ? `${esc.km} Km` : '-- Km';
 
       card.innerHTML = `
         <div class="swipe-btns">
@@ -706,7 +1283,7 @@ const app = {
 
           <div class="text-[11px] font-mono font-bold text-slate-700 flex items-center space-x-1">
             <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-blue-600"></i>
-            <span>${esc.km} Km</span>
+            <span>${kmLabel}</span>
           </div>
 
           <div class="bg-slate-100 rounded-lg p-2 grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-700">
@@ -758,9 +1335,29 @@ const app = {
 
   actionEscalaClick(idx) {
     this.closeAllSwipes();
-    this.state.selectedEscalaIdx = idx;
     const r = this.state.routes[this.state.activeRouteKey];
     const esc = r.escalas[idx];
+
+    // Validación extraída del APK oficial (libapp.so):
+    // No puede iniciar o ingresar a una escala posterior si una escala previa sigue PENDIENTE o en PROCESO
+    for (let i = 0; i < idx; i++) {
+      if (r.escalas[i].status !== 'COMPLETADO') {
+        this.recordError(
+          'ERR_ORDEN_ESCALAS',
+          `Intentó ingresar a "${esc.name}" sin completar "${r.escalas[i].name}"`,
+          `Mensaje oficial de la app: "No puede ingresar porque aun tiene una ESCALA en PROCESO" (${r.escalas[i].name} está ${r.escalas[i].status}).`,
+          'GRAVE',
+          'P05_ESCALAS'
+        );
+        this.showOperativeErrorModal(
+          'Alerta de Escala',
+          `No puede ingresar porque aun tiene una ESCALA en PROCESO (${r.escalas[i].name}). Complete las escalas en orden secuencial.`
+        );
+        return;
+      }
+    }
+
+    this.state.selectedEscalaIdx = idx;
     soundFx.tap();
 
     if (esc.status === 'PENDIENTE') {
@@ -786,6 +1383,7 @@ const app = {
   setupP07() {
     const r = this.state.routes[this.state.activeRouteKey];
     const esc = r.escalas[this.state.selectedEscalaIdx];
+    const dateStr = this.getNowDateStr();
 
     const titleEl = document.getElementById('p07-title');
     if (titleEl) titleEl.innerText = `ESCALA: ${esc.name}`;
@@ -793,6 +1391,11 @@ const app = {
     if (subEl) subEl.innerText = `- ${r.title}`;
     const bultosEl = document.getElementById('p07-bultos-text');
     if (bultosEl) bultosEl.innerText = `${esc.embarcados} Paquetes ${esc.grt} Guias`;
+
+    const embFecha = document.getElementById('p07-embarque-fecha');
+    const desFecha = document.getElementById('p07-desembarque-fecha');
+    if (embFecha) embFecha.innerText = dateStr;
+    if (desFecha) desFecha.innerText = dateStr;
 
     const boxLlegada = document.getElementById('p07-btn-box-llegada');
     const boxSalida = document.getElementById('p07-btn-box-salida');
@@ -813,13 +1416,15 @@ const app = {
       boxEvidenciaStatus?.classList.add('hidden');
     }
 
+    const kmDisplay = (esc.km !== '' && esc.km !== null && esc.km !== undefined) ? `${esc.km}Km` : '-- Km';
+
     // LLEGADA
     if (esc.isOrigin) {
       if (boxLlegada) {
         boxLlegada.className = 'p-2.5 rounded-xl bg-slate-300 text-slate-500 cursor-not-allowed text-left flex flex-col justify-between h-20';
         boxLlegada.disabled = true;
       }
-      document.getElementById('p07-txt-llegada-fecha').innerText = '2026-06-19';
+      document.getElementById('p07-txt-llegada-fecha').innerText = dateStr;
       document.getElementById('p07-txt-llegada-hora').innerText = '--:--';
       document.getElementById('p07-txt-llegada-km').innerText = 'N/A';
     } else if (esc.llegada) {
@@ -827,17 +1432,17 @@ const app = {
         boxLlegada.className = 'p-2.5 rounded-xl bg-slate-300 text-slate-600 cursor-not-allowed text-left flex flex-col justify-between h-20 shadow-none';
         boxLlegada.disabled = true;
       }
-      document.getElementById('p07-txt-llegada-fecha').innerText = '2026-06-19';
+      document.getElementById('p07-txt-llegada-fecha').innerText = dateStr;
       document.getElementById('p07-txt-llegada-hora').innerText = esc.llegada.time;
-      document.getElementById('p07-txt-llegada-km').innerText = `${esc.km}Km`;
+      document.getElementById('p07-txt-llegada-km').innerText = `${esc.llegada.km || esc.km}Km`;
     } else {
       if (boxLlegada) {
         boxLlegada.className = 'p-2.5 rounded-xl bg-app-llegada text-white text-left shadow flex flex-col justify-between h-20 active:scale-95';
         boxLlegada.disabled = false;
       }
-      document.getElementById('p07-txt-llegada-fecha').innerText = '2026-06-19';
-      document.getElementById('p07-txt-llegada-hora').innerText = '12:01';
-      document.getElementById('p07-txt-llegada-km').innerText = `${esc.km}Km`;
+      document.getElementById('p07-txt-llegada-fecha').innerText = dateStr;
+      document.getElementById('p07-txt-llegada-hora').innerText = this.state.isDemoMode ? '12:01' : this.getNowTimeStr(false);
+      document.getElementById('p07-txt-llegada-km').innerText = kmDisplay;
     }
 
     // SALIDA Y BOTÓN DE CIERRE
@@ -846,7 +1451,7 @@ const app = {
         boxSalida.className = 'p-2.5 rounded-xl bg-slate-300 text-slate-500 cursor-not-allowed text-left flex flex-col justify-between h-20';
         boxSalida.disabled = true;
       }
-      document.getElementById('p07-txt-salida-fecha').innerText = '2026-06-19';
+      document.getElementById('p07-txt-salida-fecha').innerText = dateStr;
       document.getElementById('p07-txt-salida-hora').innerText = '--:--';
       document.getElementById('p07-txt-salida-km').innerText = 'N/A';
       if (esc.llegada && esc.status !== 'COMPLETADO') {
@@ -860,21 +1465,36 @@ const app = {
         boxSalida.disabled = true;
       }
       btnCierre?.classList.add('hidden');
-      document.getElementById('p07-txt-salida-fecha').innerText = '2026-06-19';
+      document.getElementById('p07-txt-salida-fecha').innerText = dateStr;
       document.getElementById('p07-txt-salida-hora').innerText = esc.salida.time;
-      document.getElementById('p07-txt-salida-km').innerText = `${esc.km}Km`;
+      document.getElementById('p07-txt-salida-km').innerText = `${esc.salida.km || esc.km}Km`;
     } else {
       if (boxSalida) {
         boxSalida.className = 'p-2.5 rounded-xl bg-app-fucsia text-white text-left shadow flex flex-col justify-between h-20 active:scale-95';
         boxSalida.disabled = false;
       }
       btnCierre?.classList.add('hidden');
-      document.getElementById('p07-txt-salida-fecha').innerText = '2026-06-19';
-      document.getElementById('p07-txt-salida-hora').innerText = '12:01';
-      document.getElementById('p07-txt-salida-km').innerText = `${esc.km}Km`;
+      document.getElementById('p07-txt-salida-fecha').innerText = dateStr;
+      document.getElementById('p07-txt-salida-hora').innerText = this.state.isDemoMode ? '12:01' : this.getNowTimeStr(false);
+      document.getElementById('p07-txt-salida-km').innerText = kmDisplay;
     }
 
     this.updateGuiaPaso();
+  },
+
+  getMinAllowedKmForEscala(idx, isSalida = false) {
+    const r = this.state.routes[this.state.activeRouteKey];
+    const esc = r.escalas[idx];
+    if (isSalida && esc.llegada && esc.llegada.km) {
+      return Number(esc.llegada.km);
+    }
+    if (idx > 0) {
+      const prev = r.escalas[idx - 1];
+      if (prev.salida && prev.salida.km) return Number(prev.salida.km);
+      if (prev.llegada && prev.llegada.km) return Number(prev.llegada.km);
+      if (prev.km) return Number(prev.km);
+    }
+    return Number(r.kmInicio) || 0;
   },
 
   handleLlegadaClick() {
@@ -885,8 +1505,12 @@ const app = {
     soundFx.tap();
     document.getElementById('modal-p08-title').innerText = `LLEGADA: ${esc.name}`;
     document.getElementById('modal-p08-sub').innerText = `Registre el proceso de LLEGADA: para - ${r.title}`;
-    document.getElementById('input-p08-km').value = esc.km;
-    document.getElementById('modal-p08-clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const kmInput = document.getElementById('input-p08-km');
+    if (kmInput) {
+      kmInput.value = this.state.isDemoMode ? esc.km : (esc.km || '');
+    }
+    document.getElementById('modal-p08-date').innerText = this.getNowDateStr();
+    document.getElementById('modal-p08-clock').innerText = this.getNowTimeStr(true);
     document.getElementById('modal-p08')?.classList.remove('hidden');
   },
 
@@ -895,18 +1519,48 @@ const app = {
     const esc = r.escalas[this.state.selectedEscalaIdx];
     if (esc.isDest || esc.salida) return;
 
-    // ALERTA DE EVIDENCIA EN PRIMERA SALIDA (CANVA PÁG 59)
+    // 1. ALERTA DE EVIDENCIA EN PRIMERA SALIDA (CANVA PÁG 59)
     if (esc.isOrigin && !r.evidenciaAdjuntada) {
-      soundFx.alert();
+      this.recordError(
+        'ERR_FALTA_EVIDENCIA_ORIGEN',
+        `Intentó marcar SALIDA en ${esc.name} sin adjuntar evidencia fotográfica`,
+        'Lámina 59: En el punto de origen es obligatorio tomar y adjuntar la foto del precinto/candado antes de registrar la SALIDA.',
+        'CRITICO',
+        `P07_${esc.name}`
+      );
       document.getElementById('modal-alerta-evidencia')?.classList.remove('hidden');
+      return;
+    }
+
+    // 2. En escalas intermedias, no puede marcar SALIDA sin haber marcado LLEGADA primero
+    if (!esc.isOrigin && !esc.llegada) {
+      this.recordError(
+        'ERR_SALIDA_SIN_LLEGADA',
+        `Intentó marcar SALIDA en ${esc.name} sin registrar primero su LLEGADA`,
+        `El conductor presionó el botón SALIDA en la escala intermedia ${esc.name} cuando aún no había registrado la LLEGADA.`,
+        'GRAVE',
+        `P07_${esc.name}`
+      );
+      this.showOperativeErrorModal(
+        'Llegada Pendiente',
+        `Primero debe registrar su LLEGADA a la escala ${esc.name} antes de poder registrar la SALIDA.`
+      );
       return;
     }
 
     soundFx.tap();
     document.getElementById('modal-p09-title').innerText = `SALIDA: ${esc.name}`;
     document.getElementById('modal-p09-sub').innerText = r.title;
-    document.getElementById('input-p09-km').value = esc.km;
-    document.getElementById('modal-p09-clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const kmInput = document.getElementById('input-p09-km');
+    if (kmInput) {
+      kmInput.value = this.state.isDemoMode ? esc.km : (esc.llegada?.km || esc.km || '');
+    }
+    const precInput = document.getElementById('input-p09-precinto');
+    if (precInput) {
+      precInput.value = this.state.isDemoMode ? (esc.precinto || '0094821') : (esc.precinto || '');
+    }
+    document.getElementById('modal-p09-date').innerText = this.getNowDateStr();
+    document.getElementById('modal-p09-clock').innerText = this.getNowTimeStr(true);
     document.getElementById('modal-p09')?.classList.remove('hidden');
   },
 
@@ -937,7 +1591,6 @@ const app = {
     document.getElementById('modal-foto')?.classList.add('hidden');
   },
 
-  // Activar cámara real si el navegador y dispositivo la soportan
   async activarCamaraReal() {
     try {
       const constraints = {
@@ -1049,11 +1702,43 @@ const app = {
   },
 
   submitModalLlegada() {
-    document.getElementById('modal-p08')?.classList.add('hidden');
+    const idx = this.state.selectedEscalaIdx;
     const r = this.state.routes[this.state.activeRouteKey];
-    const esc = r.escalas[this.state.selectedEscalaIdx];
-    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    esc.llegada = { time: nowTime };
+    const esc = r.escalas[idx];
+    const kmVal = (document.getElementById('input-p08-km')?.value || '').trim();
+    const minKm = this.getMinAllowedKmForEscala(idx, false);
+
+    if (!kmVal || isNaN(Number(kmVal)) || Number(kmVal) <= 0) {
+      this.recordError(
+        'ERR_KM_LLEGADA_VACIO',
+        `Kilometraje de LLEGADA vacío en ${esc.name}`,
+        `El conductor intentó registrar LLEGADA en ${esc.name} sin digitar el kilometraje.`,
+        'MEDIO',
+        `P07_${esc.name}`
+      );
+      this.showOperativeErrorModal('Kilometraje Requerido', 'Debe ingresar el kilometraje actual de llegada.');
+      return;
+    }
+
+    if (Number(kmVal) < minKm) {
+      this.recordError(
+        'ERR_KM_LLEGADA_MENOR',
+        `Kilometraje de LLEGADA incoherente en ${esc.name}`,
+        `Ingresó ${kmVal} Km en LLEGADA a ${esc.name}, menor al kilometraje anterior (${minKm} Km).`,
+        'GRAVE',
+        `P07_${esc.name}`
+      );
+      this.showOperativeErrorModal(
+        'Kilometraje Incoherente',
+        `El kilometraje de llegada (${kmVal} Km) no puede ser menor al último kilometraje registrado (${minKm} Km).`
+      );
+      return;
+    }
+
+    document.getElementById('modal-p08')?.classList.add('hidden');
+    const nowTime = this.getNowTimeStr(false);
+    esc.km = Number(kmVal);
+    esc.llegada = { time: nowTime, km: Number(kmVal) };
 
     this.openExitoModal('Llegada registrada con exito!', () => {
       this.setupP07();
@@ -1061,11 +1746,57 @@ const app = {
   },
 
   submitModalSalida() {
-    document.getElementById('modal-p09')?.classList.add('hidden');
+    const idx = this.state.selectedEscalaIdx;
     const r = this.state.routes[this.state.activeRouteKey];
-    const esc = r.escalas[this.state.selectedEscalaIdx];
-    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    esc.salida = { time: nowTime };
+    const esc = r.escalas[idx];
+    const kmVal = (document.getElementById('input-p09-km')?.value || '').trim();
+    const precVal = (document.getElementById('input-p09-precinto')?.value || '').trim();
+    const minKm = this.getMinAllowedKmForEscala(idx, true);
+
+    if (!kmVal || isNaN(Number(kmVal)) || Number(kmVal) <= 0) {
+      this.recordError(
+        'ERR_KM_SALIDA_VACIO',
+        `Kilometraje de SALIDA vacío en ${esc.name}`,
+        `El conductor intentó registrar SALIDA en ${esc.name} sin digitar el kilometraje.`,
+        'MEDIO',
+        `P07_${esc.name}`
+      );
+      this.showOperativeErrorModal('Kilometraje Requerido', 'Debe ingresar el kilometraje de salida.');
+      return;
+    }
+
+    if (Number(kmVal) < minKm) {
+      this.recordError(
+        'ERR_KM_SALIDA_MENOR',
+        `Kilometraje de SALIDA menor al previo en ${esc.name}`,
+        `Ingresó ${kmVal} Km al salir de ${esc.name}, menor al kilometraje registrado previamente (${minKm} Km).`,
+        'GRAVE',
+        `P07_${esc.name}`
+      );
+      this.showOperativeErrorModal(
+        'Kilometraje Incoherente',
+        `El kilometraje de salida (${kmVal} Km) no puede ser menor al kilometraje de llegada/inicio (${minKm} Km).`
+      );
+      return;
+    }
+
+    if (!precVal) {
+      this.recordError(
+        'ERR_PRECINTO_VACIO',
+        `No ingresó número de PRECINTO al salir de ${esc.name}`,
+        `El conductor intentó registrar SALIDA de ${esc.name} dejando el campo PRECINTO en blanco.`,
+        'MEDIO',
+        `P07_${esc.name}`
+      );
+      this.showOperativeErrorModal('Precinto Requerido', 'Debe ingresar el número de PRECINTO antes de confirmar la salida.');
+      return;
+    }
+
+    document.getElementById('modal-p09')?.classList.add('hidden');
+    const nowTime = this.getNowTimeStr(false);
+    esc.km = Number(kmVal);
+    esc.precinto = precVal;
+    esc.salida = { time: nowTime, km: Number(kmVal) };
     esc.status = 'COMPLETADO';
 
     this.openExitoModal('Salida registrada con exito!', () => {
@@ -1102,8 +1833,74 @@ const app = {
   },
 
   submitP04Fin() {
-    soundFx.tap();
     const r = this.state.routes[this.state.activeRouteKey];
+    if (r.status === 'COMPLETADO') return;
+
+    const allEscalasDone = r.escalas.every(e => e.status === 'COMPLETADO');
+    if (!allEscalasDone) {
+      const pendingNames = r.escalas.filter(e => e.status !== 'COMPLETADO').map(e => e.name).join(', ');
+      this.recordError(
+        'ERR_CIERRE_PREMATURO',
+        'Intentó grabar Final de Ruta con escalas sin completar',
+        `Lámina 61: El conductor presionó GRABAR FINAL DE RUTA cuando aún faltaban completar las escalas: ${pendingNames}.`,
+        'GRAVE',
+        'P04_FIN_RUTA'
+      );
+      this.showOperativeErrorModal(
+        'Escalas Pendientes',
+        `No puede cerrar la ruta todavía. Primero debe completar todas las escalas en la Hoja de Ruta (${pendingNames}).`
+      );
+      return;
+    }
+
+    const kmFinVal = (document.getElementById('input-p04-km-fin')?.value || '').trim();
+    const canFinVal = (document.getElementById('input-p04-candados-fin')?.value || '').trim();
+    const lastEsc = r.escalas[r.escalas.length - 1];
+    const minFinKm = Number(lastEsc?.llegada?.km || lastEsc?.km || r.kmInicio || 0);
+
+    if (!kmFinVal || isNaN(Number(kmFinVal)) || Number(kmFinVal) <= 0) {
+      this.recordError(
+        'ERR_KM_FIN_VACIO',
+        'Intentó grabar Final de Ruta sin Kilometraje Final',
+        'El conductor presionó GRABAR FINAL DE RUTA dejando el campo KILOMETRAJE final en blanco.',
+        'MEDIO',
+        'P04_FIN_RUTA'
+      );
+      this.showOperativeErrorModal('Kilometraje Final Requerido', 'Debe ingresar el KILOMETRAJE final para cerrar la ruta.');
+      return;
+    }
+
+    if (Number(kmFinVal) < minFinKm) {
+      this.recordError(
+        'ERR_KM_FIN_MENOR',
+        'Kilometraje Final menor al kilometraje de las escalas',
+        `El conductor ingresó ${kmFinVal} Km en Fin de Ruta, menor al último kilometraje registrado en la ruta (${minFinKm} Km).`,
+        'GRAVE',
+        'P04_FIN_RUTA'
+      );
+      this.showOperativeErrorModal(
+        'Kilometraje Final Incoherente',
+        `El kilometraje final (${kmFinVal} Km) no puede ser menor al kilometraje de la última escala (${minFinKm} Km).`
+      );
+      return;
+    }
+
+    if (canFinVal === '' || isNaN(Number(canFinVal)) || Number(canFinVal) < 0) {
+      this.recordError(
+        'ERR_CANDADOS_FIN_VACIO',
+        'Intentó grabar Final de Ruta sin N° de Candados finales',
+        'El conductor presionó GRABAR FINAL DE RUTA dejando vacío el campo N° CANDADOS.',
+        'MEDIO',
+        'P04_FIN_RUTA'
+      );
+      this.showOperativeErrorModal('N° de Candados Requerido', 'Debe ingresar el N° DE CANDADOS finales antes de cerrar la ruta.');
+      return;
+    }
+
+    r.kmFin = Number(kmFinVal);
+    r.candadosFin = Number(canFinVal);
+
+    soundFx.tap();
     const txt = document.getElementById('modal-confirm-fin-txt');
     if (txt) txt.innerText = `Está seguro iniciar el proceso de FIN DE RUTA ${r.title}`;
     document.getElementById('modal-confirm-fin')?.classList.remove('hidden');
@@ -1128,18 +1925,27 @@ const app = {
     const r = this.state.routes[key];
     r.status = 'COMPLETADO';
 
+    const p04FinFecha = document.getElementById('p04-fin-fecha');
+    const p04FinHora = document.getElementById('p04-fin-hora');
+    if (p04FinFecha) p04FinFecha.innerText = this.getNowDateStr();
+    if (p04FinHora) p04FinHora.innerText = this.state.isDemoMode ? '12:34:45' : this.getNowTimeStr(true);
+
     document.getElementById('p04-pencil-fin')?.classList.remove('hidden');
     const btnFin = document.getElementById('btn-p04-grabar-fin');
     if (btnFin) {
       btnFin.classList.remove('bg-app-header', 'hover:bg-blue-900');
       btnFin.classList.add('bg-slate-400', 'cursor-not-allowed');
-      btnFin.disabled = true;
     }
+
+    const diff = Math.max(0, Number(r.kmFin) - Number(r.kmInicio));
 
     if (key === 'IDA') {
       // Desbloquear RETORNO (Lámina 62)
       const rRet = this.state.routes.RET;
       rRet.status = 'PENDIENTE';
+      if (this.state.isDemoMode) {
+        rRet.kmInicio = r.kmFin;
+      }
       const cardRet = document.getElementById('card-p02-ret');
       if (cardRet) cardRet.classList.remove('opacity-60');
 
@@ -1154,6 +1960,12 @@ const app = {
         badgeIda.innerText = 'COMPLETADO';
         badgeIda.className = 'px-2 py-0.5 rounded text-[10px] font-black bg-app-verde text-white';
       }
+      const kminEl = document.getElementById('lbl-p02-ida-kmin');
+      const kmfinEl = document.getElementById('lbl-p02-ida-kmfin');
+      const difClosedEl = document.getElementById('lbl-p02-ida-difkm-closed');
+      if (kminEl) kminEl.innerText = `${r.kmInicio} Km`;
+      if (kmfinEl) kmfinEl.innerText = `${r.kmFin} Km`;
+      if (difClosedEl) difClosedEl.innerText = `${diff}`;
       document.getElementById('p02-ida-details-closed')?.classList.remove('hidden');
     } else {
       const badgeRet = document.getElementById('badge-p02-ret');
@@ -1161,10 +1973,16 @@ const app = {
         badgeRet.innerText = 'COMPLETADO';
         badgeRet.className = 'px-2 py-0.5 rounded text-[10px] font-black bg-app-verde text-white';
       }
+      const kminEl = document.getElementById('lbl-p02-ret-kmin');
+      const kmfinEl = document.getElementById('lbl-p02-ret-kmfin');
+      const difClosedEl = document.getElementById('lbl-p02-ret-difkm-closed');
+      if (kminEl) kminEl.innerText = `${r.kmInicio} Km`;
+      if (kmfinEl) kmfinEl.innerText = `${r.kmFin} Km`;
+      if (difClosedEl) difClosedEl.innerText = `${diff}`;
       document.getElementById('p02-ret-details-closed')?.classList.remove('hidden');
     }
 
-    this.updateGuiaPaso();
+    this.setupP04();
   },
 
   openExitoModal(msg, callback) {
@@ -1187,8 +2005,8 @@ const app = {
 
   reset() {
     soundFx.alert();
-    if (confirm('¿Desea reiniciar la práctica de capacitación?')) {
-      window.location.reload();
+    if (confirm('¿Desea reiniciar el intento actual de la ruta? (El historial de errores del DNI se conservará en Perfil)')) {
+      this.reiniciarIntentoConductor();
     }
   }
 };

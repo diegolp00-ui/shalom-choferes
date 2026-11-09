@@ -2,18 +2,49 @@
    APP SHALOM CHOFERES - ESTILOS OPTIMIZADOS PARA MÓVIL Y DESKTOP
    ======================================================== */
 
+@font-face {
+  font-family: 'Inter';
+  src: url('assets/fonts/Inter-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('assets/fonts/Inter-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('assets/fonts/Inter-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('assets/fonts/Inter-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('assets/fonts/Inter-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
 :root {
-  --color-header: #284682;
-  --color-login-bg: #1e3a6e;
-  --color-btn-menu: #1E88E5;
-  --color-fucsia: #D81B60;
-  --color-verde: #4CAF50;
+  --color-header: #31549e;
+  --color-login-bg: #31549e;
+  --color-btn-menu: #2185d5;
+  --color-fucsia: #c51162;
+  --color-verde: #43a047;
   --color-ambar: #FB8C00;
   --color-llegada: #1E88E5;
-  --color-bg: #EDF1F7;
+  --color-bg: #F4F6F9;
   --color-dropdown: #0F2644;
-  --color-slate-tag: #455A64;
-  --color-cyan-tag: #00ACC1;
+  --color-slate-tag: #4f6d8a;
+  --color-cyan-tag: #00bcd4;
 
   /* Escala calibrada para legibilidad móvil perfecta sin desbordes */
   --font-scale: 1;

@@ -1,11 +1,18 @@
 // Service Worker para modo offline y PWA del Simulador Shalom Choferes
-const CACHE_NAME = 'shalom-choferes-v2';
+const CACHE_NAME = 'shalom-choferes-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/style.css',
   './js/app.js',
   './manifest.json',
+  './assets/logos/logo.png',
+  './assets/images/user-default.png',
+  './assets/fonts/Inter-Regular.ttf',
+  './assets/fonts/Inter-Medium.ttf',
+  './assets/fonts/Inter-SemiBold.ttf',
+  './assets/fonts/Inter-Bold.ttf',
+  './assets/fonts/Inter-ExtraBold.ttf',
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
@@ -31,7 +38,6 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Para navegación o documento HTML: Network-first con fallback a caché
   if (event.request.mode === 'navigate' || event.request.destination === 'document') {
     event.respondWith(
       fetch(event.request)
@@ -47,7 +53,6 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Para otros assets: Caché con actualización en segundo plano (Stale-While-Revalidate)
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       const fetchPromise = fetch(event.request).then(networkResponse => {
