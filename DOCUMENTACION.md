@@ -43,7 +43,7 @@ state: {
 En `js/app.js` dentro de `routes.IDA` o `routes.RET`:
 ```javascript
 IDA: {
-  title: 'IDA - HUACHIPA CO - LA MARINA - MAGDALENA AYACUCHO 2',
+  title: 'IDA - HUACHIPA CO - LA MARINA - MAGDALENA',
   progNumber: '948836',   // Número de programación
   kmInicio: 29726,        // Kilometraje inicial de salida
   kmFin: 29764,           // Kilometraje final esperado

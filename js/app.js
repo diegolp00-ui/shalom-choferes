@@ -792,7 +792,7 @@ const KNOWN_DRIVERS = {
 function getFreshRoutes(isDemo) {
   return {
     IDA: {
-      title: 'IDA - HUACHIPA CO - LA MARINA - MAGDALENA AYACUCHO 2',
+      title: 'IDA - HUACHIPA CO - LA MARINA - MAGDALENA',
       progNumber: '948836',
       status: 'PENDIENTE',
       kmInicio: isDemo ? 29726 : '',
