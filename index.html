@@ -2587,8 +2587,8 @@ function getFreshRoutes(isDemo) {
       candadosFin: isDemo ? 2 : '',
       evidenciaAdjuntada: false,
       escalas: [
-        { name: 'HUACHIPA CO', isOrigin: true, isDest: false, status: 'PENDIENTE', km: isDemo ? 29726 : '', llegada: null, salida: null, precinto: isDemo ? '0094821' : '', embarcados: 97, grt: 95, llegadaPrev: '--:--', salidaPrev: '12:50' },
-        { name: 'MAGDALENA DEL MAR', isOrigin: false, isDest: false, status: 'PENDIENTE', km: isDemo ? 29762 : '', llegada: null, salida: null, precinto: isDemo ? '0094822' : '', embarcados: 0, grt: 0, llegadaPrev: '13:00', salidaPrev: '13:10' },
+        { name: 'HUACHIPA CO', isOrigin: true, isDest: false, status: 'PENDIENTE', km: isDemo ? 29726 : '', llegada: null, salida: null, precinto: '2', embarcados: 97, grt: 95, llegadaPrev: '--:--', salidaPrev: '12:50' },
+        { name: 'MAGDALENA DEL MAR', isOrigin: false, isDest: false, status: 'PENDIENTE', km: isDemo ? 29762 : '', llegada: null, salida: null, precinto: '', embarcados: 0, grt: 0, llegadaPrev: '13:00', salidaPrev: '13:10' },
         { name: 'AV. LA MARINA', isOrigin: false, isDest: true, status: 'PENDIENTE', km: isDemo ? 29764 : '', llegada: null, salida: null, precinto: '', embarcados: 0, grt: 0, llegadaPrev: '13:30', salidaPrev: '--:--' }
       ]
     },
@@ -2602,7 +2602,7 @@ function getFreshRoutes(isDemo) {
       candadosFin: isDemo ? 2 : '',
       evidenciaAdjuntada: false,
       escalas: [
-        { name: 'AV. LA MARINA', isOrigin: true, isDest: false, status: 'PENDIENTE', km: isDemo ? 29764 : '', llegada: null, salida: null, precinto: isDemo ? '0094850' : '', embarcados: 370, grt: 368, llegadaPrev: '--:--', salidaPrev: '15:00' },
+        { name: 'AV. LA MARINA', isOrigin: true, isDest: false, status: 'PENDIENTE', km: isDemo ? 29764 : '', llegada: null, salida: null, precinto: '', embarcados: 370, grt: 368, llegadaPrev: '--:--', salidaPrev: '15:00' },
         { name: 'HUACHIPA CO', isOrigin: false, isDest: true, status: 'PENDIENTE', km: isDemo ? 29800 : '', llegada: null, salida: null, precinto: '', embarcados: 0, grt: 0, llegadaPrev: '15:30', salidaPrev: '--:--' }
       ]
     }
@@ -4057,7 +4057,13 @@ const app = {
     }
     const precInput = document.getElementById('input-p09-precinto');
     if (precInput) {
-      precInput.value = this.state.isDemoMode ? (esc.precinto || '0094821') : (esc.precinto || '');
+      if (esc.name === 'HUACHIPA CO') {
+        // En salida Huachipa CO solo debe ir el número 2
+        precInput.value = (esc.precinto !== undefined && esc.precinto !== '') ? esc.precinto : '2';
+      } else {
+        // En las salidas de las agencias o escalas ya no lleva precinto (se deja sin número)
+        precInput.value = esc.precinto || '';
+      }
     }
     document.getElementById('modal-p09-date').innerText = this.getNowDateStr();
     document.getElementById('modal-p09-clock').innerText = this.getNowTimeStr(true);
