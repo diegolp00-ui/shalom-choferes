@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 710 616" width="710" height="616">
+  <defs>
+    <filter id="btnShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.22"/>
+    </filter>
+    <filter id="logoShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Fondo Azul Shalom -->
+  <rect width="710" height="616" fill="#31549e"/>
+
+  <!-- version: 2.5.5 -->
+  <text x="115" y="118" fill="#ffffff" fill-opacity="0.95" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="500" letter-spacing="0.4">version: 2.5.5</text>
+
+  <!-- Logo SHALOM Oficial -->
+  <g transform="translate(125, 175) scale(0.605)" filter="url(#logoShadow)" fill="#ffffff">
+    <g transform="translate(-49, -380)">
+      
+    <!-- Swoosh under LOM -->
+    <path d="M435.06 468.22c101.79-17.68 217-18.75 314.83-.71-99.41-7.66-215.24-6.83-314.83.71z"/>
+    <!-- S, H, A, L -->
+    <path d="M49.12 450.54L57 437h68.77a22.16 22.16 0 0 0 4.88-.35 20.64 20.64 0 0 0 4-1.51 16.63 16.63 0 0 0 6.55-4.83 9 9 0 0 0 1-1.74 7.75 7.75 0 0 0 .52-4.75 2 2 0 0 0-1.9-1.56H73.83a5.79 5.79 0 0 1-4.55-2.18c-2.51-3.15-4.9-9.7 5.28-19.51 5.79-5.58 12.12-11 19.54-14.28 6.41-2.81 13.07-3.31 20-3.3h77.53l-5.62 12H157c-3.57 0-7.22-.08-10.82-.06a57.63 57.63 0 0 0-10.75.56 18.55 18.55 0 0 0-2.65.73c-5.27 1.89-14.63 5.76-17 10.09A2.4 2.4 0 0 0 118 410l45.29-.12a9.18 9.18 0 0 1 8.87 6.69c1.13 4 .6 9.76-5.67 16.87 0 0-17 17.81-35.09 17.14zM202.07 383.04l-33.08 67.52 46.34-.02 13.92-28.26h36.97l-14.2 28.26h27.86l32.14-67.5h-27.85l-12.19 26.92-37.23-.13 12.72-26.79zM397.87 383.08a8.79 8.79 0 0 0-1.06 0h-59.34l-49.29 67.5h47.15l13.26-19.42 25.31-.16-.27 19.55h25.85l4-58.93c.32-3.61-1.13-7.13-4.78-8.35a4.18 4.18 0 0 0-.83-.19zM375 419.15h-18.11L375 395zM436 383l-7.89 15.75c-4.43 8.83-9.2 17.58-13.35 26.55-2.39 5.18-3 11.57-.2 16.77 2.95 5.39 10 8.43 15.95 8.43h82l5.77-13.5h-17.15q-14.37 0-28.74.07h-4.14a10.43 10.43 0 0 1-7.31-2.94c-2.36-2.35-2.25-5.57-.92-8.44L480.91 383z"/>
+    <!-- O, M, and ® ring -->
+    <path d="M633.06 383H579c-35 1.21-50.76 42.19-50.76 42.19-9.51 21.7 12.32 25.31 12.32 25.31h54.24c19.56-1.47 30.67-9.37 30.67-9.37s11.25-7.9 20-30.81S633.06 383 633.06 383zm-18.22 36.88c-2.66 4.83-5.17 9.45-9.74 12.75-4.06 2.94-9 4.2-14 4.63-4.48.39-10.26 1-14.33-1.24-5.47-3-4.44-9.07-1.5-15.12s7.82-12.2 10-15.35c2.24-3.32 5-6.35 8.69-8a32.43 32.43 0 0 1 18.35-2c13.85 2.32 6.76 16.68 2.53 24.37zM636.14 450.54L669.53 383h41.61s8.39 3.28 9.64 12.09c0 0 11.43-11 21.79-12.09h41.61l-33 67.5h-28.26L744 410.9l-38.4 26.43s-7.5 5.18-11.6-1.43l-11.25-25.36-18.75 40zM801.28 390v.76a.29.29 0 0 0 0 .09 7.94 7.94 0 0 1-.25 1.61 8.2 8.2 0 0 1-8.71 6.07A7.78 7.78 0 0 1 790 398a8.05 8.05 0 0 1-3.89-3.28 8.31 8.31 0 0 1-1.21-3.71 7.79 7.79 0 0 1 .16-2.31 8.26 8.26 0 0 1 2.12-4 8 8 0 0 1 2.81-1.89 7.91 7.91 0 0 1 2.2-.56l.51-.05h.83c.36 0 .73.06 1.09.13a8.28 8.28 0 0 1 4.15 2.16 8.12 8.12 0 0 1 1.88 2.81 7.77 7.77 0 0 1 .58 2.37c.02.1.04.2.05.33zm-14.92.38a6.73 6.73 0 1 0 6.75-6.72 6.73 6.73 0 0 0-6.75 6.7z"/>
+    <!-- ® letter R -->
+    <path d="M791.68 391.55v3.14c0 .24-.1.35-.34.35h-1.15c-.21 0-.31-.11-.32-.32v-8.65a.76.76 0 0 1 0-.15.27.27 0 0 1 .25-.24h3.38a3.08 3.08 0 0 1 1.3.29 2.49 2.49 0 0 1 1.31 1.63 3.08 3.08 0 0 1-.29 2.48 2.33 2.33 0 0 1-1 .92l.12.23 1.79 3.26a.32.32 0 0 1 0 .37.25.25 0 0 1-.22.13h-1.41a.28.28 0 0 1-.26-.17l-1.46-2.75c-.09-.17-.18-.35-.28-.52a.08.08 0 0 0-.07-.05h-1.37zm0-4.23v2.57h1.06a5 5 0 0 0 .67 0 1 1 0 0 0 .92-.74 1.61 1.61 0 0 0 0-1 .92.92 0 0 0-.69-.68 2.32 2.32 0 0 0-.52-.07h-1.37z"/>
+
+    </g>
+  </g>
+
+  <!-- CAMPO 1: USUARIO -->
+  <g transform="translate(115, 290)">
+    <!-- Marco delineado -->
+    <rect x="0" y="0" width="480" height="68" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="1.3"/>
+    <!-- Recuadro para tapar borde de la etiqueta -->
+    <rect x="22" y="-10" width="94" height="20" fill="#31549e"/>
+    <!-- Etiqueta superior flotante -->
+    <text x="30" y="4" fill="#ffffff" fill-opacity="0.92" font-family="'Inter', -apple-system, sans-serif" font-size="12" font-weight="600" letter-spacing="1.2">USUARIO</text>
+    <!-- Icono Usuario FontAwesome -->
+    <g transform="translate(22, 22) scale(0.048)" fill="#ffffff">
+      <path d="M224 256A128 128 0 1 0 96 128a128 128 0 0 0 128 128zm89.6 32h-11.2a174.5 174.5 0 0 1-156.8 0h-11.2A134.4 134.4 0 0 0 0 422.4V464a48 48 0 0 0 48 48h352a48 48 0 0 0 48-48v-41.6A134.4 134.4 0 0 0 313.6 288z"/>
+    </g>
+    <!-- Placeholder Ingrese su DNI -->
+    <text x="58" y="42" fill="#bfdbfe" fill-opacity="0.65" font-family="'Inter', -apple-system, sans-serif" font-size="16" font-weight="500" letter-spacing="0.3">Ingrese su DNI</text>
+  </g>
+
+  <!-- CAMPO 2: CONTRASEÑA -->
+  <g transform="translate(115, 385)">
+    <!-- Marco delineado -->
+    <rect x="0" y="0" width="480" height="68" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="1.3"/>
+    <!-- Recuadro para tapar borde de la etiqueta -->
+    <rect x="22" y="-10" width="125" height="20" fill="#31549e"/>
+    <!-- Etiqueta superior flotante -->
+    <text x="30" y="4" fill="#ffffff" fill-opacity="0.92" font-family="'Inter', -apple-system, sans-serif" font-size="12" font-weight="600" letter-spacing="1.2">CONTRASEÑA</text>
+    <!-- Icono Candado FontAwesome -->
+    <g transform="translate(22, 22) scale(0.048)" fill="#ffffff">
+      <path d="M144 144v48h160v-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64v192c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64h16z"/>
+    </g>
+    <!-- Placeholder Su mismo DNI -->
+    <text x="58" y="42" fill="#bfdbfe" fill-opacity="0.65" font-family="'Inter', -apple-system, sans-serif" font-size="16" font-weight="500" letter-spacing="0.3">Su mismo DNI</text>
+    <!-- Icono Ojo FontAwesome -->
+    <g transform="translate(426, 24) scale(0.044)" fill="#ffffff" fill-opacity="0.9">
+      <path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM288 192a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
+    </g>
+  </g>
+
+  <!-- BOTÓN INGRESAR -->
+  <g transform="translate(115, 498)">
+    <rect x="0" y="0" width="480" height="66" rx="20" fill="#ffffff" filter="url(#btnShadow)"/>
+    <text x="240" y="41" text-anchor="middle" fill="#1e293b" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15.5" font-weight="700" letter-spacing="1.2">INGRESAR</text>
+  </g>
+</svg>
