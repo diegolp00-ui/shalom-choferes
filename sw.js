@@ -1,11 +1,12 @@
 // Service Worker para modo offline y PWA del Simulador Shalom Choferes
-const CACHE_NAME = 'shalom-choferes-v15';
+const CACHE_NAME = 'shalom-choferes-v16';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/style.css',
   './js/app.js',
   './manifest.json',
+  './assets/logos/logo.svg',
   './assets/logos/logo.png',
   './assets/images/user-default.png',
   './assets/fonts/Inter-Regular.ttf',
