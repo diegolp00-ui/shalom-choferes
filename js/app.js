@@ -1048,12 +1048,8 @@ const app = {
   },
 
   showOperativeErrorModal(title, message) {
-    soundFx.alert();
-    const tEl = document.getElementById('modal-error-op-title');
-    const mEl = document.getElementById('modal-error-op-msg');
-    if (tEl) tEl.innerText = title;
-    if (mEl) mEl.innerText = message;
-    document.getElementById('modal-error-operacion')?.classList.remove('hidden');
+    // Silenciado por requerimiento: los choferes no deben ver ninguna alerta de error en pantalla.
+    // Los errores se registran únicamente en segundo plano hacia Google Sheets.
   },
 
   updateTopErrorBadge() {
@@ -1567,11 +1563,6 @@ const app = {
         'GRAVE',
         'P04_INICIO_RUTA'
       );
-      this.showOperativeErrorModal(
-        'Inicio de Ruta Pendiente',
-        'Primero debe registrar el KILOMETRAJE, N° CANDADOS y presionar "GRABAR INICIO DE RUTA" antes de pasar a la Hoja de Ruta.'
-      );
-      return;
     }
     document.getElementById('modal-p03')?.classList.add('hidden');
     document.getElementById('modal-confirm-inicio')?.classList.add('hidden');
@@ -1718,11 +1709,7 @@ const app = {
         'GRAVE',
         'P02_PROGRAMACION'
       );
-      this.showOperativeErrorModal(
-        'Ruta Retorno Bloqueada',
-        'Debe completar y grabar el FINAL DE RUTA de la RUTA IDA para poder acceder al RETORNO (Lámina 62).'
-      );
-      return;
+      r.status = 'PENDIENTE';
     }
     soundFx.tap();
     this.state.activeRouteKey = routeKey;
@@ -1797,8 +1784,7 @@ const app = {
     const candadosFinInput = document.getElementById('input-p04-candados-fin');
     const pencilFin = document.getElementById('p04-pencil-fin');
 
-    const allEscalasDone = r.escalas.every(e => e.status === 'COMPLETADO');
-    if (allEscalasDone && r.status !== 'COMPLETADO') {
+    if (r.status !== 'COMPLETADO') {
       boxFin?.classList.remove('opacity-50');
       if (kmFinInput) {
         kmFinInput.disabled = false;
@@ -1813,7 +1799,7 @@ const app = {
         btnFin.classList.add('bg-app-header', 'hover:bg-blue-900');
       }
       pencilFin?.classList.add('hidden');
-    } else if (r.status === 'COMPLETADO') {
+    } else {
       boxFin?.classList.remove('opacity-50');
       pencilFin?.classList.remove('hidden');
       if (kmFinInput) kmFinInput.disabled = true;
@@ -1821,21 +1807,6 @@ const app = {
       if (btnFin) {
         btnFin.classList.add('bg-slate-400', 'cursor-not-allowed');
       }
-    } else {
-      boxFin?.classList.add('opacity-50');
-      if (kmFinInput) {
-        kmFinInput.disabled = true;
-        kmFinInput.value = r.kmFin !== undefined && r.kmFin !== null ? r.kmFin : '';
-      }
-      if (candadosFinInput) {
-        candadosFinInput.disabled = true;
-        candadosFinInput.value = r.candadosFin !== undefined && r.candadosFin !== null ? r.candadosFin : '';
-      }
-      if (btnFin) {
-        btnFin.classList.remove('bg-app-header', 'hover:bg-blue-900');
-        btnFin.classList.add('bg-slate-400');
-      }
-      pencilFin?.classList.add('hidden');
     }
 
     this.updateGuiaPaso();
@@ -1856,11 +1827,6 @@ const app = {
         'MEDIO',
         'P04_INICIO_RUTA'
       );
-      this.showOperativeErrorModal(
-        'Kilometraje Requerido',
-        'Debe digitar el KILOMETRAJE inicial del odómetro antes de grabar el Inicio de Ruta.'
-      );
-      return;
     }
 
     if (canVal === '' || isNaN(Number(canVal)) || Number(canVal) < 0) {
@@ -1871,17 +1837,12 @@ const app = {
         'MEDIO',
         'P04_INICIO_RUTA'
       );
-      this.showOperativeErrorModal(
-        'N° de Candados Requerido',
-        'Debe indicar el N° DE CANDADOS colocados en la unidad antes de grabar el Inicio de Ruta.'
-      );
-      return;
     }
 
     // Si estamos en RETORNO, validar que el KM de inicio no sea menor al KM final de IDA
     if (this.state.activeRouteKey === 'RET') {
       const idaFinKm = Number(this.state.routes.IDA.kmFin) || 0;
-      if (idaFinKm > 0 && Number(kmVal) < idaFinKm) {
+      if (idaFinKm > 0 && kmVal !== '' && Number(kmVal) > 0 && Number(kmVal) < idaFinKm) {
         this.recordError(
           'ERR_KM_INICIO_RET_INCOHERENTE',
           'Kilometraje inicial de Retorno menor al final de Ida',
@@ -1889,19 +1850,14 @@ const app = {
           'GRAVE',
           'P04_INICIO_RUTA'
         );
-        this.showOperativeErrorModal(
-          'Kilometraje Incoherente',
-          `El kilometraje inicial de Retorno (${kmVal} Km) no puede ser menor al kilometraje con el que cerró la Ruta Ida (${idaFinKm} Km).`
-        );
-        return;
       }
     }
 
-    r.kmInicio = Number(kmVal);
-    r.candados = Number(canVal);
+    r.kmInicio = (kmVal !== '' && !isNaN(Number(kmVal))) ? Number(kmVal) : '';
+    r.candados = (canVal !== '' && !isNaN(Number(canVal))) ? Number(canVal) : '';
     // En la primera escala (Origen), su KM base es el KM de inicio de ruta
-    if (r.escalas && r.escalas[0]) {
-      r.escalas[0].km = Number(kmVal);
+    if (r.escalas && r.escalas[0] && r.kmInicio !== '') {
+      r.escalas[0].km = r.kmInicio;
     }
 
     soundFx.tap();
@@ -2053,7 +2009,8 @@ const app = {
     const esc = r.escalas[idx];
 
     // Validación extraída del APK oficial (libapp.so):
-    // No puede iniciar o ingresar a una escala posterior si una escala previa sigue PENDIENTE o en PROCESO
+    // Validación extraída del APK oficial (libapp.so):
+    // Registra silenciosamente si intenta iniciar una escala posterior sin haber completado la anterior
     for (let i = 0; i < idx; i++) {
       if (r.escalas[i].status !== 'COMPLETADO') {
         this.recordError(
@@ -2063,11 +2020,7 @@ const app = {
           'GRAVE',
           'P05_ESCALAS'
         );
-        this.showOperativeErrorModal(
-          'Alerta de Escala',
-          `No puede ingresar porque aun tiene una ESCALA en PROCESO (${r.escalas[i].name}). Complete las escalas en orden secuencial.`
-        );
-        return;
+        break;
       }
     }
 
@@ -2168,7 +2121,7 @@ const app = {
       document.getElementById('p07-txt-salida-fecha').innerText = dateStr;
       document.getElementById('p07-txt-salida-hora').innerText = '--:--';
       document.getElementById('p07-txt-salida-km').innerText = 'N/A';
-      if (esc.llegada && esc.status !== 'COMPLETADO') {
+      if (esc.status !== 'COMPLETADO') {
         btnCierre?.classList.remove('hidden');
       } else {
         btnCierre?.classList.add('hidden');
@@ -2233,7 +2186,7 @@ const app = {
     const esc = r.escalas[this.state.selectedEscalaIdx];
     if (esc.isDest || esc.salida) return;
 
-    // 1. ALERTA DE EVIDENCIA EN PRIMERA SALIDA (CANVA PÁG 59)
+    // 1. VALIDACIÓN SILENCIOSA DE EVIDENCIA EN PRIMERA SALIDA (CANVA PÁG 59)
     if (esc.isOrigin && !r.evidenciaAdjuntada) {
       this.recordError(
         'ERR_FALTA_EVIDENCIA_ORIGEN',
@@ -2242,11 +2195,9 @@ const app = {
         'CRITICO',
         `P07_${esc.name}`
       );
-      document.getElementById('modal-alerta-evidencia')?.classList.remove('hidden');
-      return;
     }
 
-    // 2. En escalas intermedias, no puede marcar SALIDA sin haber marcado LLEGADA primero
+    // 2. En escalas intermedias, registra silenciosamente si marca SALIDA sin haber marcado LLEGADA primero
     if (!esc.isOrigin && !esc.llegada) {
       this.recordError(
         'ERR_SALIDA_SIN_LLEGADA',
@@ -2255,11 +2206,6 @@ const app = {
         'GRAVE',
         `P07_${esc.name}`
       );
-      this.showOperativeErrorModal(
-        'Llegada Pendiente',
-        `Primero debe registrar su LLEGADA a la escala ${esc.name} antes de poder registrar la SALIDA.`
-      );
-      return;
     }
 
     soundFx.tap();
@@ -2436,11 +2382,7 @@ const app = {
         'MEDIO',
         `P07_${esc.name}`
       );
-      this.showOperativeErrorModal('Kilometraje Requerido', 'Debe ingresar el kilometraje actual de llegada.');
-      return;
-    }
-
-    if (Number(kmVal) <= minKm) {
+    } else if (Number(kmVal) <= minKm) {
       this.recordError(
         'ERR_KM_LLEGADA_MENOR_IGUAL',
         `Kilometraje de LLEGADA incoherente en ${esc.name}`,
@@ -2448,17 +2390,13 @@ const app = {
         'GRAVE',
         `P07_${esc.name}`
       );
-      this.showOperativeErrorModal(
-        'Kilometraje Incoherente',
-        `El kilometraje de llegada (${kmVal} Km) no puede ser igual ni menor al punto anterior (${minKm} Km). Debe registrar el kilometraje real de avance.`
-      );
-      return;
     }
 
     document.getElementById('modal-p08')?.classList.add('hidden');
     const nowTime = this.getNowTimeStr(false);
-    esc.km = Number(kmVal);
-    esc.llegada = { time: nowTime, km: Number(kmVal) };
+    const parsedKm = (kmVal !== '' && !isNaN(Number(kmVal))) ? Number(kmVal) : '';
+    esc.km = parsedKm;
+    esc.llegada = { time: nowTime, km: parsedKm };
 
     this.openExitoModal('Llegada registrada con exito!', () => {
       this.setupP07();
@@ -2481,11 +2419,7 @@ const app = {
         'MEDIO',
         `P07_${esc.name}`
       );
-      this.showOperativeErrorModal('Kilometraje Requerido', 'Debe ingresar el kilometraje de salida.');
-      return;
-    }
-
-    if (Number(kmVal) < minKm) {
+    } else if (Number(kmVal) < minKm) {
       this.recordError(
         'ERR_KM_SALIDA_MENOR',
         `Kilometraje de SALIDA menor al previo en ${esc.name}`,
@@ -2493,19 +2427,15 @@ const app = {
         'GRAVE',
         `P07_${esc.name}`
       );
-      this.showOperativeErrorModal(
-        'Kilometraje Incoherente',
-        `El kilometraje de salida (${kmVal} Km) no puede ser menor al kilometraje de llegada/inicio (${minKm} Km).`
-      );
-      return;
     }
 
     // Requerimiento: Por el momento no deben registrar el precinto (no es obligatorio)
     document.getElementById('modal-p09')?.classList.add('hidden');
     const nowTime = this.getNowTimeStr(false);
-    esc.km = Number(kmVal);
+    const parsedKm = (kmVal !== '' && !isNaN(Number(kmVal))) ? Number(kmVal) : '';
+    esc.km = parsedKm;
     esc.precinto = precVal || '';
-    esc.salida = { time: nowTime, km: Number(kmVal) };
+    esc.salida = { time: nowTime, km: parsedKm };
     esc.status = 'COMPLETADO';
 
     this.openExitoModal('Salida registrada con exito!', () => {
@@ -2517,6 +2447,15 @@ const app = {
   submitCierreEscala() {
     const r = this.state.routes[this.state.activeRouteKey];
     const esc = r.escalas[this.state.selectedEscalaIdx];
+    if (!esc.llegada) {
+      this.recordError(
+        'ERR_CIERRE_SIN_LLEGADA',
+        `Intentó cerrar la escala destino ${esc.name} sin registrar primero su LLEGADA`,
+        `El conductor presionó CIERRE DE ESCALA en ${esc.name} sin haber registrado previamente su llegada.`,
+        'GRAVE',
+        `P07_${esc.name}`
+      );
+    }
     esc.status = 'COMPLETADO';
 
     this.openExitoModal('Primer Cierre: Escala finalizada con éxito.', () => {
@@ -2555,11 +2494,6 @@ const app = {
         'GRAVE',
         'P04_FIN_RUTA'
       );
-      this.showOperativeErrorModal(
-        'Escalas Pendientes',
-        `No puede cerrar la ruta todavía. Primero debe completar todas las escalas en la Hoja de Ruta (${pendingNames}).`
-      );
-      return;
     }
 
     const kmFinVal = (document.getElementById('input-p04-km-fin')?.value || '').trim();
@@ -2575,11 +2509,7 @@ const app = {
         'MEDIO',
         'P04_FIN_RUTA'
       );
-      this.showOperativeErrorModal('Kilometraje Final Requerido', 'Debe ingresar el KILOMETRAJE final para cerrar la ruta.');
-      return;
-    }
-
-    if (Number(kmFinVal) < minFinKm) {
+    } else if (Number(kmFinVal) < minFinKm) {
       this.recordError(
         'ERR_KM_FIN_MENOR',
         'Kilometraje Final menor al kilometraje de las escalas',
@@ -2587,11 +2517,6 @@ const app = {
         'GRAVE',
         'P04_FIN_RUTA'
       );
-      this.showOperativeErrorModal(
-        'Kilometraje Final Incoherente',
-        `El kilometraje final (${kmFinVal} Km) no puede ser menor al kilometraje de la última escala (${minFinKm} Km).`
-      );
-      return;
     }
 
     if (canFinVal === '' || isNaN(Number(canFinVal)) || Number(canFinVal) < 0) {
@@ -2602,12 +2527,10 @@ const app = {
         'MEDIO',
         'P04_FIN_RUTA'
       );
-      this.showOperativeErrorModal('N° de Candados Requerido', 'Debe ingresar el N° DE CANDADOS finales antes de cerrar la ruta.');
-      return;
     }
 
-    r.kmFin = Number(kmFinVal);
-    r.candadosFin = Number(canFinVal);
+    r.kmFin = (kmFinVal !== '' && !isNaN(Number(kmFinVal))) ? Number(kmFinVal) : '';
+    r.candadosFin = (canFinVal !== '' && !isNaN(Number(canFinVal))) ? Number(canFinVal) : '';
 
     soundFx.tap();
     const txt = document.getElementById('modal-confirm-fin-txt');
