@@ -341,3 +341,13 @@ html, body {
   0% { opacity: 0.95; }
   100% { opacity: 0; }
 }
+
+/* Bloqueo total de modales de alerta de errores para evaluación silenciosa */
+#modal-error-operacion,
+#modal-alerta-evidencia,
+#login-error-msg {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

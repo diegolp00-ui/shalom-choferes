@@ -853,9 +853,26 @@ const app = {
     this.updateGuiaPaso();
     this.flushPendingErrors();
 
-    // Registrar Service Worker para PWA (offline)
+    // Limpiar cachés antiguos y forzar recarga inmediata cuando se actualiza el Service Worker
+    if ('caches' in window) {
+      caches.keys().then(keys => {
+        keys.forEach(k => {
+          if (k !== 'shalom-choferes-v18') {
+            caches.delete(k);
+          }
+        });
+      });
+    }
+
     if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-      navigator.serviceWorker.register('./sw.js').then(reg => {
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
+      navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
         reg.update();
       }).catch(err => {
         console.log('SW no registrado:', err);
@@ -1096,20 +1113,12 @@ const app = {
     const errEl = document.getElementById('login-error-msg');
     const submitBtn = document.getElementById('btn-login-submit');
 
-    if (!user || user.length < 8) {
-      soundFx.alert();
-      if (errEl) {
-        errEl.innerText = 'Ingrese un número de DNI válido (mínimo 8 dígitos).';
-        errEl.classList.remove('hidden');
-      }
+    if (!user) {
+      document.getElementById('login-input-user')?.focus();
       return;
     }
 
     if (user !== pass) {
-      if (errEl) {
-        errEl.innerText = 'Credenciales incorrectas: Su CONTRASEÑA debe ser exactamente igual a su DNI.';
-        errEl.classList.remove('hidden');
-      }
       this.state.driverDni = user;
       this.recordError(
         'ERR_LOGIN_FALLIDO',
@@ -1118,7 +1127,6 @@ const app = {
         'LEVE',
         'LOGIN'
       );
-      return;
     }
 
     if (errEl) errEl.classList.add('hidden');
@@ -1931,11 +1939,11 @@ const app = {
             <i class="fa-solid fa-arrow-right text-sm"></i>
             <span>INGRESAR</span>
           </button>
-          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('Incidencia en ${esc.name}');" class="bg-indigo-800 text-white px-1 font-bold text-[9.5px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.tap(); app.closeAllSwipes();" class="bg-indigo-800 text-white px-1 font-bold text-[9.5px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid fa-triangle-exclamation text-sm"></i>
             <span>INCIDENCIA</span>
           </button>
-          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('${thirdBtnTxt} en ${esc.name}');" class="bg-red-600 text-white px-1 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.tap(); app.closeAllSwipes();" class="bg-red-600 text-white px-1 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid ${thirdBtnIcon} text-sm"></i>
             <span>${thirdBtnTxt}</span>
           </button>
@@ -2275,7 +2283,6 @@ const app = {
       }
     } catch (err) {
       console.warn('No se pudo acceder a la cámara:', err);
-      alert('No se pudo acceder a la cámara en este dispositivo. Usando foto simulada.');
       this.simularTomaFoto();
     }
   },

@@ -359,6 +359,16 @@ html, body {
   100% { opacity: 0; }
 }
 
+/* Bloqueo total de modales de alerta de errores para evaluación silenciosa */
+#modal-error-operacion,
+#modal-alerta-evidencia,
+#login-error-msg {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 </style>
 
   <script>
@@ -632,11 +642,11 @@ html, body {
                   <i class="fa-solid fa-arrow-right text-sm"></i>
                   <span>INGRESAR</span>
                 </button>
-                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes();" class="bg-app-btnMenu text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-dollar-sign text-sm"></i>
                   <span>GASTOS</span>
                 </button>
-                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Relevos: Informativo');" class="bg-blue-800 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes();" class="bg-blue-800 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-id-card text-sm"></i>
                   <span>RELEVOS</span>
                 </button>
@@ -687,11 +697,11 @@ html, body {
                   <i class="fa-solid fa-arrow-right text-sm"></i>
                   <span>INGRESAR</span>
                 </button>
-                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Gastos: Informativo');" class="bg-app-btnMenu text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes();" class="bg-app-btnMenu text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-dollar-sign text-sm"></i>
                   <span>GASTOS</span>
                 </button>
-                <button onclick="soundFx.tap(); app.closeAllSwipes(); alert('Relevos: Informativo');" class="bg-blue-800 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+                <button onclick="soundFx.tap(); app.closeAllSwipes();" class="bg-blue-800 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
                   <i class="fa-solid fa-id-card text-sm"></i>
                   <span>RELEVOS</span>
                 </button>
@@ -787,15 +797,15 @@ html, body {
               <i class="fa-solid fa-clipboard-list w-4"></i>
               <span>Hoja de ruta</span>
             </button>
-            <button onclick="alert('Gastos'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+            <button onclick="soundFx.tap(); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
               <i class="fa-solid fa-dollar-sign text-blue-300 w-4"></i>
               <span>Gastos</span>
             </button>
-            <button onclick="alert('Relevos'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+            <button onclick="soundFx.tap(); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
               <i class="fa-solid fa-id-card text-blue-300 w-4"></i>
               <span>Relevos</span>
             </button>
-            <button onclick="alert('Demora'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+            <button onclick="soundFx.tap(); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
               <i class="fa-solid fa-clock text-blue-300 w-4"></i>
               <span>Demora</span>
             </button>
@@ -803,15 +813,15 @@ html, body {
               <i class="fa-solid fa-file-signature text-blue-300 w-4"></i>
               <span>Evaluación</span>
             </button>
-            <button onclick="alert('Constancia'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+            <button onclick="soundFx.tap(); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
               <i class="fa-solid fa-certificate text-blue-300 w-4"></i>
               <span>Constancia</span>
             </button>
-            <button onclick="alert('Monitores'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+            <button onclick="soundFx.tap(); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
               <i class="fa-solid fa-truck text-blue-300 w-4"></i>
               <span>Monitores</span>
             </button>
-            <button onclick="alert('Documentación'); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
+            <button onclick="soundFx.tap(); app.closeDropdown();" class="w-full text-left px-3.5 py-2 hover:bg-white/10 flex items-center space-x-2.5">
               <i class="fa-solid fa-folder text-blue-300 w-4"></i>
               <span>Documentación</span>
             </button>
@@ -1142,7 +1152,7 @@ html, body {
                 <label class="block text-[10px] font-bold text-blue-600 uppercase">N° CELULAR</label>
                 <input type="text" id="perfil-celular" placeholder="999 999 999" class="app-input w-full text-xs font-mono">
               </div>
-              <button onclick="soundFx.tap(); alert('Función informativa en el simulador: La contraseña en modo evaluación es siempre igual al DNI del conductor.');" class="w-full py-2.5 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow uppercase">
+              <button onclick="soundFx.tap();" class="w-full py-2.5 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow uppercase">
                 CAMBIAR CONTRASEÑA
               </button>
             </div>
@@ -1214,7 +1224,7 @@ html, body {
                 <p class="driver-header-subtitle text-[10px] text-blue-200 truncate">41422665 - EDWIN MELCHOR GALARZA AMARILLO</p>
               </div>
             </div>
-            <button onclick="soundFx.success(); alert('PDF descargado correctamente.');" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10">
+            <button onclick="soundFx.success();" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10">
               <i class="fa-solid fa-download text-sm"></i>
             </button>
           </header>
@@ -1434,22 +1444,6 @@ html, body {
         </div>
       </div>
 
-      <!-- Modal Alerta Operativa Genérica (ej. ESCALA en PROCESO / KM inválido) -->
-      <div id="modal-error-operacion" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
-        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-3 text-xs text-center border-t-4 border-red-600">
-          <div class="w-11 h-11 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-lg font-bold">
-            <i class="fa-solid fa-circle-exclamation"></i>
-          </div>
-          <h3 id="modal-error-op-title" class="font-bold text-app-header text-sm">Alerta de Operación</h3>
-          <p id="modal-error-op-msg" class="text-slate-700 text-xs font-medium leading-relaxed">
-            No puede ingresar porque aun tiene una ESCALA en PROCESO
-          </p>
-          <button onclick="document.getElementById('modal-error-operacion').classList.add('hidden')" class="w-full py-2 bg-app-header text-white font-bold rounded-lg text-xs shadow">
-            Entendido
-          </button>
-        </div>
-      </div>
-
       <!-- Modal P03: Confirmación de inicio de ruta -->
       <div id="modal-p03" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
         <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-3 text-xs">
@@ -1517,30 +1511,6 @@ html, body {
             </button>
             <button onclick="app.confirmarInicioEscala()" class="px-4 py-2 bg-app-header hover:bg-blue-900 text-white font-bold rounded-lg text-xs shadow">
               Aceptar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal Alerta de Evidencia Obligatoria -->
-      <div id="modal-alerta-evidencia" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4 fade-in modal-backdrop">
-        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-5 space-y-3 text-xs text-center border-t-4 border-amber-500">
-          <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl font-bold">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-          </div>
-          <h3 class="font-bold text-app-header text-base">Alerta</h3>
-          <p class="text-slate-700 text-xs font-semibold leading-relaxed">
-            Debe adjuntar evidencia
-          </p>
-          <p class="text-[11px] text-slate-500">
-            Pulse en <b>ADJUNTAR EVIDENCIA</b> en la parte inferior, tome la foto y vuelva a marcar su <b>SALIDA</b>.
-          </p>
-          <div class="pt-2 flex space-x-2">
-            <button onclick="document.getElementById('modal-alerta-evidencia').classList.add('hidden')" class="flex-1 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs">
-              Entendido
-            </button>
-            <button onclick="app.irDirectoAdjuntarEvidencia()" class="flex-1 py-2 bg-app-header text-white font-bold rounded-lg text-xs shadow">
-              Tomar Foto
             </button>
           </div>
         </div>
@@ -2651,9 +2621,26 @@ const app = {
     this.updateGuiaPaso();
     this.flushPendingErrors();
 
-    // Registrar Service Worker para PWA (offline)
+    // Limpiar cachés antiguos y forzar recarga inmediata cuando se actualiza el Service Worker
+    if ('caches' in window) {
+      caches.keys().then(keys => {
+        keys.forEach(k => {
+          if (k !== 'shalom-choferes-v18') {
+            caches.delete(k);
+          }
+        });
+      });
+    }
+
     if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-      navigator.serviceWorker.register('./sw.js').then(reg => {
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
+      navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
         reg.update();
       }).catch(err => {
         console.log('SW no registrado:', err);
@@ -2894,20 +2881,12 @@ const app = {
     const errEl = document.getElementById('login-error-msg');
     const submitBtn = document.getElementById('btn-login-submit');
 
-    if (!user || user.length < 8) {
-      soundFx.alert();
-      if (errEl) {
-        errEl.innerText = 'Ingrese un número de DNI válido (mínimo 8 dígitos).';
-        errEl.classList.remove('hidden');
-      }
+    if (!user) {
+      document.getElementById('login-input-user')?.focus();
       return;
     }
 
     if (user !== pass) {
-      if (errEl) {
-        errEl.innerText = 'Credenciales incorrectas: Su CONTRASEÑA debe ser exactamente igual a su DNI.';
-        errEl.classList.remove('hidden');
-      }
       this.state.driverDni = user;
       this.recordError(
         'ERR_LOGIN_FALLIDO',
@@ -2916,7 +2895,6 @@ const app = {
         'LEVE',
         'LOGIN'
       );
-      return;
     }
 
     if (errEl) errEl.classList.add('hidden');
@@ -3729,11 +3707,11 @@ const app = {
             <i class="fa-solid fa-arrow-right text-sm"></i>
             <span>INGRESAR</span>
           </button>
-          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('Incidencia en ${esc.name}');" class="bg-indigo-800 text-white px-1 font-bold text-[9.5px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.tap(); app.closeAllSwipes();" class="bg-indigo-800 text-white px-1 font-bold text-[9.5px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid fa-triangle-exclamation text-sm"></i>
             <span>INCIDENCIA</span>
           </button>
-          <button onclick="soundFx.alert(); app.closeAllSwipes(); alert('${thirdBtnTxt} en ${esc.name}');" class="bg-red-600 text-white px-1 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="soundFx.tap(); app.closeAllSwipes();" class="bg-red-600 text-white px-1 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid ${thirdBtnIcon} text-sm"></i>
             <span>${thirdBtnTxt}</span>
           </button>
@@ -4073,7 +4051,6 @@ const app = {
       }
     } catch (err) {
       console.warn('No se pudo acceder a la cámara:', err);
-      alert('No se pudo acceder a la cámara en este dispositivo. Usando foto simulada.');
       this.simularTomaFoto();
     }
   },

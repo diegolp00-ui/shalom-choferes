@@ -1,5 +1,5 @@
 // Service Worker para modo offline y PWA del Simulador Shalom Choferes
-const CACHE_NAME = 'shalom-choferes-v17';
+const CACHE_NAME = 'shalom-choferes-v18';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -19,12 +19,12 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -33,38 +33,30 @@ self.addEventListener('activate', event => {
       return Promise.all(
         keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.mode === 'navigate' || event.request.destination === 'document') {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => caches.match('./index.html'))
-    );
+  // Ignorar peticiones POST o al Webhook de Google Apps Script
+  if (event.request.method !== 'GET' || event.request.url.includes('script.google.com')) {
     return;
   }
 
+  // Estrategia Network-First sin caché intermedio para tener siempre la última versión al instante
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      const fetchPromise = fetch(event.request).then(networkResponse => {
+    fetch(event.request, { cache: 'no-store' })
+      .then(networkResponse => {
         if (networkResponse && networkResponse.status === 200) {
           const clone = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return networkResponse;
-      }).catch(() => null);
-
-      return cachedResponse || fetchPromise;
-    })
+      })
+      .catch(() => {
+        return caches.match(event.request).then(cached => {
+          return cached || caches.match('./index.html');
+        });
+      })
   );
 });
