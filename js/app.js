@@ -857,7 +857,7 @@ const app = {
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'shalom-choferes-v21') {
+          if (k !== 'shalom-choferes-v22') {
             caches.delete(k);
           }
         });
@@ -1887,82 +1887,78 @@ const app = {
     if (!container) return;
     container.innerHTML = '';
     const sub = document.getElementById('p05-subtitle');
-    if (sub) sub.innerText = `- ${r.title}`;
-
-    const totalEmb = r.escalas.reduce((acc, cur) => acc + cur.embarcados, 0);
-    const totalGrt = r.escalas.reduce((acc, cur) => acc + cur.grt, 0);
-    const embEl = document.getElementById('p05-total-embarcados');
-    if (embEl) embEl.innerText = totalEmb || 413;
-    const grtEl = document.getElementById('p05-total-grt');
-    if (grtEl) grtEl.innerText = totalGrt || 395;
+    const placa = this.state.driverPlaca || 'BFS-863';
+    if (sub) sub.innerText = `${placa} - ${r.title}`;
 
     r.escalas.forEach((esc, idx) => {
       const card = document.createElement('div');
-      card.className = 'swipe-row escala-row rounded-xl shadow-sm border border-slate-300';
+      card.className = 'swipe-row escala-row rounded-md shadow-sm border border-slate-200 bg-white';
 
-      let badgeBg = 'bg-app-fucsia text-white';
+      let badgeBg = 'bg-[#E0226C] text-white';
       if (esc.status === 'PROCESO') badgeBg = 'bg-app-ambar text-white';
       if (esc.status === 'COMPLETADO') badgeBg = 'bg-app-verde text-white';
 
-      const kmLabel = esc.km !== '' && esc.km !== null && esc.km !== undefined ? `${esc.km} Km` : '-- Km';
+      const kmLabel = esc.km !== '' && esc.km !== null && esc.km !== undefined ? `${esc.km} Km` : '';
 
       card.innerHTML = `
         <div class="swipe-btns">
-          <button onclick="app.actionEscalaClick(${idx})" class="bg-app-verde hover:bg-green-600 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
+          <button onclick="app.actionEscalaClick(${idx})" class="bg-[#2196F3] hover:bg-[#1E88E5] text-white px-2 font-medium text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid fa-arrow-right text-sm"></i>
             <span>INGRESAR</span>
           </button>
         </div>
 
-        <div onclick="app.handleEscalaCardClick(event, ${idx})" class="swipe-body p-3 space-y-2 hover:bg-slate-50 active:bg-slate-100">
+        <div onclick="app.handleEscalaCardClick(event, ${idx})" class="swipe-body p-3.5 space-y-2.5 bg-white">
           <div class="flex justify-between items-start">
-            <span class="px-2 py-0.5 rounded bg-app-slateTag text-white text-[10px] font-bold">
+            <span class="px-2.5 py-1 rounded bg-[#5A7190] text-white text-[11px] font-normal uppercase tracking-wide">
               ${esc.name}
             </span>
-            <span class="px-2 py-0.5 rounded text-[10px] font-black ${badgeBg}">
+            <span class="px-2.5 py-1 rounded text-[10px] font-normal uppercase ${badgeBg}">
               ${esc.status}
             </span>
           </div>
 
-          <div class="text-[11px] font-mono font-bold text-slate-700 flex items-center space-x-1">
-            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-blue-600"></i>
-            <span>${kmLabel}</span>
+          <div class="text-[11px] font-bold text-slate-900 flex items-center space-x-1.5">
+            <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-900"></i>
+            ${kmLabel ? `<span class="font-mono">${kmLabel}</span>` : ''}
           </div>
 
-          <div class="bg-slate-100 rounded-lg p-2 grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-700">
+          <div class="bg-[#E2E3E5] rounded-2xl p-3 grid grid-cols-2 gap-y-2.5 gap-x-2 text-[10px]">
             <div>
-              <span class="text-blue-600 font-bold block text-[9px]">&rsaquo; LLEGADA ESTABLECIDA</span>
-              <span>${esc.llegadaPrev}</span>
+              <span class="text-[#1E88E5] font-normal block text-[10px]">&rsaquo; LLEGADA ESTABLECIDA</span>
+              <span class="text-slate-700 font-mono pl-2">${esc.llegadaPrev && esc.llegadaPrev !== '--:--' ? esc.llegadaPrev : ''}</span>
             </div>
             <div>
-              <span class="text-blue-600 font-bold block text-[9px]">&rsaquo; LLEGADA REAL</span>
-              <span>${esc.llegada ? esc.llegada.time : '--:--'}</span>
+              <span class="text-[#1E88E5] font-normal block text-[10px]">&rsaquo; LLEGADA REAL</span>
+              <span class="text-slate-700 font-mono pl-2">${esc.llegada ? esc.llegada.time : ''}</span>
             </div>
             <div>
-              <span class="text-blue-600 font-bold block text-[9px]">&rsaquo; SALIDA ESTABLECIDA</span>
-              <span>${esc.salidaPrev}</span>
+              <span class="text-[#1E88E5] font-normal block text-[10px]">&rsaquo; SALIDA ESTABLECIDA</span>
+              <span class="text-slate-700 font-mono pl-2">${esc.salidaPrev && esc.salidaPrev !== '--:--' ? esc.salidaPrev : ''}</span>
             </div>
             <div>
-              <span class="text-blue-600 font-bold block text-[9px]">&rsaquo; SALIDA REAL</span>
-              <span>${esc.salida ? esc.salida.time : '--:--'}</span>
+              <span class="text-[#1E88E5] font-normal block text-[10px]">&rsaquo; SALIDA REAL</span>
+              <span class="text-slate-700 font-mono pl-2">${esc.salida ? esc.salida.time : ''}</span>
             </div>
           </div>
 
-          <div class="flex justify-between text-[9px] text-slate-500 font-mono">
-            <span>T. ATENCIÓN ESTABLECIDA: 01:00 H</span>
+          <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] text-[#335DA5] pt-0.5">
+            <span>T. ATENCIÓN ESTABLECIDA: -</span>
+            <span>REAL: -</span>
+            <span>TRÁNSITO PROPUESTO: -</span>
             <span>REAL: -</span>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 text-center pt-0.5 font-mono">
+          <div class="grid grid-cols-2 gap-2 text-center pt-1">
             <div>
-              <span class="text-[9px] text-amber-600 font-bold block uppercase">CANT. EMBARCADOS:</span>
-              <div class="mt-0.5 py-0.5 px-3 bg-cyan-100/70 border border-cyan-200 rounded text-cyan-800 font-bold text-xs inline-block min-w-[32px]">
+              <span class="text-[10px] text-[#FB8C00] font-normal block uppercase">CANT. EMBARCADOS:</span>
+              <div class="mt-1 py-1 px-5 bg-[#C2E7EF] rounded-lg text-slate-700 font-normal text-xs inline-block min-w-[54px]">
                 ${esc.embarcados}
               </div>
             </div>
             <div>
-              <span class="text-[9px] text-amber-600 font-bold block uppercase">CANT. GRT EMITIDAS:</span>
-              <div class="mt-0.5 py-0.5 px-3 bg-cyan-100/70 border border-cyan-200 rounded text-cyan-800 font-bold text-xs inline-block min-w-[32px]">
+              <span class="text-[10px] text-[#FB8C00] font-normal block uppercase">CANT. GRT EMITIDAS:</span>
+              <div class="mt-1 py-1 px-5 bg-[#C2E7EF] rounded-lg text-slate-700 font-normal text-xs inline-block min-w-[54px]">
                 ${esc.grt}
               </div>
             </div>

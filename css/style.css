@@ -34,16 +34,16 @@
 }
 
 :root {
-  --color-header: #31549e;
+  --color-header: #335DA5;
   --color-login-bg: #31549e;
   --color-btn-menu: #2185d5;
-  --color-fucsia: #c51162;
+  --color-fucsia: #E0226C;
   --color-verde: #43a047;
   --color-ambar: #FB8C00;
-  --color-llegada: #1E88E5;
+  --color-llegada: #2196F3;
   --color-bg: #F4F6F9;
   --color-dropdown: #0F2644;
-  --color-slate-tag: #4f6d8a;
+  --color-slate-tag: #5A7190;
   --color-cyan-tag: #00bcd4;
 
   /* Escala calibrada para legibilidad móvil perfecta sin desbordes */
