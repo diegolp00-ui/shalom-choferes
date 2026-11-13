@@ -857,7 +857,7 @@ const app = {
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'shalom-choferes-v19') {
+          if (k !== 'shalom-choferes-v20') {
             caches.delete(k);
           }
         });
@@ -1904,8 +1904,6 @@ const app = {
       if (esc.status === 'PROCESO') badgeBg = 'bg-app-ambar text-white';
       if (esc.status === 'COMPLETADO') badgeBg = 'bg-app-verde text-white';
 
-      const thirdBtnTxt = esc.status === 'PROCESO' ? 'CANCELAR' : 'OMITIR';
-      const thirdBtnIcon = esc.status === 'PROCESO' ? 'fa-xmark' : 'fa-ban';
       const kmLabel = esc.km !== '' && esc.km !== null && esc.km !== undefined ? `${esc.km} Km` : '-- Km';
 
       card.innerHTML = `
@@ -1913,14 +1911,6 @@ const app = {
           <button onclick="app.actionEscalaClick(${idx})" class="bg-app-verde hover:bg-green-600 text-white px-2 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
             <i class="fa-solid fa-arrow-right text-sm"></i>
             <span>INGRESAR</span>
-          </button>
-          <button onclick="soundFx.tap(); app.closeAllSwipes();" class="bg-indigo-800 text-white px-1 font-bold text-[9.5px] flex flex-col items-center justify-center space-y-1">
-            <i class="fa-solid fa-triangle-exclamation text-sm"></i>
-            <span>INCIDENCIA</span>
-          </button>
-          <button onclick="soundFx.tap(); app.closeAllSwipes();" class="bg-red-600 text-white px-1 font-bold text-[10px] flex flex-col items-center justify-center space-y-1">
-            <i class="fa-solid ${thirdBtnIcon} text-sm"></i>
-            <span>${thirdBtnTxt}</span>
           </button>
         </div>
 
