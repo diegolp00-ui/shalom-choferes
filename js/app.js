@@ -795,29 +795,29 @@ function getFreshRoutes(isDemo) {
       title: 'IDA - HUACHIPA CO - LA MARINA - MAGDALENA',
       progNumber: '948836',
       status: 'PENDIENTE',
-      kmInicio: isDemo ? 29726 : '',
-      kmFin: isDemo ? 29764 : '',
-      candados: isDemo ? 2 : '',
-      candadosFin: isDemo ? 2 : '',
+      kmInicio: '',
+      kmFin: '',
+      candados: '',
+      candadosFin: '',
       evidenciaAdjuntada: false,
       escalas: [
-        { name: 'HUACHIPA CO', isOrigin: true, isDest: false, status: 'PENDIENTE', km: isDemo ? 29726 : '', llegada: null, salida: null, precinto: '2', embarcados: 97, grt: 95, llegadaPrev: '--:--', salidaPrev: '12:50' },
-        { name: 'MAGDALENA DEL MAR', isOrigin: false, isDest: false, status: 'PENDIENTE', km: isDemo ? 29762 : '', llegada: null, salida: null, precinto: '', embarcados: 0, grt: 0, llegadaPrev: '13:00', salidaPrev: '13:10' },
-        { name: 'AV. LA MARINA', isOrigin: false, isDest: true, status: 'PENDIENTE', km: isDemo ? 29764 : '', llegada: null, salida: null, precinto: '', embarcados: 0, grt: 0, llegadaPrev: '13:30', salidaPrev: '--:--' }
+        { name: 'HUACHIPA CO', isOrigin: true, isDest: false, status: 'PENDIENTE', km: '', llegada: null, salida: null, precinto: '2', embarcados: 97, grt: 95, llegadaPrev: '--:--', salidaPrev: '12:50' },
+        { name: 'MAGDALENA DEL MAR', isOrigin: false, isDest: false, status: 'PENDIENTE', km: '', llegada: null, salida: null, precinto: '', embarcados: 0, grt: 0, llegadaPrev: '13:00', salidaPrev: '13:10' },
+        { name: 'AV. LA MARINA', isOrigin: false, isDest: true, status: 'PENDIENTE', km: '', llegada: null, salida: null, precinto: '', embarcados: 0, grt: 0, llegadaPrev: '13:30', salidaPrev: '--:--' }
       ]
     },
     RET: {
       title: 'RET- LA MARINA - HUACHIPA 1',
       progNumber: '948836',
       status: 'BLOQUEADO',
-      kmInicio: isDemo ? 29764 : '',
-      kmFin: isDemo ? 29800 : '',
-      candados: isDemo ? 2 : '',
-      candadosFin: isDemo ? 2 : '',
+      kmInicio: '',
+      kmFin: '',
+      candados: '',
+      candadosFin: '',
       evidenciaAdjuntada: false,
       escalas: [
-        { name: 'AV. LA MARINA', isOrigin: true, isDest: false, status: 'PENDIENTE', km: isDemo ? 29764 : '', llegada: null, salida: null, precinto: '', embarcados: 370, grt: 368, llegadaPrev: '--:--', salidaPrev: '15:00' },
-        { name: 'HUACHIPA CO', isOrigin: false, isDest: true, status: 'PENDIENTE', km: isDemo ? 29800 : '', llegada: null, salida: null, precinto: '', embarcados: 0, grt: 0, llegadaPrev: '15:30', salidaPrev: '--:--' }
+        { name: 'AV. LA MARINA', isOrigin: true, isDest: false, status: 'PENDIENTE', km: '', llegada: null, salida: null, precinto: '', embarcados: 370, grt: 368, llegadaPrev: '--:--', salidaPrev: '15:00' },
+        { name: 'HUACHIPA CO', isOrigin: false, isDest: true, status: 'PENDIENTE', km: '', llegada: null, salida: null, precinto: '', embarcados: 0, grt: 0, llegadaPrev: '15:30', salidaPrev: '--:--' }
       ]
     }
   };
@@ -825,14 +825,14 @@ function getFreshRoutes(isDemo) {
 
 const app = {
   state: {
-    isDemoMode: true,
+    isDemoMode: false,
     activeRouteKey: 'IDA',
     selectedEscalaIdx: 0,
     swipeTriggered: false,
     driverDni: '99999999',
     driverName: 'pruebashalom',
-    driverCategoria: 'A2B',
-    driverGrupo: 'SUCURSALES-HUACHIPA',
+    driverCategoria: 'A3C',
+    driverGrupo: 'HUACHIPA CO',
     driverPlaca: 'BFS-863',
     driverCelular: '',
     fotoTomada: false,
@@ -841,7 +841,7 @@ const app = {
     currentStepIdx: 1,
     cameraStream: null,
     profiles: {},
-    routes: getFreshRoutes(true)
+    routes: getFreshRoutes(false)
   },
 
   init() {
@@ -857,7 +857,7 @@ const app = {
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'shalom-choferes-v20') {
+          if (k !== 'shalom-choferes-v21') {
             caches.delete(k);
           }
         });
@@ -1132,11 +1132,11 @@ const app = {
     if (errEl) errEl.classList.add('hidden');
 
     const isDemo = (user === '99999999');
-    this.state.isDemoMode = isDemo;
+    this.state.isDemoMode = false;
     this.state.driverDni = user;
 
-    // Asignar placa aleatoria de la flota Shalom en cada inicio de sesión (unidad no fija)
-    const assignedPlaca = isDemo ? 'CCY-904' : this.getRandomPlaca();
+    // Asignar placa aleatoria de la flota Shalom en cada inicio de sesión (incluyendo pruebashalom)
+    const assignedPlaca = this.getRandomPlaca();
 
     const known = KNOWN_DRIVERS[user];
     const cachedName = this.state.profiles[user]?.name;
