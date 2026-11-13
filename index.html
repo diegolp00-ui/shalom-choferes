@@ -629,11 +629,6 @@ html, body {
             </div>
           </header>
 
-          <div class="bg-blue-50/90 border-b border-blue-200 px-3 py-1.5 text-[10px] text-blue-900 font-medium flex items-center space-x-1.5 shrink-0">
-            <i class="fa-solid fa-arrows-left-right text-blue-600"></i>
-            <span>Desliza la tarjeta a la <b>IZQUIERDA</b> y presiona <b>INGRESAR</b>.</span>
-          </div>
-
           <div class="scroll-area p-3 space-y-3 pb-16">
             <!-- TARJETA RUTA IDA -->
             <div id="card-p02-ida" class="swipe-row rounded-xl shadow-sm border border-slate-300">
@@ -866,7 +861,7 @@ html, body {
                   <div>
                     <label class="block text-[10px] font-bold text-blue-600 uppercase">KILOMETRAJE</label>
                     <div class="flex items-center space-x-2">
-                      <input type="number" id="input-p04-km-inicio" value="29726" placeholder="Ej: 90583" class="app-input w-full text-xs font-mono">
+                      <input type="number" id="input-p04-km-inicio" value="29726" placeholder="" class="app-input w-full text-xs font-mono">
                       <button type="button" id="p04-pencil-inicio" onclick="app.enableEditKmInicio()" title="Editar kilometraje" class="hidden w-6 h-6 rounded bg-app-verde text-white flex items-center justify-center text-[10px] flex-shrink-0">
                         <i class="fa-solid fa-pencil"></i>
                       </button>
@@ -874,7 +869,7 @@ html, body {
                   </div>
                   <div>
                     <label class="block text-[10px] font-bold text-blue-600 uppercase">N° CANDADOS</label>
-                    <input type="number" id="input-p04-candados-inicio" value="2" placeholder="Ej: 2" class="app-input w-full text-xs font-mono">
+                    <input type="number" id="input-p04-candados-inicio" value="2" placeholder="" class="app-input w-full text-xs font-mono">
                   </div>
                 </div>
 
@@ -927,7 +922,7 @@ html, body {
                   <div>
                     <label class="block text-[10px] font-bold text-blue-600 uppercase">KILOMETRAJE</label>
                     <div class="flex items-center space-x-2">
-                      <input type="number" id="input-p04-km-fin" value="29764" placeholder="Ej: 90620" class="app-input w-full text-xs font-mono" disabled>
+                      <input type="number" id="input-p04-km-fin" value="29764" placeholder="" class="app-input w-full text-xs font-mono" disabled>
                       <button type="button" id="p04-pencil-fin" onclick="app.enableEditKmFin()" title="Editar kilometraje final" class="hidden w-6 h-6 rounded bg-app-verde text-white flex items-center justify-center text-[10px] flex-shrink-0">
                         <i class="fa-solid fa-pencil"></i>
                       </button>
@@ -935,7 +930,7 @@ html, body {
                   </div>
                   <div>
                     <label class="block text-[10px] font-bold text-blue-600 uppercase">N° CANDADOS</label>
-                    <input type="number" id="input-p04-candados-fin" value="2" placeholder="Ej: 2" class="app-input w-full text-xs font-mono" disabled>
+                    <input type="number" id="input-p04-candados-fin" value="2" placeholder="" class="app-input w-full text-xs font-mono" disabled>
                   </div>
                 </div>
 
@@ -976,11 +971,6 @@ html, body {
               <span class="text-[9px] uppercase font-bold block text-cyan-700">CANT. GRT EMITIDAS:</span>
               <span id="p05-total-grt" class="text-xs font-black px-2.5 py-0.5 rounded bg-cyan-100 border border-cyan-300 inline-block">395</span>
             </div>
-          </div>
-
-          <div class="bg-blue-50 border-b border-blue-200 px-3 py-1.5 text-[10px] text-blue-900 flex justify-between items-center shrink-0">
-            <span>Desliza la escala a la <b>IZQUIERDA</b> y presiona: <b>INGRESAR</b></span>
-            <i class="fa-solid fa-arrows-left-right text-xs text-blue-600"></i>
           </div>
 
           <div id="p05-escalas-list" class="scroll-area p-3 space-y-3 pb-24"></div>
@@ -1301,7 +1291,7 @@ html, body {
               </div>
               <div>
                 <label class="block text-[10px] font-bold text-blue-600 uppercase mb-1">Kilometraje Actual</label>
-                <input type="number" placeholder="Ej: 90603" class="app-input w-full text-xs font-mono">
+                <input type="number" placeholder="" class="app-input w-full text-xs font-mono">
               </div>
             </div>
             <div class="grid grid-cols-2 gap-3">
@@ -1589,7 +1579,7 @@ html, body {
           <div>
             <label class="block text-[10px] font-bold text-blue-600 uppercase mb-1">KILOMETRAJE</label>
             <div class="flex items-center space-x-2">
-              <input type="number" id="input-p08-km" placeholder="Ingrese Km actual" class="app-input w-full text-sm font-mono font-bold">
+              <input type="number" id="input-p08-km" placeholder="" class="app-input w-full text-sm font-mono font-bold">
               <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold">KM</span>
               <span class="w-7 h-7 rounded bg-app-verde text-white flex items-center justify-center text-xs flex-shrink-0">
                 <i class="fa-solid fa-pencil"></i>
@@ -1624,7 +1614,7 @@ html, body {
           <div>
             <label class="block text-[10px] font-bold text-blue-600 uppercase mb-1">KILOMETRAJE</label>
             <div class="flex items-center space-x-2">
-              <input type="number" id="input-p09-km" placeholder="Ingrese Km salida" class="app-input w-full text-sm font-mono font-bold">
+              <input type="number" id="input-p09-km" placeholder="" class="app-input w-full text-sm font-mono font-bold">
               <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold">KM</span>
               <span class="w-7 h-7 rounded bg-app-verde text-white flex items-center justify-center text-xs flex-shrink-0">
                 <i class="fa-solid fa-pencil"></i>
@@ -1634,7 +1624,7 @@ html, body {
 
           <div>
             <label class="block text-[10px] font-bold text-blue-600 uppercase mb-1">PRECINTO <span class="text-[9px] font-normal text-slate-400 lowercase">(opcional)</span></label>
-            <input type="text" id="input-p09-precinto" value="" placeholder="N° de precinto (opcional)" class="app-input w-full text-xs font-mono">
+            <input type="text" id="input-p09-precinto" value="" placeholder="" class="app-input w-full text-xs font-mono">
           </div>
 
           <div class="grid grid-cols-2 gap-2">
@@ -2625,7 +2615,7 @@ const app = {
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'shalom-choferes-v18') {
+          if (k !== 'shalom-choferes-v19') {
             caches.delete(k);
           }
         });
@@ -3414,64 +3404,39 @@ const app = {
         const diffX = startX - e.clientX;
         const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
 
-        if (diffX > 30) {
+        if (diffX > 25) {
           this.closeAllSwipes();
           row.classList.add(cls);
           isDown = false;
           this.state.swipeTriggered = true;
           haptics.light();
-          setTimeout(() => { this.state.swipeTriggered = false; }, 120);
         } else if (diffX < -15) {
           row.classList.remove(cls);
           isDown = false;
           this.state.swipeTriggered = true;
           haptics.light();
-          setTimeout(() => { this.state.swipeTriggered = false; }, 120);
         }
       });
 
       window.addEventListener('mouseup', () => {
         isDown = false;
+        if (this.state.swipeTriggered) {
+          setTimeout(() => { this.state.swipeTriggered = false; }, 150);
+        }
       });
     });
   },
 
   handleCardClick(event, routeKey) {
+    // Solo permitir abrir deslizando (swipe); al hacer clic simple no se abre la pestaña de ingreso
     if (event && event.target && event.target.closest('.swipe-btns')) return;
-    const card = document.getElementById(routeKey === 'IDA' ? 'card-p02-ida' : 'card-p02-ret');
-    if (!card) return;
-    const isOpen = card.classList.contains('open-programacion');
-    if (isOpen) {
-      card.classList.remove('open-programacion');
-      haptics.light();
-      soundFx.tap();
-      return;
-    }
     if (this.state.swipeTriggered) return;
-    this.closeAllSwipes();
-    card.classList.add('open-programacion');
-    haptics.light();
-    soundFx.tap();
   },
 
   handleEscalaCardClick(event, idx) {
+    // Solo permitir abrir deslizando (swipe); al hacer clic simple no se abre la pestaña de ingreso
     if (event && event.target && event.target.closest('.swipe-btns')) return;
-    const container = document.getElementById('p05-escalas-list');
-    const cards = container ? container.querySelectorAll('.swipe-row') : [];
-    if (!cards || !cards[idx]) return;
-    const card = cards[idx];
-    const isOpen = card.classList.contains('open-escalas');
-    if (isOpen) {
-      card.classList.remove('open-escalas');
-      haptics.light();
-      soundFx.tap();
-      return;
-    }
     if (this.state.swipeTriggered) return;
-    this.closeAllSwipes();
-    card.classList.add('open-escalas');
-    haptics.light();
-    soundFx.tap();
   },
 
   actionProgramacionIngresar(routeKey) {

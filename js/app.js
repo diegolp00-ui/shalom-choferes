@@ -857,7 +857,7 @@ const app = {
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'shalom-choferes-v18') {
+          if (k !== 'shalom-choferes-v19') {
             caches.delete(k);
           }
         });
@@ -1646,64 +1646,39 @@ const app = {
         const diffX = startX - e.clientX;
         const cls = row.classList.contains('escala-row') ? 'open-escalas' : 'open-programacion';
 
-        if (diffX > 30) {
+        if (diffX > 25) {
           this.closeAllSwipes();
           row.classList.add(cls);
           isDown = false;
           this.state.swipeTriggered = true;
           haptics.light();
-          setTimeout(() => { this.state.swipeTriggered = false; }, 120);
         } else if (diffX < -15) {
           row.classList.remove(cls);
           isDown = false;
           this.state.swipeTriggered = true;
           haptics.light();
-          setTimeout(() => { this.state.swipeTriggered = false; }, 120);
         }
       });
 
       window.addEventListener('mouseup', () => {
         isDown = false;
+        if (this.state.swipeTriggered) {
+          setTimeout(() => { this.state.swipeTriggered = false; }, 150);
+        }
       });
     });
   },
 
   handleCardClick(event, routeKey) {
+    // Solo permitir abrir deslizando (swipe); al hacer clic simple no se abre la pestaña de ingreso
     if (event && event.target && event.target.closest('.swipe-btns')) return;
-    const card = document.getElementById(routeKey === 'IDA' ? 'card-p02-ida' : 'card-p02-ret');
-    if (!card) return;
-    const isOpen = card.classList.contains('open-programacion');
-    if (isOpen) {
-      card.classList.remove('open-programacion');
-      haptics.light();
-      soundFx.tap();
-      return;
-    }
     if (this.state.swipeTriggered) return;
-    this.closeAllSwipes();
-    card.classList.add('open-programacion');
-    haptics.light();
-    soundFx.tap();
   },
 
   handleEscalaCardClick(event, idx) {
+    // Solo permitir abrir deslizando (swipe); al hacer clic simple no se abre la pestaña de ingreso
     if (event && event.target && event.target.closest('.swipe-btns')) return;
-    const container = document.getElementById('p05-escalas-list');
-    const cards = container ? container.querySelectorAll('.swipe-row') : [];
-    if (!cards || !cards[idx]) return;
-    const card = cards[idx];
-    const isOpen = card.classList.contains('open-escalas');
-    if (isOpen) {
-      card.classList.remove('open-escalas');
-      haptics.light();
-      soundFx.tap();
-      return;
-    }
     if (this.state.swipeTriggered) return;
-    this.closeAllSwipes();
-    card.classList.add('open-escalas');
-    haptics.light();
-    soundFx.tap();
   },
 
   actionProgramacionIngresar(routeKey) {
